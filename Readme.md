@@ -115,12 +115,12 @@ arxiv_agent/
 ## GitHub Pages 部署
 
 1. Fork 或 clone 仓库后，在 **Settings → Pages → Source** 选择 **GitHub Actions**
-2. 推送代码到 `main` 分支，Actions 自动部署 `viewer/` 目录
+2. 推送代码到 `master` 分支，Actions 自动部署 `viewer/` 目录
 
 ```bash
 git add .
 git commit -m "update papers"
-git push origin main
+git push origin master
 ```
 
 ## 定时任务
