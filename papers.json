@@ -1,0 +1,446 @@
+{
+  "papers": [
+    {
+      "arxiv_id": "2604.12972v1",
+      "title": "ESN-DAGMM: A Lightweight Framework for Unsupervised Time-Series Data Monitoring in 5G O-RAN Networks",
+      "authors": [
+        {
+          "name": "Andrew J Chen",
+          "affiliation": ""
+        },
+        {
+          "name": "Raymond Zhao",
+          "affiliation": ""
+        },
+        {
+          "name": "Lingjia Liu",
+          "affiliation": ""
+        }
+      ],
+      "published_date": "2026-04-14",
+      "crawled_date": "2026-04-16",
+      "categories": [
+        "eess.SP"
+      ],
+      "abstract": "Open Radio Access Network (O-RAN) is an important 5G network architecture enabling flexible communication with adaptive strategies for different verticals. However, testing for O-RAN deployments involve massive volumes of time-series data (e.g., key performance indicators), creating critical challenges for scalable, unsupervised monitoring without labels or high computational overhead. To address this, we present ESN-DAGMM, a lightweight adaptation of the Deep Autoencoding Gaussian Mixture Model (DAGMM) framework for time series analysis. Our model utilizes an Echo State Network (ESN) to efficiently model temporal dependencies, proving effective in O-RAN networks where training samples are highly limited. Combined with DAGMM's integratation of dimensionality reduction and density estimation, we present a scalable framework for unsupervised monitoring of high volume network telemetry. When trained on only 10% of an O-RAN video-streaming dataset, ESN-DAGMM achieved on average 269.59% higher quality clustering than baselines under identical conditions, all while maintaining competitive reconstruction error. By extending DAGMM to capture temporal dynamics, ESN-DAGMM offers a practical solution for time-series analysis using very limited training samples, outperforming baselines and enabling operator's control over the clustering-reconstruction trade-off.",
+      "summary_cn": "本文提出ESN-DAGMM，一种面向O-RAN网络时序数据无监督监控的轻量级框架。O-RAN作为重要5G网络架构，支持面向不同垂直行业的灵活通信，但其测试涉及海量时序数据（如关键性能指标），给无标签、低计算开销的可扩展无监督监控带来严峻挑战。为此，作者对深度自编码高斯混合模型（DAGMM）框架进行轻量化改造，利用回声状态网络（ESN）高效建模时序依赖关系，在训练样本极为有限的O-RAN场景中表现优异。结合DAGMM的降维与密度估计能力，构建了可扩展的网络遥测无监督监控框架。实验表明，仅使用10%的O-RAN视频流数据集进行训练，ESN-DAGMM的聚类质量平均提升269.59%，同时保持竞争性重构误差。",
+      "pdf_filename": "papers\\2026-04\\2604.12972v1.pdf",
+      "is_enriched": true
+    },
+    {
+      "arxiv_id": "2604.12958v1",
+      "title": "Learning Low-Dimensional Representation for O-RAN Testing via Transformer-ESN",
+      "authors": [
+        {
+          "name": "Jiongyu Dai",
+          "affiliation": "Institute | lizhong@mit.edu"
+        },
+        {
+          "name": "Raymond Zhao",
+          "affiliation": ""
+        },
+        {
+          "name": "Farhad Rezazadeh",
+          "affiliation": ""
+        },
+        {
+          "name": "Lizhong Zheng",
+          "affiliation": ""
+        },
+        {
+          "name": "Haining Wang",
+          "affiliation": ""
+        },
+        {
+          "name": "Lingjia Liu",
+          "affiliation": ""
+        }
+      ],
+      "published_date": "2026-04-14",
+      "crawled_date": "2026-04-16",
+      "categories": [
+        "eess.SP"
+      ],
+      "abstract": "Open Radio Access Network (O-RAN) architectures enhance flexibility for 6G and NextG networks. However, it also brings significant challenges in O-RAN testing with evaluating abundant, high-dimensional key performance indicators (KPIs). In this paper, we introduce a novel two-stage framework to learn temporally-aware low-dimensional representations of O-RAN testing KPIs. To be specific, stage one employs an information-theoretic H-score to train a hybrid self-attentive transformer and echo state network (ESN) reservoir, called Transformer-ESN, capturing temporal dynamics and producing task-aligned $8$-dimensional embeddings. Stage two evaluates these embeddings by training a lightweight multilayer perceptron (MLP) predictor exclusively on them for key target KPIs such as reference signal received quality (RSRQ) and spectral efficiency. Using real-world O-RAN testbed data (video streaming with interference), our approach demonstrates a significant advantage specifically when training samples are very limited. In this scenario, the low-dimensional representations learned from the Transformer-ESN yield mean square error (MSE) reductions of up to 41.9\\% for RSRQ and 29.9\\% for spectral efficiency compared to predictions from the original high-dimensional data. The framework exhibits high efficiency for O-RAN testing, significantly reducing testing complexities for O-RAN systems.",
+      "summary_cn": "本文提出一种两阶段框架，用于学习O-RAN测试关键性能指标（KPI）的时序感知低维表示，以应对O-RAN架构在6G网络中因评估大量高维KPI而带来的测试挑战。第一阶段利用信息论H-score训练混合自注意力Transformer与回声状态网络（ESN）储备池（称为Transformer-ESN），捕获时序动态并生成任务对齐的8维嵌入。第二阶段通过仅在嵌入上训练轻量多层感知机（MLP）预测器来评估嵌入质量，目标为参考信号接收质量（RSRQ）和频谱效率等关键KPI。基于真实O-RAN实验平台数据，该方法在训练样本极为有限时优势显著：与原始高维数据预测相比，低维表示使RSRQ均方误差降低41.9%、频谱效率降低29.9%。",
+      "pdf_filename": "papers\\2026-04\\2604.12958v1.pdf",
+      "is_enriched": true,
+      "affiliations": "Institute | lizhong@mit.edu"
+    },
+    {
+      "arxiv_id": "2604.12283v1",
+      "title": "Joint Trajectory and Resource Optimization for Aerial RIS-assisted Integrated TNT Networks",
+      "authors": [
+        {
+          "name": "Vangara Saiprudhvi",
+          "affiliation": "Institute | National University | Department School | School Institute"
+        },
+        {
+          "name": "Sandeep Singh",
+          "affiliation": ""
+        },
+        {
+          "name": "Keshav Singh",
+          "affiliation": ""
+        },
+        {
+          "name": "Hariharan Subramaniyam",
+          "affiliation": ""
+        },
+        {
+          "name": "Chih-Peng Li",
+          "affiliation": ""
+        }
+      ],
+      "published_date": "2026-04-14",
+      "crawled_date": "2026-04-16",
+      "categories": [
+        "eess.SP",
+        "cs.ET"
+      ],
+      "abstract": "Integrated terrestrial and non-terrestrial networks (ITNTNs) are regarded as a key architectural paradigm for sixth-generation (6G) wireless systems. This paper investigates a dual-aerial reconfigurable intelligent surface (RIS)-assisted ITNTN, where a terrestrial base station (TBS) and a satellite (SAT) jointly serve terrestrial and satellite users with the aid of an unmanned aerial vehicle (UAV)-mounted RIS and a high-altitude platform (HAP)-mounted RIS. We formulate an average sum-rate maximization problem by jointly optimizing the TBS and SAT precoders, the RIS phase shift matrices, and the three-dimensional trajectories of the UAV and the HAP, subject to transmit power, unit-modulus, and mobility constraints. The resulting optimization problem is highly non-convex due to the strong coupling among the transmit precoders, RIS phase shifts, and aerial platform mobility. To efficiently address this challenge, we propose a block coordinate descent (BCD) framework that integrates weighted minimum mean square error (WMMSE) optimization for precoder design, a manifold-based Riemannian conjugate gradient (RCG) method for RIS phase-shift optimization, and successive convex approximation (SCA) for trajectory optimization. The proposed algorithm is shown to converge to a stationary point. The simulation results show that the proposed joint design achieves an approximately $7.05 \\%$ higher average sum-rate compared to the random RIS scheme, highlighting the effectiveness of dual-aerial RIS deployment and joint communication-mobility optimization in ITNTNs.",
+      "summary_cn": "本文研究双空中可重构智能表面（RIS）辅助的地空一体化网络（ITNTN），其中地面基站（TBS）与卫星联合服务地面和卫星用户，借助无人机（UAV）搭载RIS和高空平台（HAP）搭载RIS增强覆盖。作者将平均和速率最大化问题建模为联合优化TBS和卫星预编码器、RIS相移矩阵及UAV与HAP三维轨迹的优化问题，受限于发射功率、单位模和移动性约束。由于预编码器、RIS相移与空中平台移动性强耦合，问题高度非凸。为此提出块坐标下降（BCD）框架，结合加权最小均方误差（WMMSE）优化预编码器、基于流形的黎曼共轭梯度法优化RIS相移、逐次凸逼近（SCA）优化轨迹。仿真表明联合设计相比随机RIS方案平均和速率提升约7.05%。",
+      "pdf_filename": "papers\\2026-04\\2604.12283v1.pdf",
+      "is_enriched": true,
+      "affiliations": "Institute | National University | Department School | School Institute"
+    },
+    {
+      "arxiv_id": "2604.12266v1",
+      "title": "Joint Trajectory and Resource Optimization for Dual-aerial ARIS-assisted NOMA-TNT Networks",
+      "authors": [
+        {
+          "name": "Vangara Saiprudhvi",
+          "affiliation": "Institute | National University | Department School | School Institute"
+        },
+        {
+          "name": "Keshav Singh",
+          "affiliation": ""
+        },
+        {
+          "name": "Hariharan Subramaniyam",
+          "affiliation": ""
+        },
+        {
+          "name": "Chih-Peng Li",
+          "affiliation": ""
+        }
+      ],
+      "published_date": "2026-04-14",
+      "crawled_date": "2026-04-16",
+      "categories": [
+        "eess.SP",
+        "cs.ET"
+      ],
+      "abstract": "Integrated terrestrial and non-terrestrial networks (ITNTNs) are envisioned as a key paradigm for sixth-generation (6G) wireless systems, enabling seamless global connectivity. In this paper, we investigate a dual-aerial active reconfigurable intelligent surface (ARIS)-assisted non-orthogonal multiple access (NOMA)-based ITNTN, where a terrestrial base station (TBS) and a satellite (SAT) simultaneously serve terrestrial and satellite users with the aid of a UAV-mounted ARIS and a HAP-mounted ARIS. Users are multiplexed via power-domain NOMA with a predefined SIC decoding order. We formulate an average sum-rate maximization problem by jointly optimizing transmit beamforming, ARIS coefficients, and the 3D trajectories of the UAV and HAP, subject to power, unit-modulus, ARIS power, and mobility constraints. The problem is highly non-convex due to coupled variables, nonlinear SINR expressions, ARIS amplification, and trajectory-dependent channels. To address this, a block coordinate descent (BCD)-based framework is proposed. Specifically, beamforming is optimized via WMMSE, ARIS phase shifts via a manifold-based RCG method, amplification factors via SCA, and trajectories via first-order approximations. The proposed algorithm is guaranteed to converge to a stationary point. Simulation results demonstrate that the proposed design achieves significant performance gains over benchmark schemes. In particular, it provides an average sum-rate improvement of approximately $8.44\\%$ over passive RIS under given power constraints, highlighting the benefits of dual-aerial ARIS and joint communication-mobility optimization.",
+      "summary_cn": "本文研究双空中有源可重构智能表面（ARIS）辅助的NOMA地空一体化网络，地面基站与卫星借助无人机搭载ARIS和HAP搭载ARIS同时服务地面及卫星用户，用户通过功率域NOMA复用。作者将平均和速率最大化问题建模为联合优化发射波束赋形、ARIS系数及UAV与HAP三维轨迹的优化问题。由于变量耦合、非线性SINR表达式、ARIS放大及轨迹依赖信道，问题高度非凸。提出基于块坐标下降的框架：WMMSE优化波束赋形、黎曼共轭梯度法优化ARIS相移、SCA优化放大系数、一阶近似优化轨迹。算法保证收敛至稳定点。仿真表明相比无源RIS方案平均和速率提升约8.44%，凸显双空中ARIS与通信-移动联合优化的优势。",
+      "pdf_filename": "papers\\2026-04\\2604.12266v1.pdf",
+      "is_enriched": true,
+      "affiliations": "Institute | National University | Department School | School Institute"
+    },
+    {
+      "arxiv_id": "2604.11298v1",
+      "title": "Toward Environment-Aware LAE: SAR as a Shared Sensing Infrastructure",
+      "authors": [
+        {
+          "name": "Xue Zhang",
+          "affiliation": "University"
+        },
+        {
+          "name": "Bang Huang",
+          "affiliation": ""
+        },
+        {
+          "name": "Mohamed-Slim Alouini",
+          "affiliation": ""
+        }
+      ],
+      "published_date": "2026-04-13",
+      "crawled_date": "2026-04-16",
+      "categories": [
+        "eess.SP"
+      ],
+      "abstract": "The rapid growth of the low-altitude economy (LAE) is making aerial systems an important part of future digital infrastructure. Although major advances have been achieved in unmanned aerial vehicle (UAV) platforms, communications, and autonomous control, environmental perception remains a key bottleneck to reliable and scalable LAE operations. Existing sensing modalities, such as optical, LiDAR, and millimeter-wave radar, are limited by visibility, sensing range, and environmental conditions, resulting in fragmented situational awareness. This article argues that addressing these limitations requires a shift from platform-centric sensing to a shared, environment-aware sensing infrastructure. In this context, synthetic aperture radar (SAR) offers a distinct advantage by enabling all-weather, wide-area perception. We show that SAR can support UAV operations through global environmental awareness, enhance task-level sensing, and enable cooperative sensing across satellites, high-altitude platforms, UAVs, and ground systems. Building on this perspective, we present a system-level view of SAR-enabled LAE, highlighting key transformations from fragmented to infrastructure-centric sensing, from reactive to predictive operation, and from device-centric to environment-aware networking. We further discuss enabling architectures, including multi-platform sensing hierarchies, integration with integrated sensing and communication (ISAC), and the role of artificial intelligence and digital twins, along with the key challenges toward real-world deployment. By positioning SAR as a shared sensing foundation rather than a standalone modality, this article provides new insights into the design of scalable, reliable, and intelligent LAE systems.",
+      "summary_cn": "本文探讨合成孔径雷达（SAR）作为低空经济（LAE）共享感知基础设施的潜力。低空经济快速发展使空中系统成为未来数字基础设施的重要组成部分，但光学、激光雷达和毫米波雷达等现有感知手段受限于可见度、感知范围和环境条件，导致态势感知碎片化。本文主张从以平台为中心转向共享的环境感知基础设施，SAR凭借全天候、广域感知能力具有独特优势。文章展示了SAR如何通过全局环境感知支持无人机运行、增强任务级感知并实现卫星、高空平台、无人机和地面系统的协同感知，提出了从碎片化到基础设施中心化感知、从响应式到预测式运行、从设备中心到环境感知网络的三大关键转变，并讨论了多平台感知层级、通感一体化（ISAC）集成、人工智能与数字孪生等使能架构及实际部署面临的挑战。",
+      "pdf_filename": "papers\\2026-04\\2604.11298v1.pdf",
+      "is_enriched": true,
+      "affiliations": "University"
+    }
+  ],
+  "overflow_list": [
+    {
+      "arxiv_id": "2604.11294v1",
+      "title": "Disaggregated multi-domain interference classification for O-RAN",
+      "url": "https://arxiv.org/abs/2604.11294v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.11098v1",
+      "title": "Efficient Transceiver Design for Aerial Image Transmission and Large-scale Scene Reconstruction",
+      "url": "https://arxiv.org/abs/2604.11098v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.10558v1",
+      "title": "Aerial IRS Deployment-Aided Secure Computation Offloading Against DISCO Jamming Attacks",
+      "url": "https://arxiv.org/abs/2604.10558v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.09363v1",
+      "title": "GreenScatter: Through-Canopy Soil Moisture Sensing with UAV-Mounted Radar",
+      "url": "https://arxiv.org/abs/2604.09363v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.09028v1",
+      "title": "Plasticity-Enhanced Multi-Agent Mixture of Experts for Dynamic Objective Adaptation in UAVs-Assisted Emergency Communication Networks",
+      "url": "https://arxiv.org/abs/2604.09028v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.09015v1",
+      "title": "Generative AI Agent Empowered Power Allocation for HAP Propulsion and Communication Systems",
+      "url": "https://arxiv.org/abs/2604.09015v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.08734v1",
+      "title": "Quality-Aware Denoising of Ultra-Short TDoA Measurements for 5G-NR UAV Localization",
+      "url": "https://arxiv.org/abs/2604.08734v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.08458v2",
+      "title": "LITE: Lightweight Channel Gain Estimation with Reduced X-Haul CSI Signaling in O-RAN",
+      "url": "https://arxiv.org/abs/2604.08458v2",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.08244v1",
+      "title": "FORSLICE: An Automated Formal Framework for Efficient PRB-Allocation towards Slicing Multiple Network Services",
+      "url": "https://arxiv.org/abs/2604.08244v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.07145v1",
+      "title": "Aerial Booster-Cell Enabled Inter-Cell Interference Coordination for 5G NR Networks",
+      "url": "https://arxiv.org/abs/2604.07145v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.06971v1",
+      "title": "RieIF: Knowledge-Driven Riemannian Information Flow for Robust Spatio-Temporal Graph Signal Prediction in 6G Wireless Networks",
+      "url": "https://arxiv.org/abs/2604.06971v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.06856v1",
+      "title": "Enhancing Secure Intent-Based Networking with an Agentic AI: The EU Project MARE Approach",
+      "url": "https://arxiv.org/abs/2604.06856v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.06444v1",
+      "title": "Real-World LoRaWAN Performance and Propagation Modeling Using UAV, Helikite, and Vehicle-Based Measurements",
+      "url": "https://arxiv.org/abs/2604.06444v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.04452v2",
+      "title": "Modeling and Analysis of Air-to-Ground Cellular KPIs in a 5G Testbed using Android Smartphones",
+      "url": "https://arxiv.org/abs/2604.04452v2",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.04271v1",
+      "title": "A Family of Open Time-Series Foundation Models for the Radio Access Network",
+      "url": "https://arxiv.org/abs/2604.04271v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.04073v1",
+      "title": "Unlocking the Energy-Saving Potential in O-RAN Cell-Free Massive MIMO by Joint Orchestration of Radio, Wireless Fronthaul, and Cloud Resources",
+      "url": "https://arxiv.org/abs/2604.04073v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.04044v1",
+      "title": "UAV Control and Communication Enabled Low-Altitude Economy: Challenges, Resilient Architecture and Co-design Strategies",
+      "url": "https://arxiv.org/abs/2604.04044v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.03908v1",
+      "title": "Reimagining RAN Automation in 6G: An Agentic AI Framework with Hierarchical Online Decision Transformer",
+      "url": "https://arxiv.org/abs/2604.03908v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.09682v1",
+      "title": "Decision-Theoretic Safety Assessment of Persona-Driven Multi-Agent Systems in O-RAN",
+      "url": "https://arxiv.org/abs/2604.09682v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.02680v1",
+      "title": "MIMO OFDM-Enabled ISAC for Low-Altitude Non-Cooperative UAV Surveillance: A Survey",
+      "url": "https://arxiv.org/abs/2604.02680v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.02205v1",
+      "title": "Evaluation of gNB Monostatic Sensing for UAV Use Case",
+      "url": "https://arxiv.org/abs/2604.02205v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.01582v1",
+      "title": "Air-to-Air Channel Characterization for UAV Communications at 3.4 GHz",
+      "url": "https://arxiv.org/abs/2604.01582v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.01087v1",
+      "title": "POLARIS: PHY-Aware Spectrum Steering for Dynamic Spectrum Sharing",
+      "url": "https://arxiv.org/abs/2604.01087v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.01049v1",
+      "title": "Adversarial Attacks in AI-Driven RAN Slicing: SLA Violations and Recovery",
+      "url": "https://arxiv.org/abs/2604.01049v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.00224v1",
+      "title": "Learning Compact Terrain-Context Representations for Feasibility-Aware Offline Reinforcement Learning in UAV Relaying Networks",
+      "url": "https://arxiv.org/abs/2604.00224v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2603.29822v1",
+      "title": "Conditional Diffusion-Based Point Cloud Imaging for UAV Position and Attitude Sensing",
+      "url": "https://arxiv.org/abs/2603.29822v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2603.29752v1",
+      "title": "AI-Programmable Wireless Connectivity: Challenges and Research Directions Toward Interactive and Immersive Industry",
+      "url": "https://arxiv.org/abs/2603.29752v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2603.29385v1",
+      "title": "A Three-Dimensional Path Loss Model for THz Band Aerial Communications",
+      "url": "https://arxiv.org/abs/2603.29385v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2603.29146v1",
+      "title": "Enabling Programmable Inference and ISAC at the 6GR Edge with dApps",
+      "url": "https://arxiv.org/abs/2603.29146v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2603.28680v1",
+      "title": "A Techno-Economic Framework for Cost Modeling and Revenue Opportunities in Open and Programmable AI-RAN",
+      "url": "https://arxiv.org/abs/2603.28680v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2603.28657v2",
+      "title": "Performance Analysis of 5G RAN Slicing Deployment Options in Industry 4.0 Factories",
+      "url": "https://arxiv.org/abs/2603.28657v2",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2603.28318v3",
+      "title": "Integrated sensing and communications in the 3GPP New Radio: sensing limits",
+      "url": "https://arxiv.org/abs/2603.28318v3",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2603.28283v1",
+      "title": "Distributed User Scheduling in Multi-Cell MIMO O-RAN with QoS Constraints",
+      "url": "https://arxiv.org/abs/2603.28283v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2603.28176v1",
+      "title": "Weighted Sum-Rate Maximization for RIS-UAV-assisted Space-Air-Ground Integrated Network with RSMA",
+      "url": "https://arxiv.org/abs/2603.28176v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.02370v1",
+      "title": "A Survey on AI for 6G: Challenges and Opportunities",
+      "url": "https://arxiv.org/abs/2604.02370v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2603.27870v1",
+      "title": "Energy Efficient Orchestration in Multiple-Access Vehicular Aerial-Terrestrial 6G Networks",
+      "url": "https://arxiv.org/abs/2603.27870v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2603.27853v1",
+      "title": "Fronthaul Network Planning for Hierarchical and Radio-Stripes-Enabled CF-mMIMO in O-RAN",
+      "url": "https://arxiv.org/abs/2603.27853v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.01239v1",
+      "title": "ML-Enabled Open RAN: A Comprehensive Survey of Architectures, Challenges, and Opportunities",
+      "url": "https://arxiv.org/abs/2604.01239v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2603.27025v1",
+      "title": "Fixed-wing UAV relay optimization for coverage hole recovery",
+      "url": "https://arxiv.org/abs/2603.27025v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2603.25288v1",
+      "title": "CSI-tuples-based 3D Channel Fingerprints Construction Assisted by MultiModal Learning",
+      "url": "https://arxiv.org/abs/2603.25288v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2603.25216v1",
+      "title": "A Wireless World Model for AI-Native 6G Networks",
+      "url": "https://arxiv.org/abs/2603.25216v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2603.24954v1",
+      "title": "On Performance of Fluid Antenna Relay (FAR)-Assisted AAV-NOMA Wireless Network",
+      "url": "https://arxiv.org/abs/2603.24954v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2603.24712v1",
+      "title": "Spatio-Temporal Semantic Inference for Resilient 6G HRLLC in the Low-Altitude Economy",
+      "url": "https://arxiv.org/abs/2603.24712v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2603.24328v1",
+      "title": "Towards Semantic-based Agent Communication Networks: Vision, Technologies, and Challenges",
+      "url": "https://arxiv.org/abs/2603.24328v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2603.24268v1",
+      "title": "Incremental Learning-Based Open-Set Classification of Unknown UAVs via RF Signal Semantics",
+      "url": "https://arxiv.org/abs/2603.24268v1",
+      "crawled_date": "2026-04-16"
+    }
+  ],
+  "metadata": {
+    "last_crawl": "2026-04-16T01:08:36.836146",
+    "total_papers": 5,
+    "total_overflow": 45
+  }
+}

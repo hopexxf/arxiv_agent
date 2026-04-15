@@ -1,2 +1,6 @@
 settings.yml
 histories.json
+papers.json.bak
+tmp/
+__pycache__/
+papers/

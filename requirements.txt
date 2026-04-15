@@ -1,3 +1,4 @@
-arxiv==1.4.2
-PyYAML==6.0
-slack-sdk==3.23.0
+arxiv>=3.0.0
+PyYAML>=6.0.1
+pdfplumber>=0.11.0
+requests>=2.31.0
