@@ -164,6 +164,201 @@
       "pdf_filename": "papers\\2026-04\\2604.11298v1.pdf",
       "is_enriched": true,
       "affiliations": "University"
+    },
+    {
+      "arxiv_id": "2604.11294v1",
+      "title": "Disaggregated multi-domain interference classification for O-RAN",
+      "authors": [
+        {
+          "name": "Dieter Verbruggen",
+          "affiliation": "Department | research"
+        },
+        {
+          "name": "Hazem Sallouha",
+          "affiliation": ""
+        },
+        {
+          "name": "Sofie Pollin",
+          "affiliation": ""
+        }
+      ],
+      "published_date": "2026-04-13",
+      "crawled_date": "2026-04-16",
+      "categories": [
+        "eess.SP"
+      ],
+      "abstract": "Spectrum sharing and dynamic spectrum reuse are becoming increasingly critical in modern wireless networks to address spectrum scarcity. However, these techniques inevitably increase Cross-Technology Interference (CTI). In this context, the Open Radio Access Network (O-RAN), as a modern and disaggregated network architecture, necessitates accurate, low-latency, and computationally efficient CTI classification and mitigation to support real-time control and maintain Quality of Service (QoS). Unfortunately, existing solutions predominantly rely on high-complexity, monolithic deep learning-based solutions that, while achieving high classification accuracy, incur significant latency and computational overhead This paper exploits the O-RAN functional split to leverage multi-domain raw signal representations (time, frequency, and Channel State Information (CSI)) directly from the same data stream. Each domain is processed locally, naturally interleaving CTI within the distributed, disaggregated O-RAN architecture. This distributed strategy enables a cost-aware, multi-domain fusion architecture that balances classification accuracy with computational overhead and latency. Our proposed multi-domain distributed architecture achieves a 400 $μs$ inference latency on standard CPUs. Compared to a state-of-the-art monolithic frequency-domain classifier, this represents an average 9x reduction in latency and an 11-fold decrease in computational cost, while sacrificing only 4% in classification performance and maintaining >90% accuracy in high-interference conditions.",
+      "summary_cn": "Spectrum sharing and dynamic spectrum reuse are becoming increasingly critical in modern wireless networks to address spectrum scarcity. However, these techniques inevitably increase Cross-Technology Interference (CTI). In this context, the Open Radio Access Network (O-RAN), as a modern and disaggregated network architecture, necessitates accurate, low-latency, and computationally efficient CTI classification and mitigation to support real-time control and maintain Quality of Service (QoS). Unfortunately, existing solutions predominantly rely on high-complexity, monolithic deep learning-based solutions that, while achieving high classification accuracy, incur significant latency and computational overhead This paper exploits the O-RAN functional split to leverage multi-domain raw signal representations (time, frequency, and Channel State Information (CSI)) directly from the same data stream. Each domain is processed locally, naturally interleaving CTI within the distributed, disaggregated O-RAN architecture. This distributed strategy enables a cost-aware, multi-domain fusion architecture that balances classification accuracy with computational overhead and latency. Our proposed multi-domain distributed architecture achieves a 400 $μs$ inference latency on standard CPUs. Compared to a state-of-the-art monolithic frequency-domain classifier, this represents an average 9x reduction in latency and an 11-fold decrease in computational cost, while sacrificing only 4% in classification performance and maintaining >90% accuracy in high-interference conditions.",
+      "pdf_filename": "papers\\2026-04\\2604.11294v1.pdf",
+      "is_enriched": false,
+      "affiliations": "Department | research"
+    },
+    {
+      "arxiv_id": "2604.11098v1",
+      "title": "Efficient Transceiver Design for Aerial Image Transmission and Large-scale Scene Reconstruction",
+      "authors": [
+        {
+          "name": "Zeyi Ren",
+          "affiliation": "∗Department | Department | Tsinghua University,Beijing,China | University | niuzhs@}tsinghua.edu.cn"
+        },
+        {
+          "name": "Jialin Dong",
+          "affiliation": ""
+        },
+        {
+          "name": "Wei Zuo",
+          "affiliation": ""
+        },
+        {
+          "name": "Yikun Wang",
+          "affiliation": ""
+        },
+        {
+          "name": "Bingyang Cheng",
+          "affiliation": ""
+        },
+        {
+          "name": "Sheng Zhou",
+          "affiliation": ""
+        },
+        {
+          "name": "Zhisheng Niu",
+          "affiliation": ""
+        }
+      ],
+      "published_date": "2026-04-13",
+      "crawled_date": "2026-04-16",
+      "categories": [
+        "cs.CV",
+        "cs.LG",
+        "eess.SP"
+      ],
+      "abstract": "Large-scale three-dimensional (3D) scene reconstruction in low-altitude intelligent networks (LAIN) demands highly efficient wireless image transmission. However, existing schemes struggle to balance severe pilot overhead with the transmission accuracy required to maintain reconstruction fidelity. To strike a balance between efficiency and reliability, this paper proposes a novel deep learning-based end-to-end (E2E) transceiver design that integrates 3D Gaussian Splatting (3DGS) directly into the training process. By jointly optimizing the communication modules via the combined 3DGS rendering loss, our approach explicitly improves scene recovery quality. Furthermore, this task-driven framework enables the use of a sparse pilot scheme, significantly reducing transmission overhead while maintaining robust image recovery under low-altitude channel conditions. Extensive experiments on real-world aerial image datasets demonstrate that the proposed E2E design significantly outperforms existing baselines, delivering superior transmission performance and accurate 3D scene reconstructions.",
+      "summary_cn": "Large-scale three-dimensional (3D) scene reconstruction in low-altitude intelligent networks (LAIN) demands highly efficient wireless image transmission. However, existing schemes struggle to balance severe pilot overhead with the transmission accuracy required to maintain reconstruction fidelity. To strike a balance between efficiency and reliability, this paper proposes a novel deep learning-based end-to-end (E2E) transceiver design that integrates 3D Gaussian Splatting (3DGS) directly into the training process. By jointly optimizing the communication modules via the combined 3DGS rendering loss, our approach explicitly improves scene recovery quality. Furthermore, this task-driven framework enables the use of a sparse pilot scheme, significantly reducing transmission overhead while maintaining robust image recovery under low-altitude channel conditions. Extensive experiments on real-world aerial image datasets demonstrate that the proposed E2E design significantly outperforms existing baselines, delivering superior transmission performance and accurate 3D scene reconstructions.",
+      "pdf_filename": "papers\\2026-04\\2604.11098v1.pdf",
+      "is_enriched": false,
+      "affiliations": "∗Department | Department | Tsinghua University,Beijing,China | University | niuzhs@}tsinghua.edu.cn"
+    },
+    {
+      "arxiv_id": "2604.10558v1",
+      "title": "Aerial IRS Deployment-Aided Secure Computation Offloading Against DISCO Jamming Attacks",
+      "authors": [
+        {
+          "name": "Minghui Min",
+          "affiliation": "China Universityof Miningand Technology,Xuzhou221116,China,andalso | College | University,Singapore639798.E-mail:minmh@cumt.edu.cn | China University School | School | University,China"
+        },
+        {
+          "name": "Peng Zhang",
+          "affiliation": ""
+        },
+        {
+          "name": "Jiayang Xiao",
+          "affiliation": ""
+        },
+        {
+          "name": "Ruixin Yang",
+          "affiliation": ""
+        },
+        {
+          "name": "Shiyin Li",
+          "affiliation": ""
+        },
+        {
+          "name": "Huan Huang",
+          "affiliation": ""
+        },
+        {
+          "name": "Hongliang Zhang",
+          "affiliation": ""
+        },
+        {
+          "name": "Zhu Han",
+          "affiliation": ""
+        }
+      ],
+      "published_date": "2026-04-12",
+      "crawled_date": "2026-04-16",
+      "categories": [
+        "eess.SP"
+      ],
+      "abstract": "With the rapid growth of Multi-access Edge Computing (MEC), secure and efficient computation offloading from user equipment (UEs) to edge access points (APs) is critical. However, DISCO intelligent reflective surface-based fully-passive jammers (DIRS-based FPJs) use random time-varying phase shifts to launch DISCO jamming attacks, disrupting offloading performance. This paper leverages an aerial intelligent reflective surface (AIRS) to enable secure computation offloading against DISCO jamming by jointly optimizing offloading ratios, AIRS phase shifts, and deployment. A two-timescale (2Ts) framework is proposed to address the optimization challenge caused by the distinct update frequencies of different strategies. Specifically, AIRS deployment is adjusted on a long timescale to boost antijamming capability due to the impracticality of frequent physical adjustment, while offloading ratios and phase shifts are optimized on a short timescale to adapt to DIRS-jammed dynamic channel conditions. We propose a dual-agent deep reinforcement learning (DRL)-based AIRS deployment-aided secure computation offloading (DDADSO) scheme to maximize the secure offloading utility under DISCO jamming. Simulation results verify that the proposed DDADSO scheme outperforms benchmark schemes, demonstrating the effectiveness of AIRS deployment in improving offloading performance against DISCO jamming attacks.",
+      "summary_cn": "With the rapid growth of Multi-access Edge Computing (MEC), secure and efficient computation offloading from user equipment (UEs) to edge access points (APs) is critical. However, DISCO intelligent reflective surface-based fully-passive jammers (DIRS-based FPJs) use random time-varying phase shifts to launch DISCO jamming attacks, disrupting offloading performance. This paper leverages an aerial intelligent reflective surface (AIRS) to enable secure computation offloading against DISCO jamming by jointly optimizing offloading ratios, AIRS phase shifts, and deployment. A two-timescale (2Ts) framework is proposed to address the optimization challenge caused by the distinct update frequencies of different strategies. Specifically, AIRS deployment is adjusted on a long timescale to boost antijamming capability due to the impracticality of frequent physical adjustment, while offloading ratios and phase shifts are optimized on a short timescale to adapt to DIRS-jammed dynamic channel conditions. We propose a dual-agent deep reinforcement learning (DRL)-based AIRS deployment-aided secure computation offloading (DDADSO) scheme to maximize the secure offloading utility under DISCO jamming. Simulation results verify that the proposed DDADSO scheme outperforms benchmark schemes, demonstrating the effectiveness of AIRS deployment in improving offloading performance against DISCO jamming attacks.",
+      "pdf_filename": "papers\\2026-04\\2604.10558v1.pdf",
+      "is_enriched": false,
+      "affiliations": "China Universityof Miningand Technology,Xuzhou221116,China,andalso | College | University,Singapore639798.E-mail:minmh@cumt.edu.cn | China University School | School | University,China"
+    },
+    {
+      "arxiv_id": "2604.09363v1",
+      "title": "GreenScatter: Through-Canopy Soil Moisture Sensing with UAV-Mounted Radar",
+      "authors": [
+        {
+          "name": "Luke Jacobs",
+          "affiliation": ""
+        },
+        {
+          "name": "Ishfaq Aziz",
+          "affiliation": ""
+        },
+        {
+          "name": "Benhao Lu",
+          "affiliation": ""
+        },
+        {
+          "name": "Alireza Tabatabaeenejad",
+          "affiliation": ""
+        },
+        {
+          "name": "Mohamad Alipour",
+          "affiliation": ""
+        },
+        {
+          "name": "Elahe Soltanaghai",
+          "affiliation": ""
+        }
+      ],
+      "published_date": "2026-04-10",
+      "crawled_date": "2026-04-16",
+      "categories": [
+        "eess.SP"
+      ],
+      "abstract": "Soil moisture is a critical variable for managing irrigation, improving crop yield, and understanding field-scale hydrology. Radars mounted on unmanned aerial vehicles (UAVs) offer a promising means to monitor soil moisture over large fields with flexible, high-resolution coverage. However, during the growing season, canopy scattering and soil reflections become strongly coupled in the radar measurement. These coupled effects vary with crop structure or flight altitude, complicating the retrieval of soil moisture. To overcome this challenge, we present GreenScatter, a physics-based soil moisture retrieval framework for nadir-looking wideband UAV radars. GreenScatter introduces a microwave radiative transfer model that explicitly captures the dominant electromagnetic interactions between vegetation and soil, enabling accurate modeling of coherent ground backscatter through canopy. In parallel, it develops a radar cross-section (RCS) estimation method that transforms time-domain radar signals into calibrated wideband RCS spectra, isolating soil reflections while compensating for hardware and waveform effects. Together, these components enable robust soil moisture estimation through vegetation across varying canopy conditions and UAV configurations. Field experiments across multiple corn and soybean sites demonstrate consistent retrieval with an average volumetric water content (VWC) error of 4.49%.",
+      "summary_cn": "Soil moisture is a critical variable for managing irrigation, improving crop yield, and understanding field-scale hydrology. Radars mounted on unmanned aerial vehicles (UAVs) offer a promising means to monitor soil moisture over large fields with flexible, high-resolution coverage. However, during the growing season, canopy scattering and soil reflections become strongly coupled in the radar measurement. These coupled effects vary with crop structure or flight altitude, complicating the retrieval of soil moisture. To overcome this challenge, we present GreenScatter, a physics-based soil moisture retrieval framework for nadir-looking wideband UAV radars. GreenScatter introduces a microwave radiative transfer model that explicitly captures the dominant electromagnetic interactions between vegetation and soil, enabling accurate modeling of coherent ground backscatter through canopy. In parallel, it develops a radar cross-section (RCS) estimation method that transforms time-domain radar signals into calibrated wideband RCS spectra, isolating soil reflections while compensating for hardware and waveform effects. Together, these components enable robust soil moisture estimation through vegetation across varying canopy conditions and UAV configurations. Field experiments across multiple corn and soybean sites demonstrate consistent retrieval with an average volumetric water content (VWC) error of 4.49%.",
+      "pdf_filename": "papers\\2026-04\\2604.09363v1.pdf",
+      "is_enriched": false
+    },
+    {
+      "arxiv_id": "2604.09028v1",
+      "title": "Plasticity-Enhanced Multi-Agent Mixture of Experts for Dynamic Objective Adaptation in UAVs-Assisted Emergency Communication Networks",
+      "authors": [
+        {
+          "name": "Wen Qiu",
+          "affiliation": "Department | School | University | Universityof Technology,China.Emails:zhaowei@ahut.edu.cn | Center,Institute"
+        },
+        {
+          "name": "Zhiqiang He",
+          "affiliation": ""
+        },
+        {
+          "name": "Wei Zhao",
+          "affiliation": ""
+        },
+        {
+          "name": "Hiroshi Masui",
+          "affiliation": ""
+        }
+      ],
+      "published_date": "2026-04-10",
+      "crawled_date": "2026-04-16",
+      "categories": [
+        "cs.MA",
+        "cs.LG",
+        "cs.NI"
+      ],
+      "abstract": "Unmanned aerial vehicles serving as aerial base stations can rapidly restore connectivity after disasters, yet abrupt changes in user mobility and traffic demands shift the quality of service trade-offs and induce strong non-stationarity. Deep reinforcement learning policies suffer from plasticity loss under such shifts, as representation collapse and neuron dormancy impair adaptation. We propose plasticity enhanced multi-agent mixture of experts (PE-MAMoE), a centralized training with decentralized execution framework built on multi-agent proximal policy optimization. PE-MAMoE equips each UAV with a sparsely gated mixture of experts actor whose router selects a single specialist per step. A non-parametric Phase Controller injects brief, expert-only stochastic perturbations after phase switches, resets the action log-standard-deviation, anneals entropy and learning rate, and schedules the router temperature, all to re-plasticize the policy without destabilizing safe behaviors. We derive a dynamic regret bound showing the tracking error scales with both environment variation and cumulative noise energy. In a phase-driven simulator with mobile users and 3GPP-style channels, PE-MAMoE improves normalized interquartile mean return by 26.3\\% over the best baseline, increases served-user capacity by 12.8\\%, and reduces collisions by approximately 75\\%. Diagnostics confirm persistently higher expert feature rank and periodic dormant-neuron recovery at regime switches.",
+      "summary_cn": "Unmanned aerial vehicles serving as aerial base stations can rapidly restore connectivity after disasters, yet abrupt changes in user mobility and traffic demands shift the quality of service trade-offs and induce strong non-stationarity. Deep reinforcement learning policies suffer from plasticity loss under such shifts, as representation collapse and neuron dormancy impair adaptation. We propose plasticity enhanced multi-agent mixture of experts (PE-MAMoE), a centralized training with decentralized execution framework built on multi-agent proximal policy optimization. PE-MAMoE equips each UAV with a sparsely gated mixture of experts actor whose router selects a single specialist per step. A non-parametric Phase Controller injects brief, expert-only stochastic perturbations after phase switches, resets the action log-standard-deviation, anneals entropy and learning rate, and schedules the router temperature, all to re-plasticize the policy without destabilizing safe behaviors. We derive a dynamic regret bound showing the tracking error scales with both environment variation and cumulative noise energy. In a phase-driven simulator with mobile users and 3GPP-style channels, PE-MAMoE improves normalized interquartile mean return by 26.3\\% over the best baseline, increases served-user capacity by 12.8\\%, and reduces collisions by approximately 75\\%. Diagnostics confirm persistently higher expert feature rank and periodic dormant-neuron recovery at regime switches.",
+      "pdf_filename": "papers\\2026-04\\2604.09028v1.pdf",
+      "is_enriched": false,
+      "affiliations": "Department | School | University | Universityof Technology,China.Emails:zhaowei@ahut.edu.cn | Center,Institute"
     }
   ],
   "overflow_list": [
@@ -436,11 +631,251 @@
       "title": "Incremental Learning-Based Open-Set Classification of Unknown UAVs via RF Signal Semantics",
       "url": "https://arxiv.org/abs/2603.24268v1",
       "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.09015v1",
+      "title": "Generative AI Agent Empowered Power Allocation for HAP Propulsion and Communication Systems",
+      "url": "https://arxiv.org/abs/2604.09015v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.08734v1",
+      "title": "Quality-Aware Denoising of Ultra-Short TDoA Measurements for 5G-NR UAV Localization",
+      "url": "https://arxiv.org/abs/2604.08734v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.08458v2",
+      "title": "LITE: Lightweight Channel Gain Estimation with Reduced X-Haul CSI Signaling in O-RAN",
+      "url": "https://arxiv.org/abs/2604.08458v2",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.08244v1",
+      "title": "FORSLICE: An Automated Formal Framework for Efficient PRB-Allocation towards Slicing Multiple Network Services",
+      "url": "https://arxiv.org/abs/2604.08244v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.07145v1",
+      "title": "Aerial Booster-Cell Enabled Inter-Cell Interference Coordination for 5G NR Networks",
+      "url": "https://arxiv.org/abs/2604.07145v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.06971v1",
+      "title": "RieIF: Knowledge-Driven Riemannian Information Flow for Robust Spatio-Temporal Graph Signal Prediction in 6G Wireless Networks",
+      "url": "https://arxiv.org/abs/2604.06971v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.06856v1",
+      "title": "Enhancing Secure Intent-Based Networking with an Agentic AI: The EU Project MARE Approach",
+      "url": "https://arxiv.org/abs/2604.06856v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.06444v1",
+      "title": "Real-World LoRaWAN Performance and Propagation Modeling Using UAV, Helikite, and Vehicle-Based Measurements",
+      "url": "https://arxiv.org/abs/2604.06444v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.04452v2",
+      "title": "Modeling and Analysis of Air-to-Ground Cellular KPIs in a 5G Testbed using Android Smartphones",
+      "url": "https://arxiv.org/abs/2604.04452v2",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.04271v1",
+      "title": "A Family of Open Time-Series Foundation Models for the Radio Access Network",
+      "url": "https://arxiv.org/abs/2604.04271v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.04073v1",
+      "title": "Unlocking the Energy-Saving Potential in O-RAN Cell-Free Massive MIMO by Joint Orchestration of Radio, Wireless Fronthaul, and Cloud Resources",
+      "url": "https://arxiv.org/abs/2604.04073v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.04044v1",
+      "title": "UAV Control and Communication Enabled Low-Altitude Economy: Challenges, Resilient Architecture and Co-design Strategies",
+      "url": "https://arxiv.org/abs/2604.04044v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.03908v1",
+      "title": "Reimagining RAN Automation in 6G: An Agentic AI Framework with Hierarchical Online Decision Transformer",
+      "url": "https://arxiv.org/abs/2604.03908v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.09682v1",
+      "title": "Decision-Theoretic Safety Assessment of Persona-Driven Multi-Agent Systems in O-RAN",
+      "url": "https://arxiv.org/abs/2604.09682v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.02680v1",
+      "title": "MIMO OFDM-Enabled ISAC for Low-Altitude Non-Cooperative UAV Surveillance: A Survey",
+      "url": "https://arxiv.org/abs/2604.02680v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.02205v1",
+      "title": "Evaluation of gNB Monostatic Sensing for UAV Use Case",
+      "url": "https://arxiv.org/abs/2604.02205v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.01582v1",
+      "title": "Air-to-Air Channel Characterization for UAV Communications at 3.4 GHz",
+      "url": "https://arxiv.org/abs/2604.01582v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.01087v1",
+      "title": "POLARIS: PHY-Aware Spectrum Steering for Dynamic Spectrum Sharing",
+      "url": "https://arxiv.org/abs/2604.01087v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.01049v1",
+      "title": "Adversarial Attacks in AI-Driven RAN Slicing: SLA Violations and Recovery",
+      "url": "https://arxiv.org/abs/2604.01049v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.00224v1",
+      "title": "Learning Compact Terrain-Context Representations for Feasibility-Aware Offline Reinforcement Learning in UAV Relaying Networks",
+      "url": "https://arxiv.org/abs/2604.00224v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2603.29822v1",
+      "title": "Conditional Diffusion-Based Point Cloud Imaging for UAV Position and Attitude Sensing",
+      "url": "https://arxiv.org/abs/2603.29822v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2603.29752v1",
+      "title": "AI-Programmable Wireless Connectivity: Challenges and Research Directions Toward Interactive and Immersive Industry",
+      "url": "https://arxiv.org/abs/2603.29752v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2603.29385v1",
+      "title": "A Three-Dimensional Path Loss Model for THz Band Aerial Communications",
+      "url": "https://arxiv.org/abs/2603.29385v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2603.29146v1",
+      "title": "Enabling Programmable Inference and ISAC at the 6GR Edge with dApps",
+      "url": "https://arxiv.org/abs/2603.29146v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2603.28680v1",
+      "title": "A Techno-Economic Framework for Cost Modeling and Revenue Opportunities in Open and Programmable AI-RAN",
+      "url": "https://arxiv.org/abs/2603.28680v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2603.28657v2",
+      "title": "Performance Analysis of 5G RAN Slicing Deployment Options in Industry 4.0 Factories",
+      "url": "https://arxiv.org/abs/2603.28657v2",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2603.28318v3",
+      "title": "Integrated sensing and communications in the 3GPP New Radio: sensing limits",
+      "url": "https://arxiv.org/abs/2603.28318v3",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2603.28283v1",
+      "title": "Distributed User Scheduling in Multi-Cell MIMO O-RAN with QoS Constraints",
+      "url": "https://arxiv.org/abs/2603.28283v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2603.28176v1",
+      "title": "Weighted Sum-Rate Maximization for RIS-UAV-assisted Space-Air-Ground Integrated Network with RSMA",
+      "url": "https://arxiv.org/abs/2603.28176v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.02370v1",
+      "title": "A Survey on AI for 6G: Challenges and Opportunities",
+      "url": "https://arxiv.org/abs/2604.02370v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2603.27870v1",
+      "title": "Energy Efficient Orchestration in Multiple-Access Vehicular Aerial-Terrestrial 6G Networks",
+      "url": "https://arxiv.org/abs/2603.27870v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2603.27853v1",
+      "title": "Fronthaul Network Planning for Hierarchical and Radio-Stripes-Enabled CF-mMIMO in O-RAN",
+      "url": "https://arxiv.org/abs/2603.27853v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2604.01239v1",
+      "title": "ML-Enabled Open RAN: A Comprehensive Survey of Architectures, Challenges, and Opportunities",
+      "url": "https://arxiv.org/abs/2604.01239v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2603.27025v1",
+      "title": "Fixed-wing UAV relay optimization for coverage hole recovery",
+      "url": "https://arxiv.org/abs/2603.27025v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2603.25288v1",
+      "title": "CSI-tuples-based 3D Channel Fingerprints Construction Assisted by MultiModal Learning",
+      "url": "https://arxiv.org/abs/2603.25288v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2603.25216v1",
+      "title": "A Wireless World Model for AI-Native 6G Networks",
+      "url": "https://arxiv.org/abs/2603.25216v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2603.24954v1",
+      "title": "On Performance of Fluid Antenna Relay (FAR)-Assisted AAV-NOMA Wireless Network",
+      "url": "https://arxiv.org/abs/2603.24954v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2603.24712v1",
+      "title": "Spatio-Temporal Semantic Inference for Resilient 6G HRLLC in the Low-Altitude Economy",
+      "url": "https://arxiv.org/abs/2603.24712v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2603.24328v1",
+      "title": "Towards Semantic-based Agent Communication Networks: Vision, Technologies, and Challenges",
+      "url": "https://arxiv.org/abs/2603.24328v1",
+      "crawled_date": "2026-04-16"
+    },
+    {
+      "arxiv_id": "2603.24268v1",
+      "title": "Incremental Learning-Based Open-Set Classification of Unknown UAVs via RF Signal Semantics",
+      "url": "https://arxiv.org/abs/2603.24268v1",
+      "crawled_date": "2026-04-16"
     }
   ],
   "metadata": {
-    "last_crawl": "2026-04-16T01:08:36.836146",
-    "total_papers": 5,
-    "total_overflow": 45
+    "last_crawl": "2026-04-16T02:04:08.058344",
+    "total_papers": 10,
+    "total_overflow": 85
   }
 }
