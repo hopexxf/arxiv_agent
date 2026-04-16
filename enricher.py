@@ -9,6 +9,7 @@ Enricher module - LLM调用（中文摘要生成）
 """
 
 import os
+import re
 import json
 import time
 from pathlib import Path
@@ -38,14 +39,44 @@ class LLMEnricher:
         self.temperature = self.llm_config.get("temperature", 0.3)
         self.max_tokens = self.llm_config.get("max_tokens", 1000)
 
-        # 自动检测 OpenClaw 网关 LLM 代理
-        self._openclaw_base = os.environ.get("QCLAW_LLM_BASE_URL", "")
-        self._openclaw_key = os.environ.get("QCLAW_LLM_API_KEY", "")
-        self._use_openclaw = False
+        # OpenClaw 网关 LLM 代理配置
+        self._openclaw_base = os.environ.get("QCLAW_LLM_BASE_URL", "http://127.0.0.1:19000/proxy/llm")
+        self._openclaw_key = self._load_openclaw_token()
+        
+        # 优先读取配置，其次检测环境变量
+        use_openclaw_config = self.llm_config.get("use_openclaw", False)
+        self._use_openclaw = use_openclaw_config
+        
+        if self._use_openclaw:
+            print("[INFO] 使用方案C: OpenClaw 网关 LLM 代理 (配置启用)")
 
-        if not self.api_key and self._openclaw_base:
-            self._use_openclaw = True
-            print("[INFO] 检测到 OpenClaw 网关，将通过 LLM 代理翻译")
+    @staticmethod
+    def _load_openclaw_token() -> str:
+        """运行时从 openclaw.json 读取网关 auth token，绝不硬编码"""
+        # 1. 环境变量优先
+        env_key = os.environ.get("QCLAW_LLM_API_KEY", "").strip()
+        if env_key:
+            return env_key
+
+        # 2. 从 openclaw.json 读取 gateway.auth.token
+        candidates = [
+            Path(os.environ.get("QCLAW_HOME", "")) / "openclaw.json",
+            Path.home() / ".qclaw" / "openclaw.json",
+        ]
+        for cfg_path in candidates:
+            if cfg_path.is_file():
+                try:
+                    import re
+                    content = cfg_path.read_text(encoding="latin-1")
+                    m = re.search(r'"token"\s*:\s*"([a-f0-9]{20,})"', content)
+                    if m:
+                        # 取最后一个匹配（gateway.auth.token 在 models.providers 之后）
+                        for match in re.finditer(r'"token"\s*:\s*"([a-f0-9]{20,})"', content):
+                            token = match.group(1)
+                        return token
+                except Exception:
+                    continue
+        return ""
 
     def _call_openai_compatible(self, prompt: str) -> Optional[str]:
         """
@@ -100,6 +131,7 @@ class LLMEnricher:
         try:
             import urllib.request
 
+            # OpenClaw 网关认证
             headers = {
                 "Content-Type": "application/json",
                 "Authorization": f"Bearer {self._openclaw_key}"
@@ -129,13 +161,31 @@ class LLMEnricher:
                 result = json.loads(response.read().decode('utf-8'))
                 choice = result["choices"][0]["message"]
                 content = choice.get("content", "").strip()
-                # 某些模型思考过程在 reasoning_content，内容在 content
-                # 如果 content 为空，尝试从 reasoning_content 提取最终结论
+                
+                # 如果 content 为空，说明模型使用了思考过程模式
+                # 思考过程在 reasoning_content，最终答案在 content
+                # content 仍然为空时，尝试从 reasoning_content 提取翻译结果
                 if not content:
                     reasoning = choice.get("reasoning_content", "").strip()
                     if reasoning:
-                        # reasoning 通常是思考过程，取最后一段作为结论
-                        content = reasoning
+                        # 1. 移除所有<think>和标签
+                        clean = re.sub(r'<think>.*?', '', reasoning, flags=re.DOTALL).strip()
+                        clean = re.sub(r'', '', clean).strip()
+                        
+                        # 2. 尝试提取 "翻译结果：" 后面的内容
+                        marker = "翻译结果："
+                        if marker in clean:
+                            content = clean.split(marker, 1)[1].strip()
+                        else:
+                            # 3. 移除可能的提示词前缀
+                            for prefix in ['摘要：', '翻译：', '最终答案：', '答案：']:
+                                if clean.startswith(prefix):
+                                    content = clean[len(prefix):].strip()
+                                    break
+                            else:
+                                # 4. 清理多余空白后直接使用
+                                content = re.sub(r'\s+', ' ', clean).strip()
+                
                 return content
 
         except Exception as e:
@@ -172,21 +222,21 @@ class LLMEnricher:
 
         prompt = TRANSLATE_PROMPT.format(abstract=abstract)
 
-        # 方案B: 优先使用配置的 API Key
-        if self.api_key:
-            print("[INFO] 使用方案B: 直接调用LLM API")
-            result = self._call_openai_compatible(prompt)
-            if result:
-                return result
-            print("[WARN] 方案B失败，降级到方案C")
-
-        # 方案C: OpenClaw 网关 LLM 代理
+        # 方案C: OpenClaw 网关 LLM 代理（配置优先）
         if self._use_openclaw:
             print("[INFO] 使用方案C: OpenClaw 网关 LLM 代理")
             result = self._call_openclaw_proxy(abstract)
             if result:
                 return result
-            print("[WARN] 方案C失败，降级到方案A")
+            print("[WARN] 方案C失败，降级到方案B")
+
+        # 方案B: 使用配置的 API Key
+        if self.api_key:
+            print("[INFO] 使用方案B: 直接调用LLM API")
+            result = self._call_openai_compatible(prompt)
+            if result:
+                return result
+            print("[WARN] 方案B失败，降级到方案A")
 
         # 方案A: 写 pending 文件
         if paper:

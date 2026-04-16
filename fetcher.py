@@ -36,12 +36,13 @@ class ArxivFetcher:
         if not Path(keywords_file).exists():
             raise FileNotFoundError(f"关键词文件不存在: {keywords_file}")
         
-        with open(keywords_file, 'r', encoding='utf-8') as f:
-            keywords = [line.strip() for line in f if line.strip()]
+        # 解析关键词和权重
+        self.keywords = self._parse_keywords(keywords_file)
         
-        # 转换关键词为arXiv查询语法
+        # 转换关键词为arXiv查询语法（只用关键词，不用权重）
         query_parts = []
-        for kw in keywords:
+        for kw_data in self.keywords:
+            kw = kw_data['keyword']
             # 处理多词关键词
             if ' ' in kw and not kw.startswith('"'):
                 # 6G AI -> all:"6G" AND all:AI
@@ -63,6 +64,74 @@ class ArxivFetcher:
         final_query = f'({keyword_query}) AND ({cat_query})'
         
         return final_query
+    
+    def _parse_keywords(self, filepath: str) -> List[Dict]:
+        """
+        解析关键词文件，支持权重
+        格式: 关键词|权重 或 关键词
+        示例:
+            AI-RAN|10
+            6G AI|9
+            Aerial
+        """
+        keywords = []
+        with open(filepath, 'r', encoding='utf-8') as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith('#'):
+                    continue
+                
+                parts = line.split('|')
+                keyword = parts[0].strip()
+                weight = int(parts[1].strip()) if len(parts) > 1 else 5
+                
+                keywords.append({
+                    'keyword': keyword,
+                    'weight': weight,
+                    'terms': keyword.lower().split()  # 分词用于匹配
+                })
+        
+        return keywords
+    
+    def _score_paper(self, result: arxiv.Result) -> Tuple[int, datetime]:
+        """
+        计算论文相关性分数
+        返回: (分数, 发表日期)
+        分数计算:
+        - 标题匹配: 权重 * 3
+        - 摘要匹配: 权重 * 1
+        """
+        score = 0
+        title_lower = result.title.lower()
+        abstract_lower = result.summary.lower()
+        
+        for kw_data in self.keywords:
+            weight = kw_data['weight']
+            
+            # 检查标题匹配（完全匹配或分词匹配）
+            if kw_data['keyword'].lower() in title_lower:
+                score += weight * 3
+            
+            # 检查摘要匹配
+            for term in kw_data['terms']:
+                if term in title_lower:
+                    score += weight
+                    break
+                if term in abstract_lower:
+                    score += weight // 2
+                    break
+        
+        return score, result.published
+    
+    def _sort_by_relevance(self, results: List[arxiv.Result]) -> List[arxiv.Result]:
+        """
+        按相关性分数排序
+        相同时按发表日期倒序
+        """
+        scored = [(r, self._score_paper(r)) for r in results]
+        # 分数降序，相同时日期降序
+        scored.sort(key=lambda x: (x[1][0], x[1][1]), reverse=True)
+        return [r for r, _ in scored]
     
     def search_papers(self, query: str, max_results: int = 50) -> List[arxiv.Result]:
         """
@@ -102,7 +171,15 @@ class ArxivFetcher:
             if r.published.replace(tzinfo=None) >= cutoff_date
         ]
         
-        return filtered_results
+        # 按相关性分数排序
+        sorted_results = self._sort_by_relevance(filtered_results)
+        
+        # 打印相关性分数分布（调试用）
+        if sorted_results:
+            scores = [self._score_paper(r)[0] for r in sorted_results[:5]]
+            print(f"[INFO] 相关性分数Top5: {scores}")
+        
+        return sorted_results
     
     def download_pdf(self, result: arxiv.Result, pdf_dir: str) -> Optional[str]:
         """
@@ -202,12 +279,20 @@ class ArxivFetcher:
                 
                 detailed_papers.append(paper_info)
             else:
-                # 溢出处理：只记录基本信息
+                # 溢出处理：保存完整信息（支持展开显示）
+                # authors 是 arxiv.Author 对象列表，转为字符串
+                authors_str = ", ".join(a.name for a in result.authors)
                 overflow_papers.append({
                     "arxiv_id": arxiv_id,
                     "title": result.title,
+                    "authors": authors_str,
                     "url": f"https://arxiv.org/abs/{arxiv_id}",
-                    "crawled_date": datetime.now().strftime("%Y-%m-%d")
+                    "published_date": result.published.strftime("%Y-%m-%d"),
+                    "crawled_date": datetime.now().strftime("%Y-%m-%d"),
+                    "categories": ", ".join(result.categories),
+                    "abstract": result.summary,
+                    "summary_cn": "",
+                    "is_enriched": False
                 })
         
         return detailed_papers, overflow_papers
@@ -231,18 +316,22 @@ class ArxivFetcher:
         detailed, overflow = self.process_papers(results)
         
         # 保存到存储
+        added_detailed = 0
         for paper in detailed:
-            self.storage.add_paper(paper)
+            if self.storage.add_paper(paper):
+                added_detailed += 1
         
+        added_overflow = 0
         for paper_info in overflow:
-            self.storage.add_to_overflow(paper_info)
+            if self.storage.add_to_overflow(paper_info):
+                added_overflow += 1
         
         self.storage.save()
         
-        print(f"[INFO] 详细处理: {len(detailed)} 篇")
-        print(f"[INFO] 溢出记录: {len(overflow)} 篇")
+        print(f"[INFO] 详细处理: {added_detailed} 篇（去重后）")
+        print(f"[INFO] 溢出记录: {added_overflow} 篇（去重后）")
         
-        return len(detailed), len(overflow)
+        return added_detailed, added_overflow
 
 
 if __name__ == "__main__":

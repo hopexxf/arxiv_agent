@@ -48,8 +48,16 @@ def main():
     print(f"  现有论文: {len(storage.get_all_papers())} 篇")
     print(f"  溢出记录: {len(storage.get_overflow_list())} 篇")
     
+    # 清理旧论文
+    keep_days = settings.get("storage", {}).get("keep_days", 90)
+    if keep_days > 0:
+        print(f"\n[2.5/6] 清理超过 {keep_days} 天的旧论文（保留收藏）...")
+        removed_papers, removed_overflow = storage.cleanup_old_papers(keep_days)
+        if removed_papers > 0 or removed_overflow > 0:
+            storage.save()
+    
     # 搜索和下载
-    print("\n[3/6] 搜索arXiv论文...")
+    print("\n[3/7] 搜索arXiv论文...")
     fetcher = ArxivFetcher(storage, settings)
     new_count, overflow_count = fetcher.run()
     
@@ -58,7 +66,7 @@ def main():
         return
     
     # 提取作者单位
-    print("\n[4/6] 提取作者单位...")
+    print("\n[4/7] 提取作者单位...")
     papers_to_enrich = []
     for paper in storage.get_all_papers():
         # 只处理今天新增的论文
@@ -70,7 +78,7 @@ def main():
     print(f"  处理 {len(papers_to_enrich)} 篇论文的单位信息")
     
     # 生成中文摘要
-    print("\n[5/6] 生成中文摘要...")
+    print("\n[5/7] 生成中文摘要...")
     if settings["processing"]["generate_chinese_summary"]:
         enricher = LLMEnricher(settings)
         
@@ -94,7 +102,7 @@ def main():
         print("  已禁用中文摘要生成")
     
     # 生成网站数据
-    print("\n[6/6] 生成网站数据...")
+    print("\n[6/7] 生成网站数据...")
     build_viewer()
     
     # 总结

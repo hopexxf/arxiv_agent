@@ -1,5 +1,8 @@
-AI-RAN
-6G AI
-Aerial
-O-RAN
-GPU RAN
+# 格式：关键词|权重（1-10），权重越高越相关
+# 默认权重为5
+
+AI-RAN|8
+6G AI|7
+Aerial|10
+O-RAN|4
+GPU RAN|5

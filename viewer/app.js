@@ -47,10 +47,7 @@ async function init() {
       els.startDate.value = minDate.toISOString().split('T')[0];
     }
     
-    // 初始渲染（不带筛选，显示全部）
-    renderOverflowList();
-    
-    // 初始渲染
+    // 初始渲染（applyFilters会调用renderOverflowList）
     applyFilters();
     
   } catch (err) {
@@ -133,10 +130,10 @@ function renderOverflowList(keyword = '', startDate = '', endDate = '') {
   
   let filtered = overflowList;
   
-  // 日期筛选
+  // 日期筛选（使用published_date）
   if (startDate || endDate) {
     filtered = filtered.filter(item => {
-      const d = item.crawled_date || '';
+      const d = item.published_date || item.crawled_date || '';
       if (startDate && d < startDate) return false;
       if (endDate && d > endDate) return false;
       return true;
@@ -145,9 +142,10 @@ function renderOverflowList(keyword = '', startDate = '', endDate = '') {
   
   // 关键词筛选
   if (keyword) {
+    const kw = keyword.toLowerCase();
     filtered = filtered.filter(item => {
-      const text = `${item.title} ${item.arxiv_id || ''}`.toLowerCase();
-      return text.includes(keyword);
+      const text = `${item.title} ${item.arxiv_id || ''} ${item.authors || ''} ${item.abstract || ''}`.toLowerCase();
+      return text.includes(kw);
     });
   }
   
@@ -162,21 +160,86 @@ function renderOverflowList(keyword = '', startDate = '', endDate = '') {
   const shownCount = filtered.length;
   els.overflowSection.querySelector('h2').textContent =
     shownCount < totalCount
-      ? `更多论文（仅记录标题）— 显示 ${shownCount}/${totalCount}`
-      : `更多论文（仅记录标题，共 ${totalCount} 篇）`;
+      ? `更多论文（${shownCount}/${totalCount}）`
+      : `更多论文（共 ${totalCount} 篇）`;
   
   els.overflowList.innerHTML = '';
   
   filtered.forEach(item => {
-    const div = document.createElement('div');
-    div.className = 'overflow-item';
-    const url = item.url || `https://arxiv.org/abs/${item.arxiv_id || ''}`;
-    div.innerHTML = `
-      <a href="${url}" target="_blank" rel="noopener">${item.title}</a>
-      <span class="date">${item.crawled_date || ''}</span>
-    `;
-    els.overflowList.appendChild(div);
+    // 统一使用可展开卡片模式
+    renderOverflowCard(item);
   });
+}
+
+// 渲染溢出论文卡片（可展开）
+function renderOverflowCard(item) {
+  const card = document.createElement('div');
+  card.className = 'overflow-card collapsed';
+  
+  // 卡片头部
+  const header = document.createElement('div');
+  header.className = 'overflow-card-header';
+  
+  const titleLink = document.createElement('a');
+  titleLink.href = item.arxiv_url || item.url || `https://arxiv.org/abs/${item.arxiv_id || ''}`;
+  titleLink.target = '_blank';
+  titleLink.rel = 'noopener';
+  titleLink.className = 'overflow-title';
+  titleLink.textContent = item.title;
+  
+  const toggleBtn = document.createElement('button');
+  toggleBtn.className = 'overflow-toggle';
+  toggleBtn.textContent = '展开';
+  toggleBtn.onclick = () => {
+    card.classList.toggle('collapsed');
+    card.classList.toggle('expanded');
+    toggleBtn.textContent = card.classList.contains('expanded') ? '收起' : '展开';
+  };
+  
+  const dateSpan = document.createElement('span');
+  dateSpan.className = 'date';
+  dateSpan.textContent = item.published_date || item.crawled_date || '';
+  
+  header.appendChild(titleLink);
+  header.appendChild(toggleBtn);
+  header.appendChild(dateSpan);
+  
+  // 卡片内容（折叠）
+  const content = document.createElement('div');
+  content.className = 'overflow-card-content';
+  
+  // 作者和分类
+  if (item.authors) {
+    const meta = document.createElement('div');
+    meta.className = 'overflow-meta';
+    meta.textContent = item.categories ? `${item.authors} · ${item.categories}` : item.authors;
+    content.appendChild(meta);
+  }
+  
+  // 单位
+  if (item.affiliations) {
+    const aff = document.createElement('div');
+    aff.className = 'overflow-affiliations';
+    aff.textContent = `单位: ${item.affiliations}`;
+    content.appendChild(aff);
+  }
+  
+  // 中文摘要或英文摘要
+  if (item.summary_cn) {
+    const cnDiv = document.createElement('div');
+    cnDiv.className = 'overflow-summary-cn';
+    cnDiv.textContent = item.summary_cn;
+    content.appendChild(cnDiv);
+  } else if (item.abstract) {
+    const absDiv = document.createElement('div');
+    absDiv.className = 'overflow-abstract';
+    absDiv.textContent = item.abstract;
+    content.appendChild(absDiv);
+  }
+  
+  card.appendChild(header);
+  card.appendChild(content);
+  els.overflowList.appendChild(card);
 }
 
 // 收藏切换
