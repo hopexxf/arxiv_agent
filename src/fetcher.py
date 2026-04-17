@@ -207,8 +207,8 @@ class ArxivFetcher:
 
     def _download_pdf_no_ssl(self, result: arxiv.Result, pdf_dir: str) -> Optional[str]:
         """
-        下载PDF（绕过SSL证书验证）
-        Windows环境下urllib默认无根证书，arxiv.org需要SSL
+        下载PDF
+        优先使用 certifi CA 证书；若不可用则 fallback 禁用验证并打印警告
         """
         import ssl
         import urllib.request
@@ -226,13 +226,20 @@ class ArxivFetcher:
         if not pdf_url:
             return None
         
-        ctx = ssl.create_default_context()
-        ctx.check_hostname = False
-        ctx.verify_mode = ssl.CERT_NONE
+        # 尝试用 certifi 提供完整 CA 证书链
+        ssl_context = None
+        try:
+            import certifi
+            ssl_context = ssl.create_default_context(cafile=certifi.where())
+        except ImportError:
+            print("[WARN] certifi 未安装，PDF下载将跳过SSL验证（存在中间人攻击风险），建议: pip install certifi")
+            ssl_context = ssl.create_default_context()
+            ssl_context.check_hostname = False
+            ssl_context.verify_mode = ssl.CERT_NONE
         
         try:
             req = urllib.request.Request(pdf_url, headers={"User-Agent": "Mozilla/5.0"})
-            with urllib.request.urlopen(req, context=ctx, timeout=60) as resp:
+            with urllib.request.urlopen(req, context=ssl_context, timeout=60) as resp:
                 data = resp.read()
                 pdf_file.write_bytes(data)
                 return str(pdf_file)
