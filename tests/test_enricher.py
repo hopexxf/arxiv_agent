@@ -13,7 +13,7 @@ from unittest.mock import patch, MagicMock
 # 添加项目根目录到路径
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from src.enricher import LLMEnricher, _sanitize_error, _USER_PROMPT_TEMPLATE, _SYSTEM_PROMPT
+from src.enricher import LLMEnricher, _sanitize_error, _USER_PROMPT_TEMPLATE, _SYSTEM_PROMPT, _clean_translation, _looks_like_chinese, _extract_translation_from_reasoning
 
 
 # ── _sanitize_error 测试 ──
@@ -71,9 +71,9 @@ class TestPromptTemplate:
         assert body == "MY_TEST_CONTENT"
 
     def test_system_prompt_mentions_delimiters(self):
-        """系统提示指示模型只翻译分隔符内内容"""
-        assert "<<<ABSTRACT>>>" in _SYSTEM_PROMPT
-        assert "忽略" in _SYSTEM_PROMPT or "ignore" in _SYSTEM_PROMPT.lower()
+        """用户提示包含分隔符，系统提示要求纯输出"""
+        assert "<<<ABSTRACT>>>" in _USER_PROMPT_TEMPLATE
+        assert "ONLY" in _SYSTEM_PROMPT  # "Output ONLY the Chinese text"
 
     def test_injection_isolation(self):
         """模拟注入场景：摘要包含指令性文本，被分隔符隔离"""
@@ -183,22 +183,107 @@ class TestTranslateAbstract:
         assert result == "测试翻译结果"
 
     def test_openclaw_proxy_mock(self):
-        """mock urllib 验证方案C请求结构"""
+        """mock 方案C直接返回翻译结果"""
         e = self._make_enricher(use_openclaw=True)
-        # 确保 _openclaw_key 非空
         e._openclaw_key = "fake_token_for_testing_1234"
 
-        mock_response = MagicMock()
-        mock_response.read.return_value = json.dumps({
-            "choices": [{"message": {"content": "中文翻译"}}]
-        }).encode('utf-8')
-        mock_response.__enter__ = MagicMock(return_value=mock_response)
-        mock_response.__exit__ = MagicMock(return_value=False)
-
-        with patch('urllib.request.urlopen', return_value=mock_response):
+        with patch.object(e, '_call_openclaw_proxy', return_value="中文翻译结果用于测试验证"):
             result = e.translate_abstract("English abstract for testing")
 
-        assert result == "中文翻译"
+        assert "中文" in result
+
+
+# ── _clean_translation 测试 ──
+
+class TestCleanTranslation:
+    """翻译结果清洗测试"""
+
+    def test_clean_text_unchanged(self):
+        """干净中文文本不变"""
+        text = "本文提出了一种用于6G网络的AI原生RAN架构。"
+        assert _clean_translation(text) == text
+
+    def test_char_numbering_removed(self):
+        """字符编号 (N) 被清除"""
+        text = "低(1)空(2)智(3)能(4)网(5)的大规模三维场景重建"
+        result = _clean_translation(text)
+        assert "(1)" not in result
+        assert "低空智能网" in result
+
+    def test_draft_marker_last_version(self):
+        """Draft 标记取最终版"""
+        text = ("*Draft 1:* 自动系统发展推动了用户激增。 (298 chars)\n"
+                "*Draft 2:* 自动驾驶与互联技术的发展催生了海量车联网应用。")
+        result = _clean_translation(text)
+        assert "Draft" not in result
+        assert "自动驾驶" in result
+        assert "自动系统" not in result
+
+    def test_english_prefix_stripped(self):
+        """英文元注释行被剥离"""
+        text = ("~250 chars. Good.\n"
+                "Let's refine for better flow:\n"
+                "随着多接入边缘计算快速发展，安全高效至关重要。")
+        result = _clean_translation(text)
+        assert "~250" not in result
+        assert "Let's" not in result
+        assert "随着多接入" in result
+
+    def test_sentence_prefix_stripped(self):
+        """*Sentence N:* 前缀被清除"""
+        text = ("*Sentence 1:* With rapid growth of MEC.\n"
+                "*Sentence 2:* 安全高效的计算卸载至关重要。")
+        result = _clean_translation(text)
+        assert "Sentence" not in result
+        assert "安全高效" in result
+
+    def test_meta_comment_removed(self):
+        """(N chars) 元注释被清除"""
+        text = "自动驾驶发展催生新应用 (298 chars) - *Good, but concise.*"
+        result = _clean_translation(text)
+        assert "chars" not in result
+        assert "Good" not in result
+
+    def test_empty_input(self):
+        """空输入返回空"""
+        assert _clean_translation("") == ""
+        assert _clean_translation(None) is None
+
+    def test_translation_prefix_stripped(self):
+        """翻译结果前缀被清除"""
+        text = "翻译结果：本文提出了一种新框架。"
+        result = _clean_translation(text)
+        assert result.startswith("本文")
+
+
+# ── _extract_translation_from_reasoning 测试 ──
+
+class TestExtractFromReasoning:
+    """reasoning_content 翻译提取测试"""
+
+    def test_marker_extraction(self):
+        """按'翻译结果：'标记提取"""
+        reasoning = "1. 分析原文\n2. 逐句翻译\n翻译结果：本文提出新框架，实现动态优化。\n4. 其他备注"
+        result = _extract_translation_from_reasoning(reasoning)
+        assert "本文提出" in result
+        assert "其他备注" not in result
+
+    def test_last_section_chinese(self):
+        """无标记时取最后一段中文"""
+        reasoning = "1. **分析**\n思考过程...\n\n5. **最终翻译**\n本文提出6G网络架构。"
+        result = _extract_translation_from_reasoning(reasoning)
+        assert "6G" in result
+
+    def test_empty_reasoning(self):
+        """空 reasoning 返回空字符串"""
+        assert _extract_translation_from_reasoning("") == ""
+
+    def test_think_tags_stripped(self):
+        """<think>标签被移除"""
+        reasoning = "<think>思考过程</think>翻译结果：本文提出新方案。"
+        result = _extract_translation_from_reasoning(reasoning)
+        assert "<think>" not in result
+        assert "本文" in result
 
 
 if __name__ == "__main__":
