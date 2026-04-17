@@ -107,7 +107,7 @@ python -m http.server 8765
 | B | 直接 API | `llm.api_key` 已配置 | 调用任意 OpenAI 兼容接口 |
 | C | OpenClaw 上游代理 | `use_openclaw: true`（配置启用） | 调用 `127.0.0.1:19000` 上游 proxy，零 session 残留 |
 | A | pending 状态 | 以上均不可用 | 标记 `abstract_zh_status=pending`，需手动 `--retry-pending` 重试 |
-| 兜底 | 保留英文 | 以上均失败 | 直接使用原始英文摘要 |
+| 失败 | 留空 | 以上均失败 | `summary_cn` 留空，前端显示「暂无中文摘要」 |
 
 **推荐**：在 OpenClaw 环境中运行时，设置 `use_openclaw: true` 启用方案 C，零配置即可翻译。
 
@@ -239,10 +239,21 @@ GPU RAN
 - [ ] PDF 下载 SSL：Windows 无根证书时仍需 fallback 跳过验证，建议 `pip install certifi`
 - [ ] 作者-单位对应：PDF 双栏解析只能提取机构名，无法精确对应到具体作者
 - [ ] 翻译质量：依赖 LLM 能力，专业术语翻译可能不够精准
-- [ ] 溢出列表：仅记录标题，后续可支持一键升级为详细论文
+- [ ] 溢出列表：暂无中文摘要，需运行 `--retry-pending` 翻译
 - [ ] pending 重试：方案 A 标记的 pending 论文需使用 `--retry-pending` 手动重试
 
 ## 版本历史
+
+### V2.8 — 溢出数据完整性 + 翻译兜底修复 (2026-04-18)
+
+- **修复**：`add_to_overflow()` 保存完整字段（abstract/authors/categories 等），而非仅存 5 个字段导致前端无法展示内容
+- **修复**：翻译失败时 `summary_cn` 留空，不再回填英文原文（前端已有「暂无中文摘要」占位）
+- **修复**：`reasoning_content` 提取重构（三策略：标记分段 → 编号列表末段 → 最后非空行），解决模型思考过程泄漏问题
+- **修复**：`_clean_translation()` 清洗 Draft 标记、`(N)` 字符编号、英文元注释等 LLM 输出格式噪声
+- **修复**：`enrich_paper` 增加 `summary_cn=None` 防护，避免误标记 completed
+- **数据**：回填 45 条溢出记录的 abstract/authors/categories（从 arxiv.org 爬取）
+- **优化**：强制 `temperature=0` 减少翻译格式发散
+- 测试 64 passed
 
 ### V2.7 — Rebuild + 测试覆盖 (2026-04-18)
 
