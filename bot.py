@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 arXiv Agent - 论文追踪报道
 主入口脚本，串联所有模块
@@ -7,6 +8,7 @@ arXiv Agent - 论文追踪报道
 import os
 import sys
 import yaml
+import argparse
 from pathlib import Path
 
 # 添加当前目录到路径
@@ -30,7 +32,20 @@ def load_settings() -> dict:
         return yaml.safe_load(f)
 
 
+def parse_args():
+    """解析命令行参数"""
+    parser = argparse.ArgumentParser(description="arXiv 论文追踪报道")
+    parser.add_argument(
+        "--retry-pending",
+        action="store_true",
+        help="重试翻译 pending 状态的论文（默认不重试）"
+    )
+    return parser.parse_args()
+
+
 def main():
+    args = parse_args()
+    
     print("=" * 60)
     print("论文追踪报道 - arXiv Agent")
     print("=" * 60)
@@ -69,23 +84,29 @@ def main():
     print("\n[4/7] 提取作者单位...")
     papers_to_enrich = []
     papers_to_translate = []
+    today = storage.get_metadata().get("last_crawl", "")[:10]
+    
     for paper in storage.get_all_papers():
         # 只处理今天新增的论文
-        if paper.get("crawled_date") == storage.get_metadata().get("last_crawl", "")[:10]:
+        if paper.get("crawled_date") == today:
             if not paper.get("affiliations") and paper.get("pdf_filename"):
                 paper = enrich_paper_with_affiliation(paper)
                 papers_to_enrich.append(paper)
-        # 收集需要翻译的论文（新论文 + pending 论文）
-        if not paper.get("summary_cn") or paper.get("abstract_zh_status") == "pending":
-            papers_to_translate.append(paper)
+            # 只处理新论文的翻译（无 summary_cn 且非 pending）
+            if not paper.get("summary_cn") and paper.get("abstract_zh_status") != "pending":
+                papers_to_translate.append(paper)
     
-    # 去重
-    seen = set()
-    papers_to_translate = [p for p in papers_to_translate if not (p["arxiv_id"] in seen or seen.add(p["arxiv_id"]))]
+    # 如果指定了 --retry-pending，也处理 pending 论文
+    if args.retry_pending:
+        for paper in storage.get_all_papers():
+            if paper.get("abstract_zh_status") == "pending" and paper not in papers_to_translate:
+                papers_to_translate.append(paper)
+        retry_msg = "（含重试 pending）"
+    else:
+        retry_msg = ""
     
-    pending_count = sum(1 for p in papers_to_translate if p.get("abstract_zh_status") == "pending")
     print(f"  处理 {len(papers_to_enrich)} 篇论文的单位信息")
-    print(f"  待翻译 {len(papers_to_translate)} 篇论文（含 {pending_count} 篇 pending）")
+    print(f"  待翻译 {len(papers_to_translate)} 篇新论文{retry_msg}")
     
     # 生成中文摘要
     print("\n[5/7] 生成中文摘要...")
