@@ -100,11 +100,13 @@ python -m http.server 8765
 | 优先级 | 方案 | 条件 | 说明 |
 |--------|------|------|------|
 | B | 直接 API | `llm.api_key` 已配置 | 调用任意 OpenAI 兼容接口 |
-| C | OpenClaw 网关 | 环境变量 `QCLAW_LLM_BASE_URL` 存在 | 自动检测，无需配置 |
+| C | OpenClaw 上游代理 | `use_openclaw: true`（配置启用） | 调用 `127.0.0.1:19000` 上游 proxy，零 session 残留 |
 | A | pending 状态 | 以上均不可用 | 标记 `abstract_zh_status=pending`，需手动 `--retry-pending` 重试 |
 | 兜底 | 保留英文 | 以上均失败 | 直接使用原始英文摘要 |
 
-**推荐**：在 OpenClaw 环境中运行时，方案 C 自动生效，零配置即可翻译。
+**推荐**：在 OpenClaw 环境中运行时，设置 `use_openclaw: true` 启用方案 C，零配置即可翻译。
+
+> **注意**：方案 C 使用 19000 端口的上游 LLM proxy（`/proxy/llm/chat/completions`），而非网关的 `/v1/chat/completions` 端点。后者每次请求会创建独立 session，翻译 N 篇论文会留下 N 个空会话。
 
 ## 目录结构
 
@@ -223,7 +225,7 @@ GPU RAN
 |------|------|
 | 后端 | Python 3.10+, arxiv, pdfplumber, PyYAML |
 | 前端 | 原生 HTML/CSS/JS，零框架依赖 |
-| 翻译 | OpenAI 兼容 API / OpenClaw 网关代理 |
+| 翻译 | OpenAI 兼容 API / OpenClaw 上游代理（19000） |
 | 部署 | GitHub Actions + GitHub Pages |
 
 ## 已知限制与待改进
@@ -234,6 +236,21 @@ GPU RAN
 - [ ] 翻译质量：依赖 LLM 能力，专业术语翻译可能不够精准
 - [ ] 溢出列表：仅记录标题，后续可支持一键升级为详细论文
 - [ ] pending 重试：方案 A 标记的 pending 论文需使用 `--retry-pending` 手动重试
+
+## 版本历史
+
+### V2.6 — Session 优化 (2026-04-18)
+
+- **修复**：方案 C 从网关 `/v1/chat/completions` 改为上游 proxy `19000/proxy/llm/chat/completions`
+  - 原端点每次请求创建独立 session，N 篇论文 = N 个空会话
+  - 上游 proxy 只做 LLM 转发，零 session 残留
+- **修复**：token 加载跳过 `__xxx__` 占位符，精确读取 `gateway.auth.token`
+- **删除**：`_load_openclaw_gateway_port()`（19000 为固定端口，无需动态读取）
+
+### V2.5 — 配置驱动 (2026-04-15)
+
+- setup.ps1 通过 config_loader.py 读取配置，CLI 参数覆盖
+- 配置优先级：CLI > config.json > 默认值
 
 ## 致谢
 
