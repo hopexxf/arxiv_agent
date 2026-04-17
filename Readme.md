@@ -72,7 +72,11 @@ llm:
 ### 3. 运行
 
 ```bash
+# 日常运行（只处理新论文）
 python bot.py
+
+# 重试 pending 论文（API 恢复后使用）
+python bot.py --retry-pending
 ```
 
 ### 4. 查看网站
@@ -92,7 +96,7 @@ python -m http.server 8765
 |--------|------|------|------|
 | B | 直接 API | `llm.api_key` 已配置 | 调用任意 OpenAI 兼容接口 |
 | C | OpenClaw 网关 | 环境变量 `QCLAW_LLM_BASE_URL` 存在 | 自动检测，无需配置 |
-| A | pending 状态 | 以上均不可用 | 标记 `abstract_zh_status=pending`，下次自动重试 |
+| A | pending 状态 | 以上均不可用 | 标记 `abstract_zh_status=pending`，需手动 `--retry-pending` 重试 |
 | 兜底 | 保留英文 | 以上均失败 | 直接使用原始英文摘要 |
 
 **推荐**：在 OpenClaw 环境中运行时，方案 C 自动生效，零配置即可翻译。
@@ -195,7 +199,7 @@ GPU RAN
 - [ ] 作者-单位对应：PDF 双栏解析只能提取机构名，无法精确对应到具体作者
 - [ ] 翻译质量：依赖 LLM 能力，专业术语翻译可能不够精准
 - [ ] 溢出列表：仅记录标题，后续可支持一键升级为详细论文
-- [ ] pending 重试：方案 A 标记的 pending 论文在 API 恢复后自动重试
+- [ ] pending 重试：方案 A 标记的 pending 论文需使用 `--retry-pending` 手动重试
 
 ## 致谢
 
