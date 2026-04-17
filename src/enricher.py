@@ -100,7 +100,7 @@ class LLMEnricher:
 
 
 
-    def _call_openai_compatible(self, prompt: str) -> Optional[str]:
+    def _call_openai_compatible(self, abstract: str) -> Optional[str]:
         """
         方案B: 调用OpenAI兼容API
         支持 OpenAI / DeepSeek / 腾讯混元 等兼容接口
@@ -228,8 +228,6 @@ class LLMEnricher:
         if not abstract:
             return ""
 
-        prompt = _USER_PROMPT_TEMPLATE.format(abstract=abstract)
-
         # 方案C: OpenClaw 网关 LLM 代理（配置优先）
         if self._use_openclaw:
             print("[INFO] 使用方案C: OpenClaw 网关 LLM 代理")
@@ -241,7 +239,7 @@ class LLMEnricher:
         # 方案B: 使用配置的 API Key
         if self.api_key:
             print("[INFO] 使用方案B: 直接调用LLM API")
-            result = self._call_openai_compatible(prompt)
+            result = self._call_openai_compatible(abstract)
             if result:
                 return result
             print("[WARN] 方案B失败，降级到方案A")

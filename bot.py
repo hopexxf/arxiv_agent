@@ -86,6 +86,16 @@ def parse_args():
         action="store_true",
         help="重试翻译 pending 状态的论文（默认不重试）"
     )
+    parser.add_argument(
+        "--rebuild",
+        action="store_true",
+        help="清空 papers.json 并从头重建（自动备份为 .rebuild.bak）"
+    )
+    parser.add_argument(
+        "--yes", "-y",
+        action="store_true",
+        help="跳过 --rebuild 的确认倒计时"
+    )
     return parser.parse_args()
 
 
@@ -117,6 +127,22 @@ def main():
     storage = PaperStorage(str(papers_json_path))
     logger.info(f"  现有论文: {len(storage.get_all_papers())} 篇")
     logger.info(f"  溢出记录: {len(storage.get_overflow_list())} 篇")
+    
+    # 清空重建
+    if args.rebuild:
+        paper_count = len(storage.get_all_papers())
+        overflow_count = len(storage.get_overflow_list())
+        logger.info(f"\n[REBUILD] 即将清空重建！当前: {paper_count} 篇论文 + {overflow_count} 条溢出")
+        
+        if not args.yes:
+            import time
+            for i in range(3, 0, -1):
+                logger.info(f"  {i} 秒后执行（Ctrl+C 取消）...")
+                time.sleep(1)
+        
+        backup_path = storage.rebuild()
+        logger.info(f"[REBUILD] 已备份到: {backup_path}")
+        logger.info(f"[REBUILD] 数据已清空，将从零开始搜索")
     
     # 清理旧论文
     keep_days = settings.get("storage", {}).get("keep_days", 90)

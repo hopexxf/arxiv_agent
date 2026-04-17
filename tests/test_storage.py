@@ -243,6 +243,62 @@ class TestPaperStorageNewFile:
         assert len(storage.get_overflow_list()) == 0
 
 
+class TestPaperStorageRebuild:
+    """rebuild() 方法测试"""
+
+    def setup_method(self):
+        self.temp_dir = tempfile.mkdtemp()
+        self.test_json = Path(self.temp_dir) / "rebuild_test.json"
+        # 写入初始数据
+        data = {
+            "papers": [
+                {"arxiv_id": "2601.00001v1", "title": "Paper A", "published_date": "2026-01-01", "crawled_date": "2026-01-15"},
+                {"arxiv_id": "2601.00002v1", "title": "Paper B", "published_date": "2026-01-02", "crawled_date": "2026-01-15"},
+            ],
+            "overflow_list": [
+                {"arxiv_id": "2601.00003v1", "title": "Overflow", "published_date": "2026-01-03"},
+            ],
+            "metadata": {"last_crawl": "2026-01-15T10:00:00", "total_papers": 2, "total_overflow": 1}
+        }
+        with open(self.test_json, 'w', encoding='utf-8') as f:
+            json.dump(data, f)
+        self.storage = PaperStorage(str(self.test_json))
+
+    def teardown_method(self):
+        import shutil
+        if Path(self.temp_dir).exists():
+            shutil.rmtree(self.temp_dir)
+
+    def test_rebuild_basic(self):
+        """rebuild 后数据清空"""
+        assert len(self.storage.get_all_papers()) == 2
+        backup = self.storage.rebuild()
+        assert len(self.storage.get_all_papers()) == 0
+        assert len(self.storage.get_overflow_list()) == 0
+        assert Path(backup).exists()
+
+    def test_rebuild_preserves_backup_content(self):
+        """备份内容 = 原始数据"""
+        self.storage.rebuild()
+        backup_path = self.test_json.with_suffix('.json.rebuild.bak')
+        with open(backup_path, 'r', encoding='utf-8') as f:
+            backup_data = json.load(f)
+        assert len(backup_data["papers"]) == 2
+        assert len(backup_data["overflow_list"]) == 1
+
+    def test_rebuild_idempotent(self):
+        """连续 rebuild 不报错"""
+        self.storage.rebuild()
+        self.storage.rebuild()  # 第二次：空数据上再 rebuild
+        assert len(self.storage.get_all_papers()) == 0
+
+    def test_rebuild_saves_to_disk(self):
+        """rebuild 后落盘，重新加载仍为空"""
+        self.storage.rebuild()
+        storage2 = PaperStorage(str(self.test_json))
+        assert len(storage2.get_all_papers()) == 0
+
+
 if __name__ == "__main__":
     import pytest
     pytest.main([__file__, "-v"])

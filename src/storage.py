@@ -139,6 +139,34 @@ class PaperStorage:
                 paper["is_favorite"] = False
                 break
     
+    def rebuild(self) -> str:
+        """
+        清空重建：备份当前数据，重置为空状态
+        返回: 备份文件路径
+        """
+        backup_path = self.json_path.with_suffix('.json.rebuild.bak')
+        
+        # 备份当前文件
+        if self.json_path.exists():
+            # .rebuild.bak 已存在则覆盖（rebuild 本身就是重建，旧备份无保留价值）
+            import shutil
+            shutil.copy2(str(self.json_path), str(backup_path))
+        
+        # 重置内存数据
+        self.data = {
+            "papers": [],
+            "overflow_list": [],
+            "metadata": {
+                "last_crawl": "",
+                "total_papers": 0,
+                "total_overflow": 0
+            }
+        }
+        
+        # 立即落盘
+        self.save()
+        return str(backup_path)
+
     def cleanup_old_papers(self, days: int = 90) -> tuple:
         """
         清理超过指定天数的旧论文（保留收藏）
