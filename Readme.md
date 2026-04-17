@@ -239,13 +239,17 @@ GPU RAN
 
 ## 版本历史
 
-### V2.6 — Session 优化 (2026-04-18)
+### V2.6 — Session 优化 + 安全修复 (2026-04-18)
 
 - **修复**：方案 C 从网关 `/v1/chat/completions` 改为上游 proxy `19000/proxy/llm/chat/completions`
   - 原端点每次请求创建独立 session，N 篇论文 = N 个空会话
   - 上游 proxy 只做 LLM 转发，零 session 残留
 - **修复**：token 加载跳过 `__xxx__` 占位符，精确读取 `gateway.auth.token`
 - **删除**：`_load_openclaw_gateway_port()`（19000 为固定端口，无需动态读取）
+- **安全**：摘要用 `<<<ABSTRACT>>>` 分隔符隔离，防止提示词注入
+- **安全**：`json.load()` 替代正则解析 openclaw.json，避免误匹配 token
+- **安全**：`_sanitize_error()` 过滤异常中的 Bearer token / API key
+- **安全**：PDF 下载优先使用 certifi CA 证书，缺失时 fallback + 警告
 
 ### V2.5 — 配置驱动 (2026-04-15)
 
