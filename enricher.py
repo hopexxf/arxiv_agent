@@ -5,7 +5,7 @@ Enricher module - LLM调用（中文摘要生成）
 降级策略:
   方案B（优先）: settings.yml 配置 API Key，Python直接调用
   方案C（自动）: 检测 OpenClaw 环境变量，通过网关 LLM 代理调用
-  方案A（兜底）: 写 pending 文件，等后续补翻译
+  方案A（兜底）: 标记 pending 状态，等后续重试
 """
 
 import os
@@ -192,30 +192,16 @@ class LLMEnricher:
             print(f"[ERROR] OpenClaw LLM 代理调用失败: {e}")
             return None
 
-    def _write_pending(self, paper: dict) -> None:
-        """方案A: 写 pending 文件，等后续补翻译"""
-        pending_path = Path("tmp") / "pending_summary.jsonl"
-        pending_path.parent.mkdir(parents=True, exist_ok=True)
-
-        entry = {
-            "arxiv_id": paper.get("arxiv_id", ""),
-            "title": paper.get("title", ""),
-            "abstract": paper.get("abstract", ""),
-            "status": "pending"
-        }
-
-        try:
-            with open(pending_path, "a", encoding="utf-8") as f:
-                f.write(json.dumps(entry, ensure_ascii=False) + "\n")
-            print(f"[INFO] 方案A: 已写入待翻译队列 {pending_path.name}")
-        except Exception as e:
-            print(f"[ERROR] 写入pending文件失败: {e}")
+    def _mark_pending(self, paper: dict) -> None:
+        """方案A: 标记 pending 状态，等后续重试"""
+        paper["abstract_zh_status"] = "pending"
+        print(f"[INFO] 方案A: 标记论文 {paper.get('arxiv_id', '')} 为 pending 状态")
 
     def translate_abstract(self, abstract: str, paper: dict = None) -> str:
         """
         翻译论文摘要为中文
 
-        降级链: 方案B(API Key) → 方案C(OpenClaw网关) → 方案A(pending文件) → 兜底(英文原文)
+        降级链: 方案B(API Key) → 方案C(OpenClaw网关) → 方案A(pending状态) → 兜底(英文原文)
         """
         if not abstract:
             return ""
@@ -238,9 +224,9 @@ class LLMEnricher:
                 return result
             print("[WARN] 方案B失败，降级到方案A")
 
-        # 方案A: 写 pending 文件
+        # 方案A: 标记 pending 状态
         if paper:
-            self._write_pending(paper)
+            self._mark_pending(paper)
 
         # 兜底: 直接使用英文摘要
         print("[INFO] 使用兜底: 保留英文摘要")
@@ -251,9 +237,13 @@ class LLMEnricher:
         if not self.settings.get("processing", {}).get("generate_chinese_summary", True):
             return paper
 
-        # 如果已有中文摘要，跳过
-        if paper.get("summary_cn"):
+        # 如果已有中文摘要且非 pending 状态，跳过
+        if paper.get("summary_cn") and paper.get("abstract_zh_status") != "pending":
             return paper
+
+        # 如果是 pending 状态，重新尝试翻译
+        if paper.get("abstract_zh_status") == "pending":
+            print(f"[INFO] 重试翻译 pending 论文: {paper.get('arxiv_id', '')}")
 
         abstract = paper.get("abstract", "")
         if not abstract:
@@ -263,6 +253,11 @@ class LLMEnricher:
 
         summary_cn = self.translate_abstract(abstract, paper)
         paper["summary_cn"] = summary_cn
+
+        # 如果翻译成功（非英文原文），标记状态
+        if summary_cn != abstract:
+            paper["abstract_zh_status"] = "completed"
+        # 否则翻译失败，由 translate_abstract 中的 _mark_pending 处理
 
         # 延迟，避免限流
         time.sleep(2)
