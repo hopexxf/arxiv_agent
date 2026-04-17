@@ -110,12 +110,9 @@ def main() -> None:
     # 2. 过滤原始 overflow_list：移除已存在于 papers_list 的论文
     overflow = [o for o in overflow if o.get("arxiv_id") not in papers_ids]
     
-    # 2.1 过滤数据不完整的记录（缺少 abstract 和 authors）
+    # 2.1 过滤数据不完整的记录（至少有标题）
     def is_valid_overflow(o):
-        # 检查是否有有效数据
-        has_abstract = o.get("abstract") and "请访问 arXiv" not in str(o.get("abstract", ""))
-        has_authors = o.get("authors") and "详情见 arXiv" not in str(o.get("authors", ""))
-        return has_abstract or has_authors
+        return bool(o.get("title") or o.get("arxiv_id"))
     
     overflow = [o for o in overflow if is_valid_overflow(o)]
     
