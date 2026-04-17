@@ -1,10 +1,39 @@
-keywords:
-  - YOUR_KEYWORD
-api:
-  max_results: 5
-slack:
-  token: YOUR_SLACK_TOKEN
-  bot_name: 'arxiv bot'
-  channel: YOUR_CHANNEL
-  options:
-    icon_emoji: ":gem:"
+# arXiv Agent 配置模板
+# 复制为 settings.yml 后编辑
+
+# 搜索配置
+search:
+  keywords_file: "config/search_keywords.txt"
+  categories:
+    - "cs.NI"      # Networking and Internet Architecture
+    - "cs.SY"      # Systems and Control
+    - "eess.SP"    # Signal Processing
+  date_range_days: 30
+
+# 处理配置
+processing:
+  max_papers_per_day: 5
+  download_pdf: true
+  extract_affiliation: true
+  generate_chinese_summary: true
+
+# LLM配置
+# 优先级: use_openclaw=true > api_key存在 > 方案A(pending)
+llm:
+  use_openclaw: true             # 是否使用 OpenClaw 上游代理（推荐）
+  api_key: ""                    # 直接调用 LLM API 的密钥
+  model: "gpt-3.5-turbo"
+  base_url: "https://api.openai.com/v1"
+  temperature: 0.3
+  max_tokens: 1000
+
+# 存储配置
+storage:
+  papers_json: "data/papers.json"
+  pdf_dir: "data/pdfs"
+  keep_days: 90                  # 论文保留天数（3个月）
+  max_display_papers: 10         # 网站显示论文数量上限
+
+# 网站配置
+viewer:
+  title: "论文追踪报道"

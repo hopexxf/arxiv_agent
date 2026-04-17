@@ -69,7 +69,8 @@ processing:
 
 # 中文摘要翻译（三档降级，详见下方说明）
 llm:
-  api_key: ""              # 留空自动使用 OpenClaw 网关
+  use_openclaw: true       # 启用 OpenClaw 上游代理（推荐）
+  api_key: ""              # 直接调用 API 的密钥（留空则走方案C）
   model: "gpt-3.5-turbo"
   base_url: "https://api.openai.com/v1"
 ```
@@ -231,7 +232,7 @@ GPU RAN
 ## 已知限制与待改进
 
 - [ ] arXiv API 限流：大量关键词时需控制并发，当前按 5s 延迟串行请求
-- [ ] PDF 下载 SSL：Windows 环境默认无根证书，当前跳过证书验证（`download_pdf_no_ssl`）
+- [ ] PDF 下载 SSL：Windows 无根证书时仍需 fallback 跳过验证，建议 `pip install certifi`
 - [ ] 作者-单位对应：PDF 双栏解析只能提取机构名，无法精确对应到具体作者
 - [ ] 翻译质量：依赖 LLM 能力，专业术语翻译可能不够精准
 - [ ] 溢出列表：仅记录标题，后续可支持一键升级为详细论文
