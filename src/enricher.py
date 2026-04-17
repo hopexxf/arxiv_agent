@@ -39,8 +39,10 @@ class LLMEnricher:
         self.temperature = self.llm_config.get("temperature", 0.3)
         self.max_tokens = self.llm_config.get("max_tokens", 1000)
 
-        # OpenClaw 网关 LLM 代理配置
-        self._openclaw_base = os.environ.get("QCLAW_LLM_BASE_URL", "http://127.0.0.1:19000/proxy/llm")
+        # OpenClaw 网关：使用上游 LLM proxy（19000），不经过 chat completions 端点
+        # 原因：/v1/chat/completions 每次请求都创建新 session，会污染 main agent 会话列表
+        # 上游 proxy 只做 LLM 转发，不创建 session
+        self._openclaw_proxy_url = "http://127.0.0.1:19000/proxy/llm/chat/completions"
         self._openclaw_key = self._load_openclaw_token()
         
         # 优先读取配置，其次检测环境变量
@@ -53,12 +55,12 @@ class LLMEnricher:
     @staticmethod
     def _load_openclaw_token() -> str:
         """运行时从 openclaw.json 读取网关 auth token，绝不硬编码"""
-        # 1. 环境变量优先
+        # 1. 环境变量（跳过 OpenClaw 内部占位符 __xxx__）
         env_key = os.environ.get("QCLAW_LLM_API_KEY", "").strip()
-        if env_key:
+        if env_key and not env_key.startswith("__"):
             return env_key
 
-        # 2. 从 openclaw.json 读取 gateway.auth.token
+        # 2. 从 openclaw.json 精确读取 gateway.auth.token
         candidates = [
             Path(os.environ.get("QCLAW_HOME", "")) / "openclaw.json",
             Path.home() / ".qclaw" / "openclaw.json",
@@ -66,17 +68,24 @@ class LLMEnricher:
         for cfg_path in candidates:
             if cfg_path.is_file():
                 try:
-                    import re
                     content = cfg_path.read_text(encoding="latin-1")
-                    m = re.search(r'"token"\s*:\s*"([a-f0-9]{20,})"', content)
+                    # 定位 gateway → auth → token，避免匹配其他 token 字段
+                    gw = re.search(r'"gateway"\s*:\s*\{', content)
+                    if not gw:
+                        continue
+                    after_gw = content[gw.start():]
+                    auth = re.search(r'"auth"\s*:\s*\{', after_gw)
+                    if not auth:
+                        continue
+                    after_auth = after_gw[auth.start():]
+                    m = re.search(r'"token"\s*:\s*"([a-f0-9]{20,})"', after_auth)
                     if m:
-                        # 取最后一个匹配（gateway.auth.token 在 models.providers 之后）
-                        for match in re.finditer(r'"token"\s*:\s*"([a-f0-9]{20,})"', content):
-                            token = match.group(1)
-                        return token
+                        return m.group(1)
                 except Exception:
                     continue
         return ""
+
+
 
     def _call_openai_compatible(self, prompt: str) -> Optional[str]:
         """
@@ -125,13 +134,13 @@ class LLMEnricher:
 
     def _call_openclaw_proxy(self, abstract: str) -> Optional[str]:
         """
-        方案C: 通过 OpenClaw 网关 LLM 代理翻译
-        使用 QCLAW_LLM_BASE_URL + QCLAW_LLM_API_KEY 环境变量
+        方案C: 通过 OpenClaw 上游 LLM proxy 翻译
+        使用 19000 端口的上游代理，避免 /v1/chat/completions 创建多余 session
         """
         try:
             import urllib.request
 
-            # OpenClaw 网关认证
+            # OpenClaw 网关认证（使用 gateway.auth.token）
             headers = {
                 "Content-Type": "application/json",
                 "Authorization": f"Bearer {self._openclaw_key}"
@@ -154,7 +163,7 @@ class LLMEnricher:
             }
 
             data = json.dumps(payload).encode('utf-8')
-            url = f"{self._openclaw_base}/chat/completions"
+            url = self._openclaw_proxy_url
             req = urllib.request.Request(url, data=data, headers=headers, method="POST")
 
             with urllib.request.urlopen(req, timeout=120) as response:
