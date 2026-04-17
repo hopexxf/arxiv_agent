@@ -6,11 +6,13 @@
 
 - 📡 **每日监控** — 按关键词 + arXiv 分类自动搜索最新论文
 - 📄 **PDF 下载** — 自动下载 PDF 到本地，按月分目录
+- 🗑️ **自动清理** — 旧论文/PDF 自动清理（保留收藏），可配置天数
 - 🏛️ **单位识别** — 从 PDF 双栏排版中提取作者所属机构
 - 🇨🇳 **中文摘要** — LLM 自动翻译（支持多种降级策略）
 - 📊 **静态网站** — 一键生成可部署的阅读网站
 - ⭐ **收藏功能** — 浏览器本地收藏，跨会话保持
 - 🔍 **全文检索** — 标题/作者/单位/摘要关键词搜索，覆盖溢出列表
+- 📝 **结构化日志** — 按日期滚动的日志文件，方便调试
 - ⏰ **定时运行** — 支持 OpenClaw cron 或系统 crontab 定时执行
 
 ## .gitignore（重要）
@@ -19,15 +21,18 @@
 
 ```
 # 数据文件
-papers.json           # 本地论文数据库
-papers_data.json      # 网页数据（由 build_viewer.py 生成后入 Git）
+data/papers.json      # 本地论文数据库
+viewer/papers_data.json # 网页数据（生成后入 Git）
 histories.json        # 历史记录
 
 # 临时文件
 __pycache__/
 
 # PDF 目录
-papers/
+data/pdfs/            # 下载的 PDF 文件
+
+# 日志
+logs/
 ```
 
 > 注意：`viewer/papers_data.json` 需要提交到 GitHub Pages 部署。
@@ -45,15 +50,15 @@ pip install -r requirements.txt
 复制配置模板并编辑：
 
 ```bash
-cp settings.example.yml settings.yml
+cp config/settings.example.yml config/settings.yml
 ```
 
-`settings.yml` 核心配置项：
+`config/settings.yml` 核心配置项：
 
 ```yaml
 # 搜索关键词文件（每行一个关键词）
 search:
-  keywords_file: "search_keywords.txt"
+  keywords_file: "config/search_keywords.txt"
   categories: ["cs.NI", "cs.SY", "eess.SP"]
   max_results_per_keyword: 10
   date_range_days: 30
@@ -106,21 +111,27 @@ python -m http.server 8765
 ```
 arxiv_agent/
 ├── bot.py                  # 主入口，串联所有模块
-├── settings.yml            # 运行配置（不入 Git）
-├── settings.example.yml    # 配置模板
-├── search_keywords.txt     # 搜索关键词（每行一个）
+├── config/                 # 配置目录
+│   ├── settings.yml        # 运行配置（不入 Git）
+│   ├── settings.example.yml # 配置模板
+│   └── search_keywords.txt # 搜索关键词（每行一个）
 ├── requirements.txt        # Python 依赖
 │
-├── fetcher.py              # arXiv 搜索 + PDF 下载（含 429 重试）
-├── storage.py              # papers.json 读写管理
-├── extract_affiliation.py  # PDF 双栏解析提取作者单位
-├── enricher.py             # LLM 中文摘要翻译（三档降级）
-├── build_viewer.py         # papers.json → papers_data.json
+├── src/                    # 核心模块
+│   ├── __init__.py
+│   ├── fetcher.py          # arXiv 搜索 + PDF 下载（含 429 重试）
+│   ├── storage.py          # papers.json 读写管理（含清理功能）
+│   ├── extract_affiliation.py # PDF 双栏解析提取作者单位
+│   ├── enricher.py         # LLM 中文摘要翻译（三档降级）
+│   ├── build_viewer.py     # papers.json → papers_data.json
+│   └── update_summaries.py # 批量更新摘要工具
 │
-├── papers.json             # 论文索引（本地运行生成，不入 Git）
-├── papers_data.json        # 网页展示数据（viewer 生成后入 Git）
-├── papers/                 # PDF 文件（按月分目录，不入 Git）
-│   └── YYYY-MM/
+├── data/                   # 数据目录（不入 Git）
+│   ├── papers.json         # 论文索引
+│   └── pdfs/              # PDF 文件（按月分目录）
+│
+├── logs/                   # 日志目录（不入 Git）
+│   └── arxiv_agent_YYYY-MM-DD.log
 │
 ├── viewer/                 # 静态网站（部署此目录即可）
 │   ├── index.html
@@ -128,6 +139,11 @@ arxiv_agent/
 │   ├── styles.css
 │   ├── favicon.svg
 │   └── papers_data.json    # 生成的数据文件
+│
+├── tests/                  # 单元测试
+│   ├── test_storage.py
+│   ├── test_fetcher.py
+│   └── test_config.py
 │
 ├── .github/workflows/
 │   └── pages.yml           # GitHub Pages 自动部署
@@ -140,8 +156,8 @@ arxiv_agent/
 3. 提交 `viewer/` 目录到 GitHub，触发自动部署
 
 ```bash
-python bot.py          # 获取论文
-python build_viewer.py # 生成网页数据
+py bot.py          # 获取论文
+py -m src.build_viewer # 生成网页数据
 git add viewer/
 git commit -m "update papers"
 git push origin master
@@ -166,12 +182,30 @@ git push origin master
 ### 系统 crontab
 
 ```bash
-0 9 * * * cd /path/to/arxiv_agent && python bot.py && cd viewer && python -m http.server 8765 &
+0 9 * * * cd /path/to/arxiv_agent && py bot.py && cd viewer && python -m http.server 8765 &
+```
+
+## 运行日志
+
+日志文件位于 `logs/` 目录，按日期滚动：
+
+```
+logs/arxiv_agent_2026-04-17.log
+logs/arxiv_agent_2026-04-18.log
+```
+
+- **控制台输出**: INFO 级别，简洁显示进度
+- **日志文件**: DEBUG 级别，包含详细执行信息
+
+日志格式：
+```
+2026-04-17 09:00:15 | INFO     | arxiv_agent | [1/6] 加载配置...
+2026-04-17 09:00:16 | DEBUG    | arxiv_agent | 关键词文件: config/search_keywords.txt
 ```
 
 ## 关键词配置
 
-编辑 `search_keywords.txt`，每行一个：
+编辑 `config/search_keywords.txt`，每行一个：
 
 ```
 AI-RAN

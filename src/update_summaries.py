@@ -2,6 +2,11 @@
 update_summaries.py - 用预翻译的中文摘要更新 papers.json
 """
 import json
+from pathlib import Path
+
+# 获取脚本目录
+SCRIPT_DIR = Path(__file__).resolve().parent.parent
+PAPERS_JSON = SCRIPT_DIR / "data" / "papers.json"
 
 # 预翻译的中文摘要
 TRANSLATIONS = {
@@ -17,7 +22,7 @@ TRANSLATIONS = {
 }
 
 # 读取 papers.json
-with open("papers.json", "r", encoding="utf-8") as f:
+with open(PAPERS_JSON, "r", encoding="utf-8") as f:
     data = json.load(f)
 
 updated = 0
@@ -30,7 +35,7 @@ for paper in data["papers"]:
         updated += 1
         print(f"[OK] {aid}: 更新中文摘要")
 
-with open("papers.json", "w", encoding="utf-8") as f:
+with open(PAPERS_JSON, "w", encoding="utf-8") as f:
     json.dump(data, f, ensure_ascii=False, indent=2)
 
 print(f"\n共更新 {updated} 篇论文的中文摘要")

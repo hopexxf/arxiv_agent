@@ -9,23 +9,69 @@ import os
 import sys
 import yaml
 import argparse
+import logging
 from pathlib import Path
+from datetime import datetime
 
 # 添加当前目录到路径
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from storage import PaperStorage
-from fetcher import ArxivFetcher
-from extract_affiliation import enrich_paper_with_affiliation
-from enricher import LLMEnricher
-from build_viewer import main as build_viewer
+from src.storage import PaperStorage
+from src.fetcher import ArxivFetcher
+from src.extract_affiliation import enrich_paper_with_affiliation
+from src.enricher import LLMEnricher
+from src.build_viewer import main as build_viewer
+
+
+def setup_logging(log_dir: str = "logs") -> logging.Logger:
+    """
+    配置结构化日志
+    - 控制台: INFO 级别
+    - 文件: DEBUG 级别，按日期滚动
+    """
+    script_dir = Path(__file__).resolve().parent
+    log_path = script_dir / log_dir
+    log_path.mkdir(exist_ok=True)
+    
+    # 日志文件名: arxiv_agent_2026-04-17.log
+    log_file = log_path / f"arxiv_agent_{datetime.now().strftime('%Y-%m-%d')}.log"
+    
+    # 创建 logger
+    logger = logging.getLogger("arxiv_agent")
+    logger.setLevel(logging.DEBUG)
+    
+    # 清除已有 handlers
+    logger.handlers.clear()
+    
+    # 控制台 Handler (INFO)
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.INFO)
+    console_formatter = logging.Formatter("%(message)s")
+    console_handler.setFormatter(console_formatter)
+    
+    # 文件 Handler (DEBUG)
+    file_handler = logging.FileHandler(log_file, encoding='utf-8')
+    file_handler.setLevel(logging.DEBUG)
+    file_formatter = logging.Formatter(
+        "%(asctime)s | %(levelname)-8s | %(name)s | %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S"
+    )
+    file_handler.setFormatter(file_formatter)
+    
+    logger.addHandler(console_handler)
+    logger.addHandler(file_handler)
+    
+    return logger
 
 
 def load_settings() -> dict:
     """加载配置文件"""
-    settings_path = Path("settings.yml")
+    # 基于脚本目录解析配置路径
+    script_dir = Path(__file__).resolve().parent
+    settings_path = script_dir / "config" / "settings.yml"
     if not settings_path.exists():
-        print("[ERROR] settings.yml 不存在")
+        logger = logging.getLogger("arxiv_agent")
+        logger.error(f"settings.yml 不存在: {settings_path}")
         sys.exit(1)
     
     with open(settings_path, 'r', encoding='utf-8') as f:
@@ -46,42 +92,60 @@ def parse_args():
 def main():
     args = parse_args()
     
-    print("=" * 60)
-    print("论文追踪报道 - arXiv Agent")
-    print("=" * 60)
+    # 初始化日志
+    logger = setup_logging()
+    logger.info("=" * 60)
+    logger.info("论文追踪报道 - arXiv Agent")
+    logger.info("=" * 60)
     
     # 加载配置
-    print("\n[1/6] 加载配置...")
+    logger.info("\n[1/6] 加载配置...")
+    script_dir = Path(__file__).resolve().parent
     settings = load_settings()
-    print(f"  关键词文件: {settings['search']['keywords_file']}")
-    print(f"  分类过滤: {', '.join(settings['search']['categories'])}")
-    print(f"  每日上限: {settings['processing']['max_papers_per_day']} 篇")
+
+    # 解析配置中的相对路径（基于脚本目录）
+    settings['search']['keywords_file'] = str(script_dir / settings['search']['keywords_file'])
+    settings['storage']['pdf_dir'] = str(script_dir / settings['storage'].get('pdf_dir', 'data/pdfs'))
+
+    logger.info(f"  关键词文件: {settings['search']['keywords_file']}")
+    logger.info(f"  分类过滤: {', '.join(settings['search']['categories'])}")
+    logger.info(f"  每日上限: {settings['processing']['max_papers_per_day']} 篇")
     
     # 初始化存储
-    print("\n[2/6] 初始化存储...")
-    storage = PaperStorage(settings["storage"]["papers_json"])
-    print(f"  现有论文: {len(storage.get_all_papers())} 篇")
-    print(f"  溢出记录: {len(storage.get_overflow_list())} 篇")
+    logger.info("\n[2/6] 初始化存储...")
+    papers_json_path = script_dir / settings["storage"]["papers_json"]
+    storage = PaperStorage(str(papers_json_path))
+    logger.info(f"  现有论文: {len(storage.get_all_papers())} 篇")
+    logger.info(f"  溢出记录: {len(storage.get_overflow_list())} 篇")
     
     # 清理旧论文
     keep_days = settings.get("storage", {}).get("keep_days", 90)
     if keep_days > 0:
-        print(f"\n[2.5/6] 清理超过 {keep_days} 天的旧论文（保留收藏）...")
+        logger.info(f"\n[2.5/6] 清理超过 {keep_days} 天的旧论文（保留收藏）...")
         removed_papers, removed_overflow = storage.cleanup_old_papers(keep_days)
         if removed_papers > 0 or removed_overflow > 0:
             storage.save()
     
+    # 清理过期 PDF
+    pdf_dir = settings.get("storage", {}).get("pdf_dir", "data/pdfs")
+    logger.info(f"\n[2.6/6] 清理过期 PDF 文件...")
+    removed_pdfs = storage.cleanup_pdfs(pdf_dir, keep_days)
+    
     # 搜索和下载
-    print("\n[3/7] 搜索arXiv论文...")
+    logger.info("\n[3/7] 搜索arXiv论文...")
     fetcher = ArxivFetcher(storage, settings)
     new_count, overflow_count = fetcher.run()
     
+    # 如果没有新论文，检查是否需要重试 pending
     if new_count == 0 and overflow_count == 0:
-        print("\n[INFO] 没有新论文，流程结束")
-        return
+        if not args.retry_pending:
+            logger.info("\n[INFO] 没有新论文，流程结束")
+            return
+        else:
+            logger.info("\n[INFO] 没有新论文，但启用重试 pending 模式")
     
     # 提取作者单位 + 收集待翻译论文
-    print("\n[4/7] 提取作者单位...")
+    logger.info("\n[4/7] 提取作者单位...")
     papers_to_enrich = []
     papers_to_translate = []
     today = storage.get_metadata().get("last_crawl", "")[:10]
@@ -96,29 +160,33 @@ def main():
             if not paper.get("summary_cn") and paper.get("abstract_zh_status") != "pending":
                 papers_to_translate.append(paper)
     
-    # 如果指定了 --retry-pending，也处理 pending 论文
+    # 如果指定了 --retry-pending，也处理 pending 论文和从未翻译的论文
     if args.retry_pending:
         for paper in storage.get_all_papers():
+            # pending 状态的论文
             if paper.get("abstract_zh_status") == "pending" and paper not in papers_to_translate:
+                papers_to_translate.append(paper)
+            # 从未尝试翻译的论文（abstract_zh_status 为空且无 summary_cn）
+            if not paper.get("summary_cn") and not paper.get("abstract_zh_status") and paper not in papers_to_translate:
                 papers_to_translate.append(paper)
         retry_msg = "（含重试 pending）"
     else:
         retry_msg = ""
     
-    print(f"  处理 {len(papers_to_enrich)} 篇论文的单位信息")
-    print(f"  待翻译 {len(papers_to_translate)} 篇新论文{retry_msg}")
+    logger.info(f"  处理 {len(papers_to_enrich)} 篇论文的单位信息")
+    logger.info(f"  待翻译 {len(papers_to_translate)} 篇新论文{retry_msg}")
     
     # 生成中文摘要
-    print("\n[5/7] 生成中文摘要...")
+    logger.info("\n[5/7] 生成中文摘要...")
     if settings["processing"]["generate_chinese_summary"]:
         enricher = LLMEnricher(settings)
         
         if enricher.api_key:
-            print(f"  使用方案B: 直接调用LLM API ({enricher.model})")
+            logger.info(f"  使用方案B: 直接调用LLM API ({enricher.model})")
         elif enricher._use_openclaw:
-            print("  使用方案C: OpenClaw网关LLM代理 (自动检测)")
+            logger.info("  使用方案C: OpenClaw网关LLM代理 (自动检测)")
         else:
-            print("  使用方案A: 标记pending状态，等后续重试")
+            logger.info("  使用方案A: 标记pending状态，等后续重试")
         
         for paper in papers_to_translate:
             paper = enricher.enrich_paper(paper)
@@ -130,23 +198,23 @@ def main():
         
         storage.save()
     else:
-        print("  已禁用中文摘要生成")
+        logger.info("  已禁用中文摘要生成")
     
     # 生成网站数据
-    print("\n[6/7] 生成网站数据...")
+    logger.info("\n[6/7] 生成网站数据...")
     build_viewer()
     
     # 总结
-    print("\n" + "=" * 60)
-    print("执行完成!")
-    print(f"  新增论文: {new_count} 篇")
-    print(f"  溢出记录: {overflow_count} 篇")
-    print(f"  总论文数: {len(storage.get_all_papers())} 篇")
-    print("\n下一步:")
-    print("  1. 查看论文: 打开 viewer/index.html")
-    print("  2. 本地预览: cd viewer && python -m http.server 8765")
-    print("  3. 发布网站: git add . && git commit -m 'update' && git push")
-    print("=" * 60)
+    logger.info("\n" + "=" * 60)
+    logger.info("执行完成!")
+    logger.info(f"  新增论文: {new_count} 篇")
+    logger.info(f"  溢出记录: {overflow_count} 篇")
+    logger.info(f"  总论文数: {len(storage.get_all_papers())} 篇")
+    logger.info("\n下一步:")
+    logger.info("  1. 查看论文: 打开 viewer/index.html")
+    logger.info("  2. 本地预览: cd viewer && python -m http.server 8765")
+    logger.info("  3. 发布网站: git add . && git commit -m 'update' && git push")
+    logger.info("=" * 60)
 
 
 if __name__ == "__main__":

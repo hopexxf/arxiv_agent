@@ -1,0 +1,10 @@
+keywords:
+  - YOUR_KEYWORD
+api:
+  max_results: 5
+slack:
+  token: YOUR_SLACK_TOKEN
+  bot_name: 'arxiv bot'
+  channel: YOUR_CHANNEL
+  options:
+    icon_emoji: ":gem:"

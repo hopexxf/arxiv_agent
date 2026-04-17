@@ -257,6 +257,7 @@ class LLMEnricher:
         # 如果翻译成功（非英文原文），标记状态
         if summary_cn != abstract:
             paper["abstract_zh_status"] = "completed"
+            paper["is_enriched"] = True
         # 否则翻译失败，由 translate_abstract 中的 _mark_pending 处理
 
         # 延迟，避免限流
@@ -270,7 +271,8 @@ class LLMEnricher:
         for i, paper in enumerate(papers):
             print(f"[INFO] 处理 {i+1}/{len(papers)}: {paper.get('title', '')[:50]}...")
             enriched_paper = self.enrich_paper(paper)
-            enriched_paper["is_enriched"] = True
+            # 只有翻译成功才标记为已富化
+            enriched_paper["is_enriched"] = enriched_paper.get("abstract_zh_status") == "completed"
             enriched.append(enriched_paper)
 
         return enriched

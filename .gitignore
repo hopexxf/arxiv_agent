@@ -1,15 +1,39 @@
-# 配置文件
-settings.yml
+# 配置文件（使用模板）
+config/settings.yml
 
 # 数据文件
-papers.json
-papers_data.json
+data/papers.json
+data/papers.json.bak
 histories.json
-papers.json.bak
+
+# PDF 文件
+data/pdfs/
+
+# 日志
+logs/
 
 # 临时文件
 tmp/
 __pycache__/
 
-# PDF 目录
-papers/
+# Python 字节码
+*.pyc
+*.pyo
+*.pyd
+.Python/
+
+# 测试
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# viewer/papers_data.json 需要入 Git（GitHub Pages 部署用）
+# viewer/index.html
+# viewer/app.js
+# viewer/styles.css
