@@ -92,9 +92,15 @@ class PaperStorage:
         self.data["overflow_list"].append({
             "arxiv_id": arxiv_id,
             "title": paper_info.get("title", ""),
+            "authors": paper_info.get("authors", ""),
+            "affiliations": paper_info.get("affiliations", ""),
             "url": paper_info.get("url", ""),
             "published_date": paper_info.get("published_date", ""),
-            "crawled_date": datetime.now().strftime("%Y-%m-%d")
+            "crawled_date": datetime.now().strftime("%Y-%m-%d"),
+            "categories": paper_info.get("categories", ""),
+            "abstract": paper_info.get("abstract", ""),
+            "summary_cn": paper_info.get("summary_cn", ""),
+            "is_enriched": paper_info.get("is_enriched", False),
         })
         return True
     

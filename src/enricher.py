@@ -327,7 +327,7 @@ class LLMEnricher:
         """
         翻译论文摘要为中文
 
-        降级链: 方案B(API Key) → 方案C(OpenClaw网关) → 方案A(pending状态) → 兜底(英文原文)
+        降级链: 方案B(API Key) → 方案C(OpenClaw网关) → 方案A(pending状态) → 翻译失败(留空)
         """
         if not abstract:
             return ""
@@ -352,9 +352,9 @@ class LLMEnricher:
         if paper:
             self._mark_pending(paper)
 
-        # 兜底: 直接使用英文摘要
-        print("[INFO] 使用兜底: 保留英文摘要")
-        return abstract
+        # 翻译失败: summary_cn 留空，不回填英文（abstract 已有英文原文）
+        print("[INFO] 翻译失败，summary_cn 留空")
+        return ""
 
     def enrich_paper(self, paper: Dict[str, Any]) -> Dict[str, Any]:
         """为论文生成中文摘要"""

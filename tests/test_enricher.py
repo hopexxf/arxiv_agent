@@ -159,11 +159,11 @@ class TestTranslateAbstract:
         assert e.translate_abstract(None) == ""
 
     def test_fallback_to_pending(self):
-        """无 API 无 OpenClaw 时标记 pending"""
+        """无 API 无 OpenClaw 时标记 pending，summary_cn 留空"""
         e = self._make_enricher()
         paper = {"arxiv_id": "2601.99999", "abstract": "Test abstract"}
         result = e.translate_abstract("Test abstract", paper)
-        assert result == "Test abstract"  # 兜底返回原文
+        assert result == ""  # 翻译失败留空，不回填英文
         assert paper.get("abstract_zh_status") == "pending"
 
     def test_openai_compatible_mock(self):
