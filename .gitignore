@@ -1,6 +1,15 @@
+# 配置文件
 settings.yml
+
+# 数据文件
+papers.json
+papers_data.json
 histories.json
 papers.json.bak
+
+# 临时文件
 tmp/
 __pycache__/
+
+# PDF 目录
 papers/
