@@ -65,17 +65,27 @@ def main():
         print("\n[INFO] 没有新论文，流程结束")
         return
     
-    # 提取作者单位
+    # 提取作者单位 + 收集待翻译论文
     print("\n[4/7] 提取作者单位...")
     papers_to_enrich = []
+    papers_to_translate = []
     for paper in storage.get_all_papers():
         # 只处理今天新增的论文
         if paper.get("crawled_date") == storage.get_metadata().get("last_crawl", "")[:10]:
             if not paper.get("affiliations") and paper.get("pdf_filename"):
                 paper = enrich_paper_with_affiliation(paper)
                 papers_to_enrich.append(paper)
+        # 收集需要翻译的论文（新论文 + pending 论文）
+        if not paper.get("summary_cn") or paper.get("abstract_zh_status") == "pending":
+            papers_to_translate.append(paper)
     
+    # 去重
+    seen = set()
+    papers_to_translate = [p for p in papers_to_translate if not (p["arxiv_id"] in seen or seen.add(p["arxiv_id"]))]
+    
+    pending_count = sum(1 for p in papers_to_translate if p.get("abstract_zh_status") == "pending")
     print(f"  处理 {len(papers_to_enrich)} 篇论文的单位信息")
+    print(f"  待翻译 {len(papers_to_translate)} 篇论文（含 {pending_count} 篇 pending）")
     
     # 生成中文摘要
     print("\n[5/7] 生成中文摘要...")
@@ -87,9 +97,9 @@ def main():
         elif enricher._use_openclaw:
             print("  使用方案C: OpenClaw网关LLM代理 (自动检测)")
         else:
-            print("  使用方案A: 写pending文件等后续补翻译")
+            print("  使用方案A: 标记pending状态，等后续重试")
         
-        for paper in papers_to_enrich:
+        for paper in papers_to_translate:
             paper = enricher.enrich_paper(paper)
             # 更新存储
             for i, p in enumerate(storage.data["papers"]):
