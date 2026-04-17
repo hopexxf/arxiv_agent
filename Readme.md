@@ -83,6 +83,10 @@ python bot.py
 
 # 重试 pending 论文（API 恢复后使用）
 python bot.py --retry-pending
+
+# 清空重建（备份 papers.json，从零开始搜索）
+python bot.py --rebuild          # 有3秒确认倒计时
+python bot.py --rebuild --yes    # 跳过倒计时
 ```
 
 ### 4. 查看网站
@@ -239,6 +243,14 @@ GPU RAN
 - [ ] pending 重试：方案 A 标记的 pending 论文需使用 `--retry-pending` 手动重试
 
 ## 版本历史
+
+### V2.7 — Rebuild + 测试覆盖 (2026-04-18)
+
+- **新增**：`--rebuild` 清空重建，自动备份为 `.rebuild.bak`，3 秒倒计时 + `--yes` 跳过
+- **新增**：`tests/test_enricher.py`（21 个用例），覆盖 sanitzer、提示词、token 加载、翻译降级链
+- **新增**：rebuild 单元测试（4 个用例）
+- **修复**：`_call_openai_compatible` 参数名 `prompt` → `abstract`
+- 全量测试 52 passed
 
 ### V2.6 — Session 优化 + 安全修复 (2026-04-18)
 
