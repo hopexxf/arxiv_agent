@@ -13,6 +13,26 @@
 - 🔍 **全文检索** — 标题/作者/单位/摘要关键词搜索，覆盖溢出列表
 - ⏰ **定时运行** — 支持 OpenClaw cron 或系统 crontab 定时执行
 
+## .gitignore（重要）
+
+以下文件由运行生成，**不应提交到 Git**：
+
+```
+# 数据文件
+papers.json           # 本地论文数据库
+papers_data.json      # 网页数据（由 build_viewer.py 生成后入 Git）
+histories.json        # 历史记录
+
+# 临时文件
+tmp/
+__pycache__/
+
+# PDF 目录
+papers/
+```
+
+> 注意：`viewer/papers_data.json` 需要提交到 GitHub Pages 部署。
+
 ## 快速开始
 
 ### 1. 安装依赖
@@ -94,7 +114,8 @@ arxiv_agent/
 ├── enricher.py             # LLM 中文摘要翻译（三档降级）
 ├── build_viewer.py         # papers.json → papers_data.json
 │
-├── papers.json             # 论文索引（JSON 格式，Git 友好）
+├── papers.json             # 论文索引（本地运行生成，不入 Git）
+├── papers_data.json        # 网页展示数据（viewer 生成后入 Git）
 ├── papers/                 # PDF 文件（按月分目录，不入 Git）
 │   └── YYYY-MM/
 │
@@ -115,10 +136,13 @@ arxiv_agent/
 ## GitHub Pages 部署
 
 1. Fork 或 clone 仓库后，在 **Settings → Pages → Source** 选择 **GitHub Actions**
-2. 推送代码到 `master` 分支，Actions 自动部署 `viewer/` 目录
+2. 本地运行 `bot.py` 获取论文 → `build_viewer.py` 生成网页数据
+3. 提交 `viewer/` 目录到 GitHub，触发自动部署
 
 ```bash
-git add .
+python bot.py          # 获取论文
+python build_viewer.py # 生成网页数据
+git add viewer/
 git commit -m "update papers"
 git push origin master
 ```
