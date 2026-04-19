@@ -26,12 +26,16 @@ def _sanitize_error(e: Exception) -> str:
     return msg
 
 
-def _looks_like_chinese(text: str) -> bool:
+def _looks_like_chinese(text: str, threshold: float = 0.3) -> bool:
     """判断文本是否包含足够的中文字符（翻译结果的标志）"""
     if not text:
         return False
     chinese_chars = len(re.findall(r'[\u4e00-\u9fff]', text))
-    return chinese_chars >= 5 or (len(text) > 10 and chinese_chars / len(text) > 0.3)
+    total = len(text.strip())
+    if total == 0:
+        return False
+    ratio = chinese_chars / total
+    return chinese_chars >= 5 or (total > 10 and ratio > threshold)
 
 
 def _clean_translation(text: str) -> str:
@@ -55,6 +59,14 @@ def _clean_translation(text: str) -> str:
                 break
 
     # 第二步：按行分割，只保留包含中文的行
+    # 英文元注释关键词黑名单
+    _META_KEYWORDS = re.compile(
+        r'(character\s+count|concise\s+chinese|under\s+\d+\s+char|'
+        r'output\s+only|no\s+markdown|no\s+notes|let\s*\x27?s\s+(check|refine|do|review)|'
+        r'good\s*[,\.]|well\s+under|plain\s+text\s+only)',
+        re.IGNORECASE
+    )
+
     lines = text.strip().split('\n')
     chinese_lines = []
     for line in lines:
@@ -65,19 +77,38 @@ def _clean_translation(text: str) -> str:
         stripped = stripped.strip()
         if not stripped:
             continue
-        if _looks_like_chinese(stripped):
+        # 跳过英文元注释行
+        if _META_KEYWORDS.search(stripped):
+            continue
+        # 跳过"英文术语: 中文翻译"对照行（术语表条目，不是摘要内容）
+        # 格式：英文词/短语 : 中文翻译，且英文占主体
+        colon_match = re.match(r'^[A-Za-z][\w\s()\-/]+\s*[:：]\s*(.+)$', stripped)
+        if colon_match:
+            after_colon = colon_match.group(1)
+            # 如果冒号后面的中文占比不高，整行是术语对照，跳过
+            if not _looks_like_chinese(after_colon, 0.6):
+                continue
+        if _looks_like_chinese(stripped, 0.3):
             chinese_lines.append(stripped)
         # 跳过纯英文行（模型自言自语如 "~250 chars. Good."、"Let's refine..."等）
 
     if chinese_lines:
         text = ''.join(chinese_lines)
-    else:
-        # 没有中文行，返回原文（兜底）
+    elif _looks_like_chinese(text, 0.3):
+        # 所有行被元注释过滤，但原文有中文内容——可能是正常翻译被误过滤
+        # 去除元注释后返回
+        text = re.sub(r'\s*\(\d+\s*chars?\).*$', '', text)
+        text = re.sub(r'\s*-\s*\*[^*]+\*\s*$', '', text)
         return text.strip()
+    else:
+        return ""
 
-    # 第三步：去除元注释
-    text = re.sub(r'\s*\(\d+\s*chars?\)\s*.*', '', text)
+    # 第三步：去除元注释（行内尾缀）
+    # 匹配 "(N chars) ..." 各种变体，从 (N chars) 到行尾全删
+    text = re.sub(r'\s*\(\d+\s*chars?\).*$', '', text)
     text = re.sub(r'\s*-\s*\*[^*]+\*\s*$', '', text)
+    # 去除行内英文元注释尾缀（如 "Yes." "Good." 等）
+    text = re.sub(r'\s+[A-Z][a-z]+[\.\,]$', '', text)
 
     # 第四步：清理前缀
     for prefix in ['翻译结果：', '翻译结果:', '最终翻译：', '最终翻译:', 'Final translation:']:
