@@ -235,7 +235,7 @@ GPU RAN
 
 ## 已知限制与待改进
 
-- [ ] arXiv API 限流：大量关键词时需控制并发，当前按 5s 延迟串行请求
+- [ ] arXiv API 限流：按需迭代拉取，找到目标篇数立即停止（已优化）；429 时自动重试 5 次
 - [ ] PDF 下载 SSL：Windows 无根证书时仍需 fallback 跳过验证，建议 `pip install certifi`
 - [ ] 作者-单位对应：PDF 双栏解析只能提取机构名，无法精确对应到具体作者
 - [ ] 翻译质量：依赖 LLM 能力，专业术语翻译可能不够精准
@@ -243,6 +243,12 @@ GPU RAN
 - [ ] pending 重试：方案 A 标记的 pending 论文需使用 `--retry-pending` 手动重试
 
 ## 版本历史
+
+### V2.9 — arXiv 按需迭代 + API 调用量说明 (2026-04-19)
+
+- **优化**：`fetcher.py` arXiv 搜索从一次拉 50 篇改为迭代器按需拉取，找到 `max_papers_per_day` 篇即停止
+- **优化**：`max_results` 从硬编码 50 改为 `max_papers_per_day * 1.5`，减少 arXiv 侧无效负载
+- **说明**：429 / 连接超时为 `export.arxiv.org` 出口节点限流，不受代码调用次数控制（已改按需迭代，影响降至最低）
 
 ### V2.8 — 溢出数据完整性 + 翻译兜底修复 (2026-04-18)
 

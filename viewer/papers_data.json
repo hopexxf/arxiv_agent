@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-04-19 14:42:43",
+  "generated_at": "2026-04-19 19:17:08",
   "count": 10,
-  "total_papers": 35,
+  "total_papers": 50,
   "overflow_count": 40,
   "crawled_date_min": "2026-04-18",
   "crawled_date_max": "2026-04-19",
-  "published_date_min": "2026-03-29",
+  "published_date_min": "2026-03-26",
   "published_date_max": "2026-04-15",
   "papers": [
     {
@@ -20,6 +20,20 @@
       "summary_cn": "我需要翻译这段关于石油泄漏监测中使用UAV和Tiny U-Net进行早期厚度估计的学术摘要。关键点：1. 石油泄漏威胁，早期厚度估计对 remediation 很重要2. UAV是环境监测的好平台，但计算和功耗受限3. 标准U-Net太大，Tiny U-Net适合FPGA，IoU 0.794. 问题：每个图像都走完整流程，简单案例浪费计算5. 解决方案：early exit机制 - 当置信度超过阈值时返回早期预测6. 结果：IoU相当，乘法运算减少42%，降低动态功耗7. 阈值太低会牺牲IoU需要保持学术性，用简洁中文，300字以内。石油泄漏构成严重威胁，早期厚度估算对指导修复工作至关重要。无人机是环境监测的理想平台，但受限于计算和功耗，实时机载处理需要优化算法或轻量级模型。标准U-Net架构过大，而压缩版Tiny U-Net可部署于FPGA并达到0.79的交并比。然而Tiny U-Net对每帧雷达图像均执行完整推理流程，导致简单案例产生不必要计算。为解决此低效问题，我们为Tiny U-Net集成早退机制：当紧凑置信度得分超过可调阈值时返回早期预测，跳过深层计算。实验表明该设计达到与完整基线模型相当的IoU，且在激进阈值下平均乘法运算减少42%，显著降低动态功耗。选用极高置信度阈值虽提升IoU但削弱复杂度削减效果。该早退方法显著提升Tiny U-Net的计算效率，有助于实现无人机环境监测系统的实际部署。",
       "pdf_url": "https://arxiv.org/pdf/2604.13961v1",
       "arxiv_url": "https://arxiv.org/abs/2604.13961v1",
+      "is_enriched": true
+    },
+    {
+      "arxiv_id": "2604.13884v1",
+      "title": "A Variational Message Passing Framework for Multi-Sensor Multi-Object Tracking using Raw Radar Signals",
+      "authors": "Anders Malthe Westerkam, Jakob Möderl, Erik Leitinger, Troels Pedersen",
+      "affiliations": "University | research",
+      "published_date": "2026-04-15",
+      "crawled_date": "2026-04-19",
+      "categories": "eess.SP",
+      "abstract": "The growing proliferation of unmanned aerial vehicles (UAVs) poses major challenges for reliable airspace surveillance, as drones are typically small, have low radar cross-sections, and often move slowly in cluttered environments. These characteristics make the joint tasks of detecting, localizing, and tracking multiple objects difficult for conventional detect-then-track (DTT) approaches, which rely on pre-processed measurements and may discard informative low-signal-to-noise ratio (SNR) signal components. To overcome these limitations, we propose a variational message passing (VMP)-based direct multiobject tracking (MOT) method that operates directly on raw radar signals and explicitly accounts for an unknown and time-varying number of objects. The proposed method is formulated for MIMO multi-radar systems and performs data fusion by jointly processing the signals of all radar sensors using a probabilistic model. A superimposed signal model is employed to capture correlations in the raw sensor data caused by closely spaced objects, and a hierarchical Bernoulli-Gamma model is introduced to jointly model object existence, reflectivities, and the reliability of individual radar-object links. Using a mean-field approximation, we derive message updates, yielding a computationally efficient VMP algorithm that simultaneously performs object detection, track formation, state estimation, and nuisance parameter learning directly from the radar signal. Simulation results in synthetic scenarios with weak and closely-spaced objects show that the proposed direct-MOT method outperforms a conventional pipeline based on super-resolution estimation followed by belief propagation (BP)-based tracking, particularly in low-SNR and clutter-rich conditions, demonstrating the advantages of direct signal-level inference and coherent multi-radar fusion.",
+      "summary_cn": "无人机大规模应用对空域监控提出严峻挑战，其体积小、雷达截面积低且在复杂环境中移动缓慢，导致传统\"先检测后跟踪\"方法难以有效应对。本文提出基于变分消息传递的直接多目标跟踪方法，直接处理MIMO多雷达原始信号，采用叠加信号模型捕获密集目标相关性，并引入层次Bernoulli-Gamma模型描述目标存在性、反射率及雷达-目标链路可靠性。通过平均场近似推导消息更新算法，实现检测、航迹关联、状态估计与噪声参数学习的联合推断。仿真结果表明，该方法在低信噪比及强杂波环境下性能显著优于传统超分辨率+置信度传播的两阶段方案。",
+      "pdf_url": "https://arxiv.org/pdf/2604.13884v1",
+      "arxiv_url": "https://arxiv.org/abs/2604.13884v1",
       "is_enriched": true
     },
     {
@@ -65,101 +79,77 @@
       "is_enriched": true
     },
     {
+      "arxiv_id": "2604.09015v1",
+      "title": "Generative AI Agent Empowered Power Allocation for HAP Propulsion and Communication Systems",
+      "authors": "Xiaoyu Xing, Dingyi Lu, Peng Yang, Zehui Xiong, Xianbin Cao, Tony Q. S. Quek",
+      "affiliations": "research | National Research | Information Engineering,Beihang University,Beijing100191,China(e-mail | School | Beihang University,Beijing100191,China,Pengcheng Laboratory,Shenzhen | China,Laboratory Beijing",
+      "published_date": "2026-04-10",
+      "crawled_date": "2026-04-19",
+      "categories": "cs.NI, cs.IT",
+      "abstract": "High altitude platforms (HAPs) are emerging as a key enabler for 6G coverage, yet limited energy must be split between propulsion and communications. Most prior HAP studies ignore propulsion power or rely on surrogates that miss hull-propeller interference, leading to misestimated communication power budgets and degraded beamforming. More importantly, HAP power allocation is intrinsically a multi-system, multidisciplinary problem in which aerodynamics, propulsion-system efficiency, and communication-system performance (quality of service (QoS) and energy efficiency (EE)) are tightly coupled.To address these challenges, this paper designs an interactive generative artificial intelligence (AI)-empowered HAP power allocation agent.By interacting with the AI agent, we develop an accurate propulsion power consumption model that takes into account the aerodynamic interference between the HAP's hull and the propeller. Assisted by the AI agent, we further formulate a HAP beamforming problem to improve user QoS and enhance the EE of the HAP communication system.This paper also proposes a QoS-enhanced energy-efficient (Q3E) beamforming algorithm to solve the formulated problem.Simulation results demonstrate the accuracy of the propulsion-power model and the effectiveness of the Q3E algorithm.",
+      "summary_cn": "本文设计AI赋能的HAP功率分配智能体，构建含气动干扰的推进功率精确模型，并提出QoS增强能效（Q3E）波束赋形算法。仿真验证了推进功率模型的准确性和Q3E算法在提升用户QoS及系统能效方面的有效性。",
+      "pdf_url": "https://arxiv.org/pdf/2604.09015v1",
+      "arxiv_url": "https://arxiv.org/abs/2604.09015v1",
+      "is_enriched": true
+    },
+    {
       "arxiv_id": "2604.08734v1",
       "title": "Quality-Aware Denoising of Ultra-Short TDoA Measurements for 5G-NR UAV Localization",
       "authors": "Zexin Fang, Bin Han, Anjie Qiu, Zhuojun Tian, Hans D. Schotten",
-      "affiliations": "",
+      "affiliations": "University | Research Center | China China | Institute",
       "published_date": "2026-04-09",
       "crawled_date": "2026-04-19",
       "categories": "eess.SP, cs.NI",
       "abstract": "Reliable positioning is essential for Uncrewed Aerial Vehicles (UAVs) in safety-critical urban operations, yet achieving sub-meter accuracy under stringent latency constraints remains challenging. While 3rd Generation Partnership Project (3GPP) specifies repeated Positioning Reference Signals (PRS) transmissions for accurate Time Difference of Arrival (TDoA) measurements, denoising techniques specifically tailored for extremely limited measurement sequences within 3GPP frameworks remain underexplored. We propose Adaptive Gain Exponential Smoother (AGES), a lightweight filter combining exponentially weighted averaging with adaptive gains informed by 3GPP measurement quality reports. Simulations demonstrate AGES achieves 30-40% reduction in positioning error with only 3-5 repeated measurements while maintaining Fifth Generation New Radio (5G-NR) infrastructure compatibility.",
-      "summary_cn": "",
+      "summary_cn": "可靠定位对无人机在城市安全关键任务中至关重要，但在严格延迟约束下实现亚米级精度仍具挑战。3GPP规定了重复发送定位参考信号(PRS)以实现精确的到达时差(TDoA)测量，但针对3GPP框架内极有限测量序列的去噪技术仍缺乏探索。我们提出自适应增益指数平滑器(AGES)，这是一种轻量级滤波器，结合了指数加权平均与3GPP测量质量报告提供的自适应增益。仿真表明，AGES仅需3-5次重复测量即可降低30-40%的定位误差，同时保持5G-NR基础设施兼容性。",
       "pdf_url": "https://arxiv.org/pdf/2604.08734v1",
       "arxiv_url": "https://arxiv.org/abs/2604.08734v1",
-      "is_enriched": false
-    },
-    {
-      "arxiv_id": "2604.06444v1",
-      "title": "Real-World LoRaWAN Performance and Propagation Modeling Using UAV, Helikite, and Vehicle-Based Measurements",
-      "authors": "Sergio Vargas Villar, Simran Singh, Özgür Özdemir, Mihail L. Sichitiu, İsmail Güvenç",
-      "affiliations": "",
-      "published_date": "2026-04-07",
-      "crawled_date": "2026-04-19",
-      "categories": "eess.SP, cs.NI",
-      "abstract": "This paper presents a field-based evaluation of Long Range Wide Area Network (LoRaWAN) signal propagation conducted at two locations within the Aerial Experimentation and Research Platform for Advanced Wireless (AERPAW) testbed: Lake Wheeler Field and NC State University's Centennial Campus. Three distinct transmission platforms were deployed, a ground vehicle, a multirotor drone at 50 meters, and a helikite at a steady altitude of 150 meters and 300 meters approximately. These platforms enabled a comparative study on how altitude, mobility, and terrain influence wireless signal reception across a LoRaWAN gateway network. We analyze received signal strength (RSSI) and signal-to-noise ratio (SNR) as functions of distance and spreading factor (SF). Three complementary metrics are visualized: SNR versus distance with demodulation thresholds, probability of successful reception, and SNR boxplots grouped by distance bins. These plots reveal link degradation patterns and demonstrate the role of adaptive SF selection in maintaining communication reliability. To characterize propagation behavior, we apply a log-distance path loss model to empirical data from the ground vehicle experiment, which encompass both rural and urban non-line-of-sight (NLOS) conditions. Model parameters are optimized through error minimization techniques. Our results show that the helikite platform, due to its stable high-altitude position, provided the most reliable and consistent link performance. Conversely, the drone and vehicle exhibited higher variability due to movement, obstructions, and terrain-induced multipath. These findings demonstrate the influence of platform dynamics and altitude on LoRaWAN reception performance, providing support for future aerial network planning efforts.",
-      "summary_cn": "",
-      "pdf_url": "https://arxiv.org/pdf/2604.06444v1",
-      "arxiv_url": "https://arxiv.org/abs/2604.06444v1",
-      "is_enriched": false
-    },
-    {
-      "arxiv_id": "2604.02205v1",
-      "title": "Evaluation of gNB Monostatic Sensing for UAV Use Case",
-      "authors": "Steve Blandino, Neeraj Varshney, Jian Wang, Jack Chuang, Camillo Gentile, Nada Golmie",
-      "affiliations": "",
-      "published_date": "2026-04-02",
-      "crawled_date": "2026-04-19",
-      "categories": "eess.SP, cs.SE",
-      "abstract": "3GPP Release 19 has initiated the standardization of integrated sensing and communications (ISAC), including a channel model for monostatic sensing, evaluation scenarios, and performance assessment methodologies. These common assumptions provide an important basis for ISAC evaluation, but reproducible end-to-end studies still require a transparent sensing implementation. This paper evaluates 5G New Radio (NR) base station (gNB)-based monostatic sensing for the Unmanned Aerial Vehicle (UAV) use case using a 5G NR downlink Cyclic Prefix-Orthogonal Frequency Division Multiplexing (CP-OFDM) waveform and positioning reference signals (PRS), following 3GPP Urban Macro-Aerial Vehicle (UMa-AV) scenario assumptions. We present an end-to-end processing chain for multi-target detection and 3D localization, achieving more than 70% detection probability with less than 5% false alarm rate, in the considered scenario. For correctly detected targets, localization errors are on the order of a few meters, with a 90th-percentile error of 4m and 6m in the vertical and horizontal directions, respectively. To support reproducible baseline studies and further research, we release the simulator 5GNRad, which reproduces our evaluation",
-      "summary_cn": "",
-      "pdf_url": "https://arxiv.org/pdf/2604.02205v1",
-      "arxiv_url": "https://arxiv.org/abs/2604.02205v1",
-      "is_enriched": false
-    },
-    {
-      "arxiv_id": "2603.29146v1",
-      "title": "Enabling Programmable Inference and ISAC at the 6GR Edge with dApps",
-      "authors": "Michele Polese, Rajeev Gangula, Tommaso Melodia",
-      "affiliations": "Institute | University",
-      "published_date": "2026-03-31",
-      "crawled_date": "2026-04-19",
-      "categories": "cs.NI, eess.SP",
-      "abstract": "The convergence of communication, sensing, and Artificial Intelligence (AI) in the Radio Access Network (RAN) offers compelling economic advantages through shared spectrum and infrastructure. How can inference and sensing be integrated in the RAN infrastructure at a system level? Current abstractions in O-RAN and 3GPP lack the interfaces and capabilities to support (i) a dynamic life cycle for inference and Integrated Sensing and Communication (ISAC) algorithms, whose requirements and sensing targets may change over time and across sites; (ii) pipelines for AI-driven ISAC, which need complex data flows, training, and testing; (iii) dynamic device and stack configuration to balance trade-offs between connectivity, sensing, and inference services. This paper analyzes the role of a programmable, software-driven, open RAN in enabling the intelligent edge for 5G and 6G systems. We identify real-time user-plane data exposure, open interfaces for plug-and-play inference and ISAC models, closed-loop control, and AI pipelines as elements that evolutions of the O-RAN architecture can uniquely provide. Specifically, we describe how dApps - a real-time, user-plane extension of O-RAN - and a hierarchy of controllers enable real-time AI inference and ISAC. Experimental results on an open-source RAN testbed demonstrate the value of exposing I/Q samples and real-time RAN telemetry to dApps for sensing applications.",
-      "summary_cn": "通信、感知与AI在无线接入网(RAN)中的融合通过共享频谱和基础设施带来显著经济优势。如何在系统级将推理与感知集成至RAN？当前O-RAN与3GPP缺乏支持以下功能的接口与能力：推理与通感一体化(ISAC",
-      "pdf_url": "https://arxiv.org/pdf/2603.29146v1",
-      "arxiv_url": "https://arxiv.org/abs/2603.29146v1",
       "is_enriched": true
     },
     {
-      "arxiv_id": "2603.29822v1",
-      "title": "Conditional Diffusion-Based Point Cloud Imaging for UAV Position and Attitude Sensing",
-      "authors": "Xinhong Dai, Yuan Gao, Hao Jiang, Xiaojun Yuan, Xin Wang",
-      "affiliations": "",
-      "published_date": "2026-03-31",
+      "arxiv_id": "2604.08244v1",
+      "title": "FORSLICE: An Automated Formal Framework for Efficient PRB-Allocation towards Slicing Multiple Network Services",
+      "authors": "Debarpita Banerjee, Sumana Ghosh, Snigdha Das, Shilpa Budhkar, Rana Pratap Sircar",
+      "affiliations": "sumana@isical.ac. in ,Indian Statistical Institute Kolkata,Kolkata,India;Snigdha Das,snigdha.das@ericsson.com,Ericsson Research,India;Shilpa | Budhkar,shilpa.budhkar@ericsson.com,Ericsson Research,India;Rana Pratap Sircar,rana.pratap.sircar@ericsson.com,Ericsson Research,India",
+      "published_date": "2026-04-09",
       "crawled_date": "2026-04-19",
-      "categories": "eess.SP",
-      "abstract": "This paper studies an unmanned aerial vehicle (UAV) position and attitude sensing problem, where a base station equipped with an antenna array transmits signals to a predetermined potential flight region of a flying UAV, and exploits the reflected echoes for wireless imaging. The UAV is represented by an electromagnetic point cloud in this region that contains its spatial information and electromagnetic properties (EPs), enabling the unified extraction of UAV position, attitude, and shape from the reconstructed point cloud. To accomplish this task, we develop a generative UAV sensing approach. The position and signal-to-noise ratio embedding are adopted to assist the UAV features extraction from the estimated sensing channel under the measurement noise and channel variations. Guided by the obtained features, a conditional diffusion model is utilized to generate the point cloud. The simulation results demonstrate that the reconstructed point clouds via the proposed approach present higher fidelity compared to the competing schemes, thereby enabling a more accurate capture of the UAV attitude and shape information, as well as a more precise position estimation.",
-      "summary_cn": "",
-      "pdf_url": "https://arxiv.org/pdf/2603.29822v1",
-      "arxiv_url": "https://arxiv.org/abs/2603.29822v1",
-      "is_enriched": false
+      "categories": "cs.NI, eess.SY",
+      "abstract": "Network slicing is a modern 5G technology that provides efficient network experience for diverse use cases. It is a technique for partitioning a single physical network infrastructure into multiple virtual networks, called slices, each equipped for specific services and requirements. In this work, we particularly deal with radio access network (RAN) slicing and resource allocation to RAN slices. In 5G, physical resource blocks (PRBs) being the fundamental units of radio resources, our main focus is to allocate PRBs to the slices efficiently. While addressing a spectrum of needs for multiple services or the same services with multi-priorities, we need to ensure two vital system properties: i) fairness to every service type (i.e., providing the required resources and a desired range of throughput) even after prioritizing a particular service type, and ii) PRB-optimality or minimizing the unused PRBs in slices. These serve as the core performance evaluation metrics for PRB-allocation in our work.   We adopt the 3-layered hierarchical PRB-partitioning technique for allocating PRBs to network slices. The case-specific, AI-based solution of the state-of-the-art method lacks sufficient correctness to ensure consistent system performance. To achieve guaranteed correctness and completeness, we leverage formal methods and propose the first approach for a fair and optimal PRB distribution to RAN slices. We formally model the PRB-allocation problem as a 3-layered framework, FORSLICE, specifically by employing satisfiability modulo theories. Next, we apply formal verification to ensure that the desired system properties: fairness and PRB-optimality, are satisfied by the model. The proposed method offers an efficient, versatile and automated approach compatible with all 3-layered hierarchical network structure configurations, yielding significant system property improvements compared to the baseline.",
+      "summary_cn": "网络切片是5G的关键技术，将物理网络划分为多个虚拟切片以满足差异化服务需求。针对RAN切片资源分配，以物理资源块（PRB）为基本单位，需同时保障公平性和PRB最优性，即确保各类服务获得所需资源且最小化未用资源块。采用三层层级化PRB划分技术，现有AI方案缺乏一致性保障。本研究引入形式化方法，提出首个公平且最优的RAN切片PRB分配框架FORSLICE，运用可满足性模理论建模，并通过形式化验证确保公平性和资源利用率。该方法通用可自动化，性能显著优于基准方案。",
+      "pdf_url": "https://arxiv.org/pdf/2604.08244v1",
+      "arxiv_url": "https://arxiv.org/abs/2604.08244v1",
+      "is_enriched": true
     },
     {
-      "arxiv_id": "2603.28318v3",
-      "title": "Integrated sensing and communications in the 3GPP New Radio: sensing limits",
-      "authors": "Santiago Fernández, Javier Giménez, Mari Carmen Aguayo-Torres, José A. Cortés",
-      "affiliations": "",
-      "published_date": "2026-03-30",
+      "arxiv_id": "2604.06971v1",
+      "title": "RieIF: Knowledge-Driven Riemannian Information Flow for Robust Spatio-Temporal Graph Signal Prediction in 6G Wireless Networks",
+      "authors": "Zhonghao Jiu, Yongming Huang, Fan Meng, Hang Zhan, Zening Liu, Xiaohu You",
+      "affiliations": "University,Nanjing China | tain Laboratories,Nanjing211111,China(e-mail:230228222@seu.edu.cn | meta-learning",
+      "published_date": "2026-04-08",
       "crawled_date": "2026-04-19",
       "categories": "eess.SP",
-      "abstract": "Integrated Sensing and Communications (ISAC) is regarded as a key element of the beyond-fifth-generation (5G) and sixth-generation (6G) systems, raising the question of whether current 5G New Radio (NR) signal structures can meet the sensing accuracy requirements specified by the Third Generation Partnership Project (3GPP). This paper addresses this issue by analyzing the fundamental limits of range and velocity estimation through the Cramér-Rao lower bound (CRLB) for a monostatic unmanned aerial vehicle (UAV) sensing use case currently under consideration in the 3GPP standardization process. The study focuses on standardized signals and also evaluates the potential performance gains achievable with reference signals specifically designed for sensing purposes.   The compact CRLB expressions derived in this work highlight the fundamental trade-offs between estimation accuracy and system parameters. The results further indicate that information from multiple slots must be exploited in the estimation process to attain the performance targets defined by the 3GPP. As a result, the 5G NR positioning reference signal (PRS), whose patterns may be suboptimal for velocity estimation when using single-slot resources, becomes suitable when multislot estimation is employed. Finally, we propose a two-step iterative range and radial-velocity estimator that attains the CRLB over a significantly wider range of distances than conventional maximum-likelihood (ML) estimators, for which the well-known threshold effect severely limits the distance range over which the accuracy requirements imposed by the 3GPP are satisfied.",
-      "summary_cn": "",
-      "pdf_url": "https://arxiv.org/pdf/2603.28318v3",
-      "arxiv_url": "https://arxiv.org/abs/2603.28318v3",
-      "is_enriched": false
+      "abstract": "With 6G evolving towards intelligent network autonomy, artificial intelligence (AI)-native operations are becoming pivotal. Wireless networks continuously generate rich and heterogeneous data, which inherently exhibits spatio-temporal graph structure. However, limited radio resources result in incomplete and noisy network measurements. This challenge is further intensified when a target variable and its strongest correlates are missing over contiguous intervals, forming systemic blind spots. To tackle this issue, we propose RieIF (Knowledge-driven Riemannian Information Flow), a geometry-consistent framework that incorporates knowledge graphs (KGs) for robust spatio-temporal graph signal prediction. For analytical tractability within the Fisher-Rao geometry, we project the input from a Riemannian manifold onto a positive unit hypersphere, where angular similarity is computationally efficient. This projection is implemented via a graph transformer, using the KG as a structural prior to constrain attention and generate a micro stream. Simultaneously, a Long Short-Term Memory (LSTM) model captures temporal dynamics to produce a macro stream. Finally, the micro stream (highlighting geometric shape) and the macro stream (emphasizing signal strength) are adaptively fused through a geometric gating mechanism for signal recovery. Experiments on three wireless datasets show consistent improvements under systemic blind spots, including up to 31% reduction in root mean squared error and up to 3.2 dB gain in recovery signal-to-noise ratio, while maintaining robustness to graph sparsity and measurement noise.",
+      "summary_cn": "随着6G迈向智能网络自治，AI原生运营成为关键。无线网络持续产生具有时空图结构的海量异构数据，但有限频谱资源导致测量不完整且含噪声，尤其当目标变量及其强相关变量在连续区间缺失时，系统性盲点问题更加突出。为此，提出RieIF框架：将输入从黎曼流形投影至正定单位超球面，以费舍尔-拉奥几何实现高效角度相似度计算；图transformer以知识图谱为结构先验约束注意力，生成突出几何形状的微流；LSTM捕获时序动态，生成强调查看信号强度的宏流；最终通过几何门控机制自适应融合两流以恢复信号。在三类无线数据集上系统性盲点测试中，RMSE最高降低31%，恢复信噪比最高提升3.2 dB，且对图稀疏性和测量噪声均具鲁棒性。",
+      "pdf_url": "https://arxiv.org/pdf/2604.06971v1",
+      "arxiv_url": "https://arxiv.org/abs/2604.06971v1",
+      "is_enriched": true
+    },
+    {
+      "arxiv_id": "2604.06856v1",
+      "title": "Enhancing Secure Intent-Based Networking with an Agentic AI: The EU Project MARE Approach",
+      "authors": "Iulisloi Zacarias, Marla Grunewald, Fin Gentzen, Xavi Masip-Bruin, Admela Jukan",
+      "affiliations": "research",
+      "published_date": "2026-04-08",
+      "crawled_date": "2026-04-19",
+      "categories": "cs.NI",
+      "abstract": "In the EU project MARE, a novel plane was proposed and used in combination with intent-based networking (IBN), allowing the operator to focus on what, rather than on how. Recently, LLMs have been successfully employed to translate the high-level intents into low-level actions. The open challenge is to understand how IBN can be effectively enhanced with LLM and the emerging agentic AI for security purposes. Enhancing IBN with an agentic AI paradigm introduces significant challenges that existing solutions do not fully address. This paper proposes an enhanced IBN framework with a strong security focus toward agentic AI. We address the architectural and security requirements for a multi-agent intent-based system (IBS) architecture, including a multi-domain IBN. We propose a hierarchical multi-agent and multi-vendor architecture that can also be applied more broadly in 6G architectures and beyond, beyond the security architecture proposed in MARE. The architecture incorporates an interactive intent-processing pipeline using LLMs, and it also allows the IBS to connect to external security knowledge bases, such as MITRE ATT\\&CK, MITRE FiGHT, and NIST.",
+      "summary_cn": "本文提出一种面向Agent AI的安全增强IBN框架，引入层级多智能体架构，整合LLM实现意图处理流程，支持连接MITRE ATT&CK、FiGHT及NIST等外部安全知识库，并探讨其在6G多域网络中的应用。",
+      "pdf_url": "https://arxiv.org/pdf/2604.06856v1",
+      "arxiv_url": "https://arxiv.org/abs/2604.06856v1",
+      "is_enriched": true
     }
   ],
   "overflow_list": [
-    {
-      "arxiv_id": "2604.13884v1",
-      "title": "A Variational Message Passing Framework for Multi-Sensor Multi-Object Tracking using Raw Radar Signals",
-      "url": "https://arxiv.org/abs/2604.13884v1",
-      "published_date": "2026-04-15",
-      "crawled_date": "2026-04-18",
-      "abstract": "The growing proliferation of unmanned aerial vehicles (UAVs) poses major challenges for reliable airspace surveillance, as drones are typically small, have low radar cross-sections, and often move slowly in cluttered environments. These characteristics make the joint tasks of detecting, localizing, and tracking multiple objects difficult for conventional detect-then-track (DTT) approaches, which rely on pre-processed measurements and may discard informative low-signal-to-noise ratio (SNR) signal components. To overcome these limitations, we propose a variational message passing (VMP)-based direct multiobject tracking (MOT) method that operates directly on raw radar signals and explicitly accounts for an unknown and time-varying number of objects. The proposed method is formulated for MIMO multi-radar systems and performs data fusion by jointly processing the signals of all radar sensors using a probabilistic model. A superimposed signal model is employed to capture correlations in the raw sensor data caused by closely spaced objects, and a hierarchical Bernoulli-Gamma model is introduced to jointly model object existence, reflectivities, and the reliability of individual radar-object links. Using a mean-field approximation, we derive message updates, yielding a computationally efficient VMP algorithm that simultaneously performs object detection, track formation, state estimation, and nuisance parameter learning directly from the radar signal. Simulation results in synthetic scenarios with weak and closely-spaced objects show that the proposed direct-MOT method outperforms a conventional pipeline based on super-resolution estimation followed by belief propagation (BP)-based tracking, particularly in low-SNR and clutter-rich conditions, demonstrating the advantages of direct signal-level inference and coherent multi-radar fusion.",
-      "authors": "Anders Malthe Westerkam, Jakob Möderl, Erik Leitinger, Troels Pedersen",
-      "categories": "Signal Processing (eess.SP)"
-    },
     {
       "arxiv_id": "2604.14309v1",
       "title": "Aerial Multi-Functional RIS in Fluid Antennas-Aided Full-Duplex Networks: A Self-Optimized Hybrid Deep Reinforcement Learning Approach",
@@ -169,7 +159,7 @@
       "crawled_date": "2026-04-18",
       "categories": "cs.IT, cs.AI, eess.SP",
       "abstract": "To address high data traffic demands of sixth-generation (6G) networks, this paper proposes a novel architecture that integrates autonomous aerial vehicles (AAVs) and multi-functional reconfigurable intelligent surfaces (MF-RISs) as AM-RIS in fluid antenna (FA)-assisted full-duplex (FD) networks. The AM-RIS provides hybrid functionalities, including signal reflection, amplification, and energy harvesting (EH), potentially improving both signal coverage and sustainability. Meanwhile, FA facilitates fine-grained spatial adaptability at FD-enabled base station (BS), which complements residual self-interference (SI) suppression. We aim at maximizing the overall energy efficiency (EE) by jointly optimizing transmit DL beamforming at BS, UL user power, configuration of AM-RIS, and positions of the FA and AM-RIS. Owing to the hybrid continuous-discrete parameters and high dimensionality of the intractable problem, we have conceived a self-optimized multi-agent hybrid deep reinforcement learning (DRL) framework (SOHRL), which integrates multi-agent deep Q-networks (DQN) and multi-agent proximal policy optimization (PPO), respectively handling discrete and continuous actions. To enhance self-adaptability, an attention-driven state representation and meta-level hyperparameter optimization are incorporated, enabling multi-agents to autonomously adjust learning hyperparameters. Simulation results validate the effectiveness of the proposed AM-RIS-enabled FA-aided FD networks empowered by SOHRL algorithm. The results reveal that SOHRL outperforms benchmarks of the case without attention mechanism and conventional hybrid/multi-agent/standalone DRL. Moreover, AM-RIS in FD achieves the highest EE compared to half-duplex, conventional rigid antenna arrays, partial EH, and conventional RIS without amplification, highlighting its potential as a compelling solution for EE-aware wireless networks.",
-      "summary_cn": "为满足6G网络高数据流量需求，本文提出一种融合自主飞行器与多功能可重构智能表面的新型架构，应用于流体天线辅助的全双工网络。该架构提供信号反射、放大与能量收集混合功能，提升覆盖与可持续性。流体天线实现基站空间自适应，辅助抑制残余自干扰。通过联合优化下行波束成形、上行功率、AM-RIS配置及天线位置，最大化能效。针对混合连续-离散参数与高维难题，设计自优化多智能体混合深度强化学习框架，融合DQN与PPO分别处理离散与连续动作，引入注意力状态表示与元级超参优化。仿真验证了所提方案有效性，SOHRL优于无注意力机制及传统混合/多智能体/独立DRL基准，全双工AM-RIS能效显著优于半双工、传统刚性天线阵列、部分能量收集及无放大传统RIS。",
+      "summary_cn": "为应对6G网络高数据流量需求，本文提出将自主飞行器和多功能可重构智能面集成于流体天线辅助全双工网络的新架构。智能面具备信号反射、放大和能量收集混合功能，可同时提升信号覆盖和可持续性。流体天线在基站的精细空间适应性可抑制残余自干扰。通过联合优化下行波束赋形、用户功率、智能面配置及位置最大化能效。提出SOHRL框架结合多智能体深度Q网络和近端策略优化。仿真验证了所提架构和算法的有效性。",
       "arxiv_url": "https://arxiv.org/abs/2604.14309v1",
       "pdf_url": "https://arxiv.org/pdf/2604.14309v1",
       "is_enriched": true
@@ -211,7 +201,7 @@
       "crawled_date": "2026-04-18",
       "categories": "eess.SP, cs.ET",
       "abstract": "Integrated terrestrial and non-terrestrial networks (ITNTNs) are regarded as a key architectural paradigm for sixth-generation (6G) wireless systems. This paper investigates a dual-aerial reconfigurable intelligent surface (RIS)-assisted ITNTN, where a terrestrial base station (TBS) and a satellite (SAT) jointly serve terrestrial and satellite users with the aid of an unmanned aerial vehicle (UAV)-mounted RIS and a high-altitude platform (HAP)-mounted RIS. We formulate an average sum-rate maximization problem by jointly optimizing the TBS and SAT precoders, the RIS phase shift matrices, and the three-dimensional trajectories of the UAV and the HAP, subject to transmit power, unit-modulus, and mobility constraints. The resulting optimization problem is highly non-convex due to the strong coupling among the transmit precoders, RIS phase shifts, and aerial platform mobility. To efficiently address this challenge, we propose a block coordinate descent (BCD) framework that integrates weighted minimum mean square error (WMMSE) optimization for precoder design, a manifold-based Riemannian conjugate gradient (RCG) method for RIS phase-shift optimization, and successive convex approximation (SCA) for trajectory optimization. The proposed algorithm is shown to converge to a stationary point. The simulation results show that the proposed joint design achieves an approximately $7.05 \\%$ higher average sum-rate compared to the random RIS scheme, highlighting the effectiveness of dual-aerial RIS deployment and joint communication-mobility optimization in ITNTNs.",
-      "summary_cn": "天地一体化网络（ITNTN）是第六代（6G）无线系统的关键架构范式。本文研究一种双空中可重构智能表面（RIS）辅助ITNTN，其中地面基站与卫星借助无人机搭载RIS和高空平台搭载RIS联合服务地面与卫星用户。通过联合优化基站和卫星预编码器、RIS相移矩阵以及无人机和高空平台的三维轨迹，在发射功率、单位模和移动性约束下建立平均和速率最大化问题。该问题因预编码器、RIS相移与空中平台移动性的强耦合而高度非凸。为此，提出块坐标下降框架，集成加权最小均方误差优化进行预编码器设计、基于流形的黎曼共轭梯度法优化RIS相移、以及连续凸逼近优化轨迹。所提算法可收敛至稳定点。仿真结果表明，相比随机RIS方案，联合设计平均和速率提升约7.05%，验证了双空中RIS部署与联合通信-移动性优化的有效性。",
+      "summary_cn": "天地一体化网络被视为6G关键架构。本文研究双智能面辅助天地一体化网络，地面基站和卫星协同服务地面和卫星用户，辅以无人机和飞艇智能面。通过联合优化基站和卫星预编码器、智能面相位偏移及空中平台三维轨迹最大化平均和速率。该优化问题因强耦合而高度非凸。提出块坐标下降框架整合加权最小均方误差优化、流形黎曼共轭梯度法和连续凸近似。仿真表明所提联合设计相比随机智能面方案可实现约7.05%的性能提升。",
       "arxiv_url": "https://arxiv.org/abs/2604.12283v1",
       "pdf_url": "https://arxiv.org/pdf/2604.12283v1",
       "is_enriched": true
@@ -267,7 +257,7 @@
       "crawled_date": "2026-04-18",
       "categories": "cs.CV, cs.LG, eess.SP",
       "abstract": "Large-scale three-dimensional (3D) scene reconstruction in low-altitude intelligent networks (LAIN) demands highly efficient wireless image transmission. However, existing schemes struggle to balance severe pilot overhead with the transmission accuracy required to maintain reconstruction fidelity. To strike a balance between efficiency and reliability, this paper proposes a novel deep learning-based end-to-end (E2E) transceiver design that integrates 3D Gaussian Splatting (3DGS) directly into the training process. By jointly optimizing the communication modules via the combined 3DGS rendering loss, our approach explicitly improves scene recovery quality. Furthermore, this task-driven framework enables the use of a sparse pilot scheme, significantly reducing transmission overhead while maintaining robust image recovery under low-altitude channel conditions. Extensive experiments on real-world aerial image datasets demonstrate that the proposed E2E design significantly outperforms existing baselines, delivering superior transmission performance and accurate 3D scene reconstructions.",
-      "summary_cn": "低空智能网络的大规模三维场景重建对高效无线图像传输提出极高要求。现有方案难以在导频开销与重建保真度所需的传输精度间取得平衡。为此，本文提出一种新颖的深度学习端到端收发机设计，将三维高斯泼溅直接嵌入训练过程。通过联合优化通信模块与三维高斯泼溅渲染损失，本方法显式提升场景恢复质量。该任务驱动框架支持稀疏导频方案，显著降低传输开销，同时保证低空信道条件下的鲁棒图像恢复。真实航拍数据集上的大量实验表明，所提端到端设计显著优于现有基线，实现更优的传输性能与精确的三维场景重建。",
+      "summary_cn": "低空智能网络中的大规模三维场景重建需要高效的无线图像传输。现有方案难以平衡导频开销与重建保真度间的矛盾。本文提出基于深度学习的端到端收发机设计，将三维高斯溅射集成到训练过程中，通过联合优化通信模块提高场景恢复质量。该任务驱动框架采用稀疏导频方案显著降低传输开销。真实航拍数据集实验验证了所提方案在传输性能和三维重建精度方面均优于现有方案。",
       "arxiv_url": "https://arxiv.org/abs/2604.11098v1",
       "pdf_url": "https://arxiv.org/pdf/2604.11098v1",
       "is_enriched": true
@@ -295,30 +285,10 @@
       "crawled_date": "2026-04-18",
       "categories": "eess.SP",
       "abstract": "With the rapid growth of Multi-access Edge Computing (MEC), secure and efficient computation offloading from user equipment (UEs) to edge access points (APs) is critical. However, DISCO intelligent reflective surface-based fully-passive jammers (DIRS-based FPJs) use random time-varying phase shifts to launch DISCO jamming attacks, disrupting offloading performance. This paper leverages an aerial intelligent reflective surface (AIRS) to enable secure computation offloading against DISCO jamming by jointly optimizing offloading ratios, AIRS phase shifts, and deployment. A two-timescale (2Ts) framework is proposed to address the optimization challenge caused by the distinct update frequencies of different strategies. Specifically, AIRS deployment is adjusted on a long timescale to boost antijamming capability due to the impracticality of frequent physical adjustment, while offloading ratios and phase shifts are optimized on a short timescale to adapt to DIRS-jammed dynamic channel conditions. We propose a dual-agent deep reinforcement learning (DRL)-based AIRS deployment-aided secure computation offloading (DDADSO) scheme to maximize the secure offloading utility under DISCO jamming. Simulation results verify that the proposed DDADSO scheme outperforms benchmark schemes, demonstrating the effectiveness of AIRS deployment in improving offloading performance against DISCO jamming attacks.",
-      "summary_cn": "随着多接入边缘计算发展，用户设备到边缘接入点的安全高效计算卸载至关重要。然而，基于DISCO智能反射面的全被动干扰机利用随机时变相移发起干扰攻击，破坏卸载性能。本文利用空中智能反射面(AIRS)，联合优化卸载比例、相移和部署，实现抗DISCO干扰的安全卸载。针对策略更新频率差异，提出双时间尺度框架：AIRS部署在长时间尺度调整以增强抗干扰能力；卸",
+      "summary_cn": "随着多接入边缘计算快速发展，从用户设备到边缘接入点的安全高效计算卸载至关重要。然而DISCO智能反射面完全无源干扰器利用随机时变相位偏移发起DISCO干扰攻击，破坏卸载性能。本文利用空中智能反射面实现抗DISCO干扰的安全计算卸载，联合优化卸载比例、相位偏移和部署位置。提出双时间尺度框架，长尺度调整部署以增强抗干扰能力，短尺度优化卸载比例和相位偏移。提出DDADSO方案最大化安全卸载效用。仿真验证了方案有效性。",
       "arxiv_url": "https://arxiv.org/abs/2604.10558v1",
       "pdf_url": "https://arxiv.org/pdf/2604.10558v1",
       "is_enriched": true
-    },
-    {
-      "arxiv_id": "2604.09015v1",
-      "title": "Generative AI Agent Empowered Power Allocation for HAP Propulsion and Communication Systems",
-      "url": "https://arxiv.org/abs/2604.09015v1",
-      "published_date": "2026-04-10",
-      "crawled_date": "2026-04-18",
-      "abstract": "High altitude platforms (HAPs) are emerging as a key enabler for 6G coverage, yet limited energy must be split between propulsion and communications. Most prior HAP studies ignore propulsion power or rely on surrogates that miss hull-propeller interference, leading to misestimated communication power budgets and degraded beamforming. More importantly, HAP power allocation is intrinsically a multi-system, multidisciplinary problem in which aerodynamics, propulsion-system efficiency, and communication-system performance (quality of service (QoS) and energy efficiency (EE)) are tightly this http URL address these challenges, this paper designs an interactive generative artificial intelligence (AI)-empowered HAP power allocation this http URL interacting with the AI agent, we develop an accurate propulsion power consumption model that takes into account the aerodynamic interference between the HAP&#39;s hull and the propeller. Assisted by the AI agent, we further formulate a HAP beamforming problem to improve user QoS and enhance the EE of the HAP communication this http URL paper also proposes a QoS-enhanced energy-efficient (Q3E) beamforming algorithm to solve the formulated this http URL results demonstrate the accuracy of the propulsion-power model and the effectiveness of the Q3E algorithm.",
-      "authors": "Xiaoyu Xing, Dingyi Lu, Peng Yang, Zehui Xiong, Xianbin Cao, Tony Q. S. Quek",
-      "categories": "Networking and Internet Architecture (cs.NI)"
-    },
-    {
-      "arxiv_id": "2604.08244v1",
-      "title": "FORSLICE: An Automated Formal Framework for Efficient PRB-Allocation towards Slicing Multiple Network Services",
-      "url": "https://arxiv.org/abs/2604.08244v1",
-      "published_date": "2026-04-09",
-      "crawled_date": "2026-04-18",
-      "abstract": "Network slicing is a modern 5G technology that provides efficient network experience for diverse use cases. It is a technique for partitioning a single physical network infrastructure into multiple virtual networks, called slices, each equipped for specific services and requirements. In this work, we particularly deal with radio access network (RAN) slicing and resource allocation to RAN slices. In 5G, physical resource blocks (PRBs) being the fundamental units of radio resources, our main focus is to allocate PRBs to the slices efficiently. While addressing a spectrum of needs for multiple services or the same services with multi-priorities, we need to ensure two vital system properties: i) fairness to every service type (i.e., providing the required resources and a desired range of throughput) even after prioritizing a particular service type, and ii) PRB-optimality or minimizing the unused PRBs in slices. These serve as the core performance evaluation metrics for PRB-allocation in our work. We adopt the 3-layered hierarchical PRB-partitioning technique for allocating PRBs to network slices. The case-specific, AI-based solution of the state-of-the-art method lacks sufficient correctness to ensure consistent system performance. To achieve guaranteed correctness and completeness, we leverage formal methods and propose the first approach for a fair and optimal PRB distribution to RAN slices. We formally model the PRB-allocation problem as a 3-layered framework, FORSLICE, specifically by employing satisfiability modulo theories. Next, we apply formal verification to ensure that the desired system properties: fairness and PRB-optimality, are satisfied by the model. The proposed method offers an efficient, versatile and automated approach compatible with all 3-layered hierarchical network structure configurations, yielding significant system property improvements compared to the baseline.",
-      "authors": "Debarpita Banerjee, Sumana Ghosh, Snigdha Das, Shilpa Budhkar, Rana Pratap Sircar",
-      "categories": "Networking and Internet Architecture (cs.NI)"
     },
     {
       "arxiv_id": "2604.08458v2",
@@ -335,26 +305,6 @@
       "is_enriched": true
     },
     {
-      "arxiv_id": "2604.06971v1",
-      "title": "RieIF: Knowledge-Driven Riemannian Information Flow for Robust Spatio-Temporal Graph Signal Prediction in 6G Wireless Networks",
-      "url": "https://arxiv.org/abs/2604.06971v1",
-      "published_date": "2026-04-08",
-      "crawled_date": "2026-04-18",
-      "abstract": "With 6G evolving towards intelligent network autonomy, artificial intelligence (AI)-native operations are becoming pivotal. Wireless networks continuously generate rich and heterogeneous data, which inherently exhibits spatio-temporal graph structure. However, limited radio resources result in incomplete and noisy network measurements. This challenge is further intensified when a target variable and its strongest correlates are missing over contiguous intervals, forming systemic blind spots. To tackle this issue, we propose RieIF (Knowledge-driven Riemannian Information Flow), a geometry-consistent framework that incorporates knowledge graphs (KGs) for robust spatio-temporal graph signal prediction. For analytical tractability within the Fisher-Rao geometry, we project the input from a Riemannian manifold onto a positive unit hypersphere, where angular similarity is computationally efficient. This projection is implemented via a graph transformer, using the KG as a structural prior to constrain attention and generate a micro stream. Simultaneously, a Long Short-Term Memory (LSTM) model captures temporal dynamics to produce a macro stream. Finally, the micro stream (highlighting geometric shape) and the macro stream (emphasizing signal strength) are adaptively fused through a geometric gating mechanism for signal recovery. Experiments on three wireless datasets show consistent improvements under systemic blind spots, including up to 31% reduction in root mean squared error and up to 3.2 dB gain in recovery signal-to-noise ratio, while maintaining robustness to graph sparsity and measurement noise.",
-      "authors": "Zhonghao Jiu, Yongming Huang, Fan Meng, Hang Zhan, Zening Liu, Xiaohu You",
-      "categories": "Signal Processing (eess.SP)"
-    },
-    {
-      "arxiv_id": "2604.06856v1",
-      "title": "Enhancing Secure Intent-Based Networking with an Agentic AI: The EU Project MARE Approach",
-      "url": "https://arxiv.org/abs/2604.06856v1",
-      "published_date": "2026-04-08",
-      "crawled_date": "2026-04-18",
-      "abstract": "In the EU project MARE, a novel plane was proposed and used in combination with intent-based networking (IBN), allowing the operator to focus on what, rather than on how. Recently, LLMs have been successfully employed to translate the high-level intents into low-level actions. The open challenge is to understand how IBN can be effectively enhanced with LLM and the emerging agentic AI for security purposes. Enhancing IBN with an agentic AI paradigm introduces significant challenges that existing solutions do not fully address. This paper proposes an enhanced IBN framework with a strong security focus toward agentic AI. We address the architectural and security requirements for a multi-agent intent-based system (IBS) architecture, including a multi-domain IBN. We propose a hierarchical multi-agent and multi-vendor architecture that can also be applied more broadly in 6G architectures and beyond, beyond the security architecture proposed in MARE. The architecture incorporates an interactive intent-processing pipeline using LLMs, and it also allows the IBS to connect to external security knowledge bases, such as MITRE ATT\\&amp;CK, MITRE FiGHT, and NIST.",
-      "authors": "Iulisloi Zacarias, Marla Grunewald, Fin Gentzen, Xavi Masip-Bruin, Admela Jukan",
-      "categories": "Networking and Internet Architecture (cs.NI)"
-    },
-    {
       "arxiv_id": "2604.07145v1",
       "title": "Aerial Booster-Cell Enabled Inter-Cell Interference Coordination for 5G NR Networks",
       "authors": "Md Sharif Hossen, Vijay K. Shah, Ismail Guvenc",
@@ -366,6 +316,20 @@
       "summary_cn": "5G NR网络中，无人机面临基站天线旁瓣引发的严重下行干扰，限制了其高质量覆盖。为解决增强覆盖加剧的小区间干扰，本文提出一种联合优化基站天线上倾角与NR时域调度的干扰协调框架。该模型在保障地面用户性能的前提下最大化无人机最小信干比，并采用粒子群与遗传算法求解此非凸问题。仿真表明，结合增强小区架构的协同上倾角优化显著提升了网络中无人机的最差信干比与下行可靠性。",
       "arxiv_url": "https://arxiv.org/abs/2604.07145v1",
       "pdf_url": "https://arxiv.org/pdf/2604.07145v1",
+      "is_enriched": true
+    },
+    {
+      "arxiv_id": "2604.06444v1",
+      "title": "Real-World LoRaWAN Performance and Propagation Modeling Using UAV, Helikite, and Vehicle-Based Measurements",
+      "authors": "Sergio Vargas Villar, Simran Singh, Özgür Özdemir, Mihail L. Sichitiu, İsmail Güvenç",
+      "affiliations": "Department | University’ s Centennial Campus | University | Research | National",
+      "published_date": "2026-04-07",
+      "crawled_date": "2026-04-19",
+      "categories": "eess.SP, cs.NI",
+      "abstract": "This paper presents a field-based evaluation of Long Range Wide Area Network (LoRaWAN) signal propagation conducted at two locations within the Aerial Experimentation and Research Platform for Advanced Wireless (AERPAW) testbed: Lake Wheeler Field and NC State University's Centennial Campus. Three distinct transmission platforms were deployed, a ground vehicle, a multirotor drone at 50 meters, and a helikite at a steady altitude of 150 meters and 300 meters approximately. These platforms enabled a comparative study on how altitude, mobility, and terrain influence wireless signal reception across a LoRaWAN gateway network. We analyze received signal strength (RSSI) and signal-to-noise ratio (SNR) as functions of distance and spreading factor (SF). Three complementary metrics are visualized: SNR versus distance with demodulation thresholds, probability of successful reception, and SNR boxplots grouped by distance bins. These plots reveal link degradation patterns and demonstrate the role of adaptive SF selection in maintaining communication reliability. To characterize propagation behavior, we apply a log-distance path loss model to empirical data from the ground vehicle experiment, which encompass both rural and urban non-line-of-sight (NLOS) conditions. Model parameters are optimized through error minimization techniques. Our results show that the helikite platform, due to its stable high-altitude position, provided the most reliable and consistent link performance. Conversely, the drone and vehicle exhibited higher variability due to movement, obstructions, and terrain-induced multipath. These findings demonstrate the influence of platform dynamics and altitude on LoRaWAN reception performance, providing support for future aerial network planning efforts.",
+      "summary_cn": "本文基于AERPAW测试平台，利用地面车辆、多旋翼无人机（50m）和系留风筝（150-300m）三种发射平台，对LoRaWAN信号传播进行外场评估。通过分析RSSI、SNR随距离和扩频因子的变化，结合对数距离路径损耗模型拟合，结果表明高空系留风筝平台链路性能最稳定可靠，而无人机和车辆因移动、遮挡及多径效应导致接收波动较大。该研究揭示了平台动态与高度对LoRaWAN通信的影响，为空基网络规划提供参考。",
+      "arxiv_url": "https://arxiv.org/abs/2604.06444v1",
+      "pdf_url": "https://arxiv.org/pdf/2604.06444v1",
       "is_enriched": true
     },
     {
@@ -385,22 +349,30 @@
     {
       "arxiv_id": "2604.04044v1",
       "title": "UAV Control and Communication Enabled Low-Altitude Economy: Challenges, Resilient Architecture and Co-design Strategies",
-      "url": "https://arxiv.org/abs/2604.04044v1",
+      "authors": "Tianhao Liang, Nanchi Su, Yuqi Ping, Guangyu Lei, Xinglin Chen, Longyu Zhou, Tingting Zhang, Qinyu Zhang, Tony Q. S. Quek",
+      "affiliations": "Institute Shenzhen | Research Institute | research",
       "published_date": "2026-04-05",
-      "crawled_date": "2026-04-18",
+      "crawled_date": "2026-04-19",
+      "categories": "cs.NI",
       "abstract": "The emerging low-altitude economy has catalyzed the large-scale deployment of unmanned aerial vehicles (UAVs), driving a paradigm shift in environment monitoring, logistics, and emergency response. However, operating within these environments presents notable challenges as pervasive coverage holes, unpredictable interference, and spectrum scarcity. To this end, this article present a communication and control co-design framework to enable a resilient architecture for cellular-connected UAVs. Specifically, we first characterize typical service applications and their stringent performance requirements, followed by a comprehensive analysis of the unique challenges. To bridge the gap between volatile wireless links and rigid flight stability, a three layered architecture is proposed, integrating pre-flight strategic planning, in-flight adaptive action, and system-level resource orchestration. Furthermore, we detail the key enabling technologies for communication and control co-design. Preliminary case studies are proposed to validate that the co-design framework significantly improve the resilience of cellular-connected UAV systems, providing a robust foundation for the evolution of intelligent low-altitude networks.",
-      "authors": "Tianhao Liang, Nanchi Su, Yuqi Ping, Guangyu Lei, Xinglin Chen, Longyu Zhou, Tingting Zhang, Qinyu Zhang, Tony Q.S. Quek",
-      "categories": "Networking and Internet Architecture (cs.NI)"
+      "summary_cn": "低空经济的兴起推动了无人机的大规模部署，催生了环境监测、物流和应急响应等领域的范式转变。然而，低空作业面临覆盖空洞、干扰不确定性及频谱稀缺等严峻挑战。本文提出一种通信与控制协同设计框架，构建蜂窝连接无人机的弹性架构。首先，梳理典型应用场景及其严格性能需求，深入分析低空环境的独特挑战。其次，为弥合无线链路波动与飞行稳定性之间的鸿沟，提出三层架构，融合飞行前战略规划、飞行中自适应控制及系统级资源协调。最后，详细阐述通信控制协同设计的关键使能技术。初步案例验证表明，该协同设计框架显著提升蜂窝连接无人机系统的弹性，为智能低空网络的演进奠定坚实基础。",
+      "arxiv_url": "https://arxiv.org/abs/2604.04044v1",
+      "pdf_url": "https://arxiv.org/pdf/2604.04044v1",
+      "is_enriched": true
     },
     {
       "arxiv_id": "2604.04271v1",
       "title": "A Family of Open Time-Series Foundation Models for the Radio Access Network",
-      "url": "https://arxiv.org/abs/2604.04271v1",
-      "published_date": "2026-04-05",
-      "crawled_date": "2026-04-18",
-      "abstract": "The Radio Access Network (RAN) is evolving into a programmable and disaggregated infrastructure that increasingly relies on AI-native algorithms for optimization and closed-loop control. However, current RAN intelligence is still largely built from task-specific models tailored to individual functions, resulting in model fragmentation, limited knowledge sharing across tasks, poor generalization, and increased system complexity. To address these limitations, we introduce TimeRAN, a unified multi-task learning framework for time-series modeling in the RAN. TimeRAN leverages a lightweight time-series foundation model with few task-specific heads to learn transferable representations that can be efficiently adapted across diverse tasks with limited supervision. To enable large-scale pretraining, we further curate and open-source TimeRAN DataPile, the largest time-series corpus for RAN analytics to date, comprising over 355K time series and 0.56B measurements across diverse telemetry sources, protocol layers, and deployment scenarios. We evaluate TimeRAN across a comprehensive set of RAN analytics tasks, including anomaly detection, classification, forecasting, and imputation, and show that it achieves state-of-the-art performance with minimal or no task-specific fine-tuning. Finally, we integrate TimeRAN into a proof-of-concept 5G testbed and demonstrate that it operates efficiently with limited resource requirements in real-world scenarios.",
       "authors": "Ioannis Panitsas, Leandros Tassiulas",
-      "categories": "Networking and Internet Architecture (cs.NI)"
+      "affiliations": "Department Yale University",
+      "published_date": "2026-04-05",
+      "crawled_date": "2026-04-19",
+      "categories": "cs.NI, cs.LG",
+      "abstract": "The Radio Access Network (RAN) is evolving into a programmable and disaggregated infrastructure that increasingly relies on AI-native algorithms for optimization and closed-loop control. However, current RAN intelligence is still largely built from task-specific models tailored to individual functions, resulting in model fragmentation, limited knowledge sharing across tasks, poor generalization, and increased system complexity. To address these limitations, we introduce TimeRAN, a unified multi-task learning framework for time-series modeling in the RAN. TimeRAN leverages a lightweight time-series foundation model with few task-specific heads to learn transferable representations that can be efficiently adapted across diverse tasks with limited supervision. To enable large-scale pretraining, we further curate and open-source TimeRAN DataPile, the largest time-series corpus for RAN analytics to date, comprising over 355K time series and 0.56B measurements across diverse telemetry sources, protocol layers, and deployment scenarios. We evaluate TimeRAN across a comprehensive set of RAN analytics tasks, including anomaly detection, classification, forecasting, and imputation, and show that it achieves state-of-the-art performance with minimal or no task-specific fine-tuning. Finally, we integrate TimeRAN into a proof-of-concept 5G testbed and demonstrate that it operates efficiently with limited resource requirements in real-world scenarios.",
+      "summary_cn": "本文提出TimeRAN——统一多任务学习框架，用于RAN时序建模。基于0.56B测量值预训练时序基础模型，在异常检测、分类、预测等任务上实现先进性能，并将TimeRAN集成至5G测试平台验证其高效性与低资源需求。",
+      "arxiv_url": "https://arxiv.org/abs/2604.04271v1",
+      "pdf_url": "https://arxiv.org/pdf/2604.04271v1",
+      "is_enriched": true
     },
     {
       "arxiv_id": "2604.04073v1",
@@ -433,12 +405,16 @@
     {
       "arxiv_id": "2604.02680v1",
       "title": "MIMO OFDM-Enabled ISAC for Low-Altitude Non-Cooperative UAV Surveillance: A Survey",
-      "url": "https://arxiv.org/abs/2604.02680v1",
-      "published_date": "2026-04-03",
-      "crawled_date": "2026-04-18",
-      "abstract": "The widespread use of unmanned aerial vehicles (UAVs) in low-altitude airspace has raised significant safety and security concerns, motivating the development of reliable non-cooperative UAV surveillance technologies. Integrated sensing and communication (ISAC), enabled by multiple-input multiple-output (MIMO) architectures and orthogonal frequency-division multiplexing (OFDM) waveforms, has emerged as a promising paradigm for leveraging cellular infrastructure to support large-scale sensing without additional hardware deployment. This paper presents the first comprehensive survey dedicated to MIMO OFDM-enabled ISAC for low-altitude non-cooperative UAV surveillance, where the targeted UAVs do not intentionally assist the monitoring system through dedicated signaling or prior coordinate sharing. We first analyze the unique propagation characteristics of low-altitude UAV sensing, including severe clutter, rapid channel variations, and mixed near/far-field effects, and discuss corresponding waveform design principles. We then systematically review existing MIMO OFDM-enabled UAV surveillance techniques along four key dimensions: ISAC system modeling and network optimization, UAV detection and tracking algorithms under single and networked base station (BS) architectures, UAV identification techniques based on micro-Doppler and learning-based approaches, and experimental validations and practical field trials. Subsequently, we summarize open challenges such as sensing under severe clutter and multipath, data scarcity for identification, cooperative multi-BS fusion, and real-world deployment constraints. Finally, we outline promising future research directions toward 5G-Advanced (5G-A) and 6G-enabled low-altitude surveillance systems.",
       "authors": "Shiyu Bai, Sijia Li, Cunyi Yin, Wenqiu Qu, Li-Ta Hsu, Yuanwei Liu, Wen-Hua Chen",
-      "categories": "Signal Processing (eess.SP)"
+      "affiliations": "Shiyu Baiiswiththe Hong Kong Polytechnic University,Hong Kong,China | University,China | University | China(e-mail:wenhua.chen@polyu.edu.hk) | University China | University,Beijing,China",
+      "published_date": "2026-04-03",
+      "crawled_date": "2026-04-19",
+      "categories": "eess.SP",
+      "abstract": "The widespread use of unmanned aerial vehicles (UAVs) in low-altitude airspace has raised significant safety and security concerns, motivating the development of reliable non-cooperative UAV surveillance technologies. Integrated sensing and communication (ISAC), enabled by multiple-input multiple-output (MIMO) architectures and orthogonal frequency-division multiplexing (OFDM) waveforms, has emerged as a promising paradigm for leveraging cellular infrastructure to support large-scale sensing without additional hardware deployment. This paper presents the first comprehensive survey dedicated to MIMO OFDM-enabled ISAC for low-altitude non-cooperative UAV surveillance, where the targeted UAVs do not intentionally assist the monitoring system through dedicated signaling or prior coordinate sharing. We first analyze the unique propagation characteristics of low-altitude UAV sensing, including severe clutter, rapid channel variations, and mixed near/far-field effects, and discuss corresponding waveform design principles. We then systematically review existing MIMO OFDM-enabled UAV surveillance techniques along four key dimensions: ISAC system modeling and network optimization, UAV detection and tracking algorithms under single and networked base station (BS) architectures, UAV identification techniques based on micro-Doppler and learning-based approaches, and experimental validations and practical field trials. Subsequently, we summarize open challenges such as sensing under severe clutter and multipath, data scarcity for identification, cooperative multi-BS fusion, and real-world deployment constraints. Finally, we outline promising future research directions toward 5G-Advanced (5G-A) and 6G-enabled low-altitude surveillance systems.",
+      "summary_cn": "无人机在低空空域的广泛使用引发了严重的安全隐患，推动了非合作无人机监视技术的发展。基于MIMO架构和OFDM波形的通感一体化（ISAC）借助现有蜂窝基础设施实现大规模感知，成为该领域的重要范式。本文首次对面向低空非合作无人机监视的MIMO OFDM通感一体化技术进行全面综述。首先分析低空感知的独特传播特性（强杂波、快变信道、近远场混合效应）及波形设计原则；然后从四个维度系统回顾现有技术：ISAC系统建模与网络优化、单站及多基站架构下的检测跟踪算法、基于微多普勒和深度学习的无人机识别方法，以及实验验证与外场测试；最后总结当前挑战（强杂波多径感知、识别数据稀缺、多站协同融合、实际部署约束），并展望面向5G-A和6G的低空监视未来研究方向。",
+      "arxiv_url": "https://arxiv.org/abs/2604.02680v1",
+      "pdf_url": "https://arxiv.org/pdf/2604.02680v1",
+      "is_enriched": true
     },
     {
       "arxiv_id": "2604.09682v1",
@@ -452,6 +428,20 @@
       "summary_cn": "开放无线接入网(ORAN)的自主管理需在冲突目标间智能决策，但现有基于大语言模型(LLM)的多智能体系统策略同质且缺乏部署前验证。本文提出角色驱动的多智能体框架，通过编码优化优先级、风险容忍和决策风格的可配置行为角色，影响规划、协调、资源分配、代码生成和分析五个专业智能体。基于决策理论，我们构建三维评估框架，测量规范合规性、规定一致性和行为动态。在两项ORAN优化挑战中评估486种角色配置的结果表明：角色-智能体对齐显著影响个体性能(14.3%)及涌现协调能力，检索架构(GraphRAG vs RAG)从根本上制约定制效果；单智能体角色修改会产生",
       "arxiv_url": "https://arxiv.org/abs/2604.09682v1",
       "pdf_url": "https://arxiv.org/pdf/2604.09682v1",
+      "is_enriched": true
+    },
+    {
+      "arxiv_id": "2604.02205v1",
+      "title": "Evaluation of gNB Monostatic Sensing for UAV Use Case",
+      "authors": "Steve Blandino, Neeraj Varshney, Jian Wang, Jack Chuang, Camillo Gentile, Nada Golmie",
+      "affiliations": "National Institute | research",
+      "published_date": "2026-04-02",
+      "crawled_date": "2026-04-19",
+      "categories": "eess.SP, cs.SE",
+      "abstract": "3GPP Release 19 has initiated the standardization of integrated sensing and communications (ISAC), including a channel model for monostatic sensing, evaluation scenarios, and performance assessment methodologies. These common assumptions provide an important basis for ISAC evaluation, but reproducible end-to-end studies still require a transparent sensing implementation. This paper evaluates 5G New Radio (NR) base station (gNB)-based monostatic sensing for the Unmanned Aerial Vehicle (UAV) use case using a 5G NR downlink Cyclic Prefix-Orthogonal Frequency Division Multiplexing (CP-OFDM) waveform and positioning reference signals (PRS), following 3GPP Urban Macro-Aerial Vehicle (UMa-AV) scenario assumptions. We present an end-to-end processing chain for multi-target detection and 3D localization, achieving more than 70% detection probability with less than 5% false alarm rate, in the considered scenario. For correctly detected targets, localization errors are on the order of a few meters, with a 90th-percentile error of 4m and 6m in the vertical and horizontal directions, respectively. To support reproducible baseline studies and further research, we release the simulator 5GNRad, which reproduces our evaluation",
+      "summary_cn": "3GPP Rel-19启动了通感一体化（ISAC）标准化，涵盖单站感知信道模型、评估场景与性能方法。本文基于3GPP UMa-AV场景，采用5G NR下行CP-OFDM波形与PRS信号，评估gNB单站感知对无人机的多目标检测与3D定位能力。所提端到端处理链路实现超70%检测率、低于5%虚警率；正确检测目标的90%分位定位误差垂直方向4m、水平方向6m。为支持可复现研究，开源仿真器5GNRad。",
+      "arxiv_url": "https://arxiv.org/abs/2604.02205v1",
+      "pdf_url": "https://arxiv.org/pdf/2604.02205v1",
       "is_enriched": true
     },
     {
@@ -471,12 +461,16 @@
     {
       "arxiv_id": "2604.01087v1",
       "title": "POLARIS: PHY-Aware Spectrum Steering for Dynamic Spectrum Sharing",
-      "url": "https://arxiv.org/abs/2604.01087v1",
-      "published_date": "2026-04-01",
-      "crawled_date": "2026-04-18",
-      "abstract": "Dynamic Spectrum Sharing (DSS) enables flexible activation of additional spectrum resources but leaves open a key runtime question: once new spectrum becomes available, which steering mechanism should migrate connected devices toward it with minimum service disruption? We present the first PHY-aware characterization of 3GPP-compliant UE steering mechanisms, including Bandwidth Part (BWP) reconfiguration, Carrier Aggregation (CA), E-UTRA-NR Dual Connectivity (EN-DC), Connected-Mode Handover (HO), and Release and Redirection (R&amp;R), using modem-level traces from devices connected to operational networks, collected across 1,600 executions over four months in 12 urban areas. By mapping each mechanism to observable PHY-layer milestones, we decompose steering latency into intrinsic PHY-centric execution and RRC-to-PHY completion components, revealing substantial heterogeneity: NR BWP achieves 6.25 ms mean latency with zero tail exceedance above 50 ms, while CA exceeds 1225 ms; mobility procedures remain largely modem-bound, whereas discovery-driven mechanisms experience significant RRC-to-PHY completion amplification. Guided by these measurements, we design POLARIS, an O-RAN-based system that selects the least disruptive steering mechanism via a two-parameter disruption score. POLARIS reduces mean latency by up to 85.1% and T95 by 89.7% over static or non-adaptive baselines, eliminates tail exceedance above 50 ms, and avoids high-disruption mechanisms, demonstrating that PHY-layer execution profiling enables reliable and context-aware spectrum steering in DSS-enabled networks.",
       "authors": "Stavros Dimou, Guevara Noubir",
-      "categories": "Networking and Internet Architecture (cs.NI)"
+      "affiliations": "University | research",
+      "published_date": "2026-04-01",
+      "crawled_date": "2026-04-19",
+      "categories": "cs.NI",
+      "abstract": "Dynamic Spectrum Sharing (DSS) enables flexible activation of additional spectrum resources but leaves open a key runtime question: once new spectrum becomes available, which steering mechanism should migrate connected devices toward it with minimum service disruption? We present the first PHY-aware characterization of 3GPP-compliant UE steering mechanisms, including Bandwidth Part (BWP) reconfiguration, Carrier Aggregation (CA), E-UTRA-NR Dual Connectivity (EN-DC), Connected-Mode Handover (HO), and Release and Redirection (R&R), using modem-level traces from devices connected to operational networks, collected across 1,600 executions over four months in 12 urban areas. By mapping each mechanism to observable PHY-layer milestones, we decompose steering latency into intrinsic PHY-centric execution and RRC-to-PHY completion components, revealing substantial heterogeneity: NR BWP achieves 6.25 ms mean latency with zero tail exceedance above 50 ms, while CA exceeds 1225 ms; mobility procedures remain largely modem-bound, whereas discovery-driven mechanisms experience significant RRC-to-PHY completion amplification. Guided by these measurements, we design POLARIS, an O-RAN-based system that selects the least disruptive steering mechanism via a two-parameter disruption score. POLARIS reduces mean latency by up to 85.1% and T95 by 89.7% over static or non-adaptive baselines, eliminates tail exceedance above 50 ms, and avoids high-disruption mechanisms, demonstrating that PHY-layer execution profiling enables reliable and context-aware spectrum steering in DSS-enabled networks.",
+      "summary_cn": "动态频谱共享(DSS)可灵活激活额外频谱，但如何以最小业务中断将设备迁移至新频谱仍是关键问题。本文首次对3GPP UE引导机制进行物理层感知表征，涵盖BWP重配、CA、EN-DC、切换及释放重定向，基于12个城市4个月1600次执行的调制解调器级追踪数据。通过映射物理层里程碑，将引导时延分解为物理层执行与RRC到物理层完成两部分，揭示显著异质性：NR BWP平均6.25ms且50ms以上零尾超，而CA超1225ms；移动性流程主要受调制解调器约束，发现驱动机制则受RRC到物理层完成放大。据此设计POLARIS系统，基于O-RAN通过双参数中断评分选择最低中断机制，平均时延降低85.1%、T95降低89.7%，消除50ms以上尾超，证明物理层执行画像可实现DSS网络可靠频谱引导。",
+      "arxiv_url": "https://arxiv.org/abs/2604.01087v1",
+      "pdf_url": "https://arxiv.org/pdf/2604.01087v1",
+      "is_enriched": true
     },
     {
       "arxiv_id": "2604.01049v1",
@@ -493,14 +487,46 @@
       "is_enriched": true
     },
     {
+      "arxiv_id": "2603.29146v1",
+      "title": "Enabling Programmable Inference and ISAC at the 6GR Edge with dApps",
+      "authors": "Michele Polese, Rajeev Gangula, Tommaso Melodia",
+      "affiliations": "Institute | University",
+      "published_date": "2026-03-31",
+      "crawled_date": "2026-04-19",
+      "categories": "cs.NI, eess.SP",
+      "abstract": "The convergence of communication, sensing, and Artificial Intelligence (AI) in the Radio Access Network (RAN) offers compelling economic advantages through shared spectrum and infrastructure. How can inference and sensing be integrated in the RAN infrastructure at a system level? Current abstractions in O-RAN and 3GPP lack the interfaces and capabilities to support (i) a dynamic life cycle for inference and Integrated Sensing and Communication (ISAC) algorithms, whose requirements and sensing targets may change over time and across sites; (ii) pipelines for AI-driven ISAC, which need complex data flows, training, and testing; (iii) dynamic device and stack configuration to balance trade-offs between connectivity, sensing, and inference services. This paper analyzes the role of a programmable, software-driven, open RAN in enabling the intelligent edge for 5G and 6G systems. We identify real-time user-plane data exposure, open interfaces for plug-and-play inference and ISAC models, closed-loop control, and AI pipelines as elements that evolutions of the O-RAN architecture can uniquely provide. Specifically, we describe how dApps - a real-time, user-plane extension of O-RAN - and a hierarchy of controllers enable real-time AI inference and ISAC. Experimental results on an open-source RAN testbed demonstrate the value of exposing I/Q samples and real-time RAN telemetry to dApps for sensing applications.",
+      "summary_cn": "通信、感知与AI在无线接入网(RAN)中的融合通过共享频谱和基础设施带来显著经济优势。如何在系统级将推理与感知集成至RAN？当前O-RAN与3GPP缺乏支持以下功能的接口与能力：推理与通感一体化(ISAC",
+      "arxiv_url": "https://arxiv.org/abs/2603.29146v1",
+      "pdf_url": "https://arxiv.org/pdf/2603.29146v1",
+      "is_enriched": true
+    },
+    {
+      "arxiv_id": "2603.29822v1",
+      "title": "Conditional Diffusion-Based Point Cloud Imaging for UAV Position and Attitude Sensing",
+      "authors": "Xinhong Dai, Yuan Gao, Hao Jiang, Xiaojun Yuan, Xin Wang",
+      "affiliations": "National Lab | fudan.edu.cn | College Fudan Shanghai | center",
+      "published_date": "2026-03-31",
+      "crawled_date": "2026-04-19",
+      "categories": "eess.SP",
+      "abstract": "This paper studies an unmanned aerial vehicle (UAV) position and attitude sensing problem, where a base station equipped with an antenna array transmits signals to a predetermined potential flight region of a flying UAV, and exploits the reflected echoes for wireless imaging. The UAV is represented by an electromagnetic point cloud in this region that contains its spatial information and electromagnetic properties (EPs), enabling the unified extraction of UAV position, attitude, and shape from the reconstructed point cloud. To accomplish this task, we develop a generative UAV sensing approach. The position and signal-to-noise ratio embedding are adopted to assist the UAV features extraction from the estimated sensing channel under the measurement noise and channel variations. Guided by the obtained features, a conditional diffusion model is utilized to generate the point cloud. The simulation results demonstrate that the reconstructed point clouds via the proposed approach present higher fidelity compared to the competing schemes, thereby enabling a more accurate capture of the UAV attitude and shape information, as well as a more precise position estimation.",
+      "summary_cn": "本文研究无人机位置与姿态感知问题：基站利用天线阵列发射信号，通过接收无人机回波进行无线成像。无人机被建模为包含空间信息与电磁特性的电磁点云，从而统一提取位置、姿态和形状。为此，提出一种生成式感知方法：通过位置与信噪比嵌入辅助从含噪感知信道中提取特征，并引导条件扩散模型生成点云。仿真表明，所提方法重建的点云保真度更高，能更精确地捕获无人机姿态与形状，实现更准确的位置估计。",
+      "arxiv_url": "https://arxiv.org/abs/2603.29822v1",
+      "pdf_url": "https://arxiv.org/pdf/2603.29822v1",
+      "is_enriched": true
+    },
+    {
       "arxiv_id": "2603.29752v1",
       "title": "AI-Programmable Wireless Connectivity: Challenges and Research Directions Toward Interactive and Immersive Industry",
-      "url": "https://arxiv.org/abs/2603.29752v1",
-      "published_date": "2026-03-31",
-      "crawled_date": "2026-04-18",
-      "abstract": "This vision paper addresses the research challenges of integrating traditional signal processing with Artificial Intelligence (AI) to enable energy-efficient, programmable, and scalable wireless connectivity infrastructures. While prior studies have primarily focused on high-level concepts, such as the potential role of Large Language Model (LLM) in 6G systems, this work advances the discussion by emphasizing integration challenges and research opportunities at the system level. Specifically, this paper examines the role of compact AI models, including Tiny and Real-time Machine Learning (ML), in enhancing wireless connectivity while adhering to strict constraints on computing resources, adaptability, and reliability. Application examples are provided to illustrate practical considerations and highlight how AI-driven signal processing can support next-generation wireless networks. By combining classical signal processing with lightweight AI methods, this paper outlines a pathway toward efficient and adaptive connectivity solutions for 6G and beyond.",
       "authors": "Haris Gacanin",
-      "categories": "Signal Processing (eess.SP)"
+      "affiliations": "Research | University | hospital | center",
+      "published_date": "2026-03-31",
+      "crawled_date": "2026-04-19",
+      "categories": "eess.SP, eess.SY",
+      "abstract": "This vision paper addresses the research challenges of integrating traditional signal processing with Artificial Intelligence (AI) to enable energy-efficient, programmable, and scalable wireless connectivity infrastructures. While prior studies have primarily focused on high-level concepts, such as the potential role of Large Language Model (LLM) in 6G systems, this work advances the discussion by emphasizing integration challenges and research opportunities at the system level. Specifically, this paper examines the role of compact AI models, including Tiny and Real-time Machine Learning (ML), in enhancing wireless connectivity while adhering to strict constraints on computing resources, adaptability, and reliability. Application examples are provided to illustrate practical considerations and highlight how AI-driven signal processing can support next-generation wireless networks. By combining classical signal processing with lightweight AI methods, this paper outlines a pathway toward efficient and adaptive connectivity solutions for 6G and beyond.",
+      "summary_cn": "本文探讨传统信号处理与紧凑AI模型（如TinyML）的系统级集成，以实现6G及未来网络的节能可编程连接。通过应用案例说明AI驱动信号处理的实际考量，为轻量化自适应连接方案提供可行路径。",
+      "arxiv_url": "https://arxiv.org/abs/2603.29752v1",
+      "pdf_url": "https://arxiv.org/pdf/2603.29752v1",
+      "is_enriched": true
     },
     {
       "arxiv_id": "2603.29385v1",
@@ -531,24 +557,46 @@
       "is_enriched": true
     },
     {
+      "arxiv_id": "2603.28318v3",
+      "title": "Integrated sensing and communications in the 3GPP New Radio: sensing limits",
+      "authors": "Santiago Fernández, Javier Giménez, Mari Carmen Aguayo-Torres, José A. Cortés",
+      "affiliations": "Research Institute",
+      "published_date": "2026-03-30",
+      "crawled_date": "2026-04-19",
+      "categories": "eess.SP",
+      "abstract": "Integrated Sensing and Communications (ISAC) is regarded as a key element of the beyond-fifth-generation (5G) and sixth-generation (6G) systems, raising the question of whether current 5G New Radio (NR) signal structures can meet the sensing accuracy requirements specified by the Third Generation Partnership Project (3GPP). This paper addresses this issue by analyzing the fundamental limits of range and velocity estimation through the Cramér-Rao lower bound (CRLB) for a monostatic unmanned aerial vehicle (UAV) sensing use case currently under consideration in the 3GPP standardization process. The study focuses on standardized signals and also evaluates the potential performance gains achievable with reference signals specifically designed for sensing purposes.   The compact CRLB expressions derived in this work highlight the fundamental trade-offs between estimation accuracy and system parameters. The results further indicate that information from multiple slots must be exploited in the estimation process to attain the performance targets defined by the 3GPP. As a result, the 5G NR positioning reference signal (PRS), whose patterns may be suboptimal for velocity estimation when using single-slot resources, becomes suitable when multislot estimation is employed. Finally, we propose a two-step iterative range and radial-velocity estimator that attains the CRLB over a significantly wider range of distances than conventional maximum-likelihood (ML) estimators, for which the well-known threshold effect severely limits the distance range over which the accuracy requirements imposed by the 3GPP are satisfied.",
+      "summary_cn": "通感一体化(ISAC)被视为超越5G和6G系统的关键要素，这引出了一个问题：当前的5G新空口(NR)信号结构能否满足3GPP规定的感知精度要求。本文通过分析单站无人机(UAV)感知用例中距离和速度估计的克拉美-罗下界(CRLB)来解决这一问题，该用例目前正在3GPP标准化流程中审议。研究聚焦于标准化信号，同时评估了专为感知设计的参考信号所能带来的潜在性能提升。本文推导的紧凑CRLB表达式凸显了估计精度与系统参数之间的基本权衡。结果进一步表明，必须利用多个时隙的信息进行估计才能达到3GPP设定的性能目标。因此，5G NR定位参考信号(PRS)在单时隙资源用于速度估计时其模式可能并非最优，但在采用多时隙估计时则变得适用。最后，我们提出了一种两步迭代的距离和径向速度估计器，相比传统最大似然(ML)估计器，它能在更宽的距离范围内达到CRLB——而ML估计器众所周知的阈值效应严重限制了满足3GPP精度要求的距离范围。",
+      "arxiv_url": "https://arxiv.org/abs/2603.28318v3",
+      "pdf_url": "https://arxiv.org/pdf/2603.28318v3",
+      "is_enriched": true
+    },
+    {
       "arxiv_id": "2603.28657v2",
       "title": "Performance Analysis of 5G RAN Slicing Deployment Options in Industry 4.0 Factories",
-      "url": "https://arxiv.org/abs/2603.28657v2",
-      "published_date": "2026-03-30",
-      "crawled_date": "2026-04-18",
-      "abstract": "This paper studies Radio Access Network (RAN) slicing strategies for 5G Industry~4.0 networks with ultra-reliable low-latency communication (uRLLC) requirements. We compare four RAN slicing deployment options that differ in slice sharing and in the degree of per-line or per-flow isolation. Unlike prior works that assume a fixed slicing structure, this work addresses how RAN slicing should be instantiated in the presence of multiple production lines and heterogeneous industrial flows. A Stochastic Network Calculus (SNC)-based analytical framework and a heuristic slice planner are used to evaluate per-flow delay guarantees and radio resource utilization. Within the considered RAN-level analytical model, the results show that, under resource scarcity, only per-flow slicing prevents delay violations, whereas slice-sharing and hybrid deployments improve aggregation efficiency at the cost of weaker protection for the most delay-critical flows. Execution-time results show that the proposed planner operates at non-real-time (Non-RT) time scales, supporting its implementation as an rApp within Open RAN (O-RAN) Non-RT RAN Intelligent Controller (RIC) control loops.",
       "authors": "Oscar Adamuz-Hinojosa, Abdelhilah Abdeselam, Pablo Muñoz, Pablo Ameigeiras, Juan M. Lopez-Soler",
-      "categories": "Networking and Internet Architecture (cs.NI)"
+      "affiliations": "Department | University",
+      "published_date": "2026-03-30",
+      "crawled_date": "2026-04-19",
+      "categories": "cs.NI",
+      "abstract": "This paper studies Radio Access Network (RAN) slicing strategies for 5G Industry~4.0 networks with ultra-reliable low-latency communication (uRLLC) requirements. We compare four RAN slicing deployment options that differ in slice sharing and in the degree of per-line or per-flow isolation. Unlike prior works that assume a fixed slicing structure, this work addresses how RAN slicing should be instantiated in the presence of multiple production lines and heterogeneous industrial flows. A Stochastic Network Calculus (SNC)-based analytical framework and a heuristic slice planner are used to evaluate per-flow delay guarantees and radio resource utilization. Within the considered RAN-level analytical model, the results show that, under resource scarcity, only per-flow slicing prevents delay violations, whereas slice-sharing and hybrid deployments improve aggregation efficiency at the cost of weaker protection for the most delay-critical flows. Execution-time results show that the proposed planner operates at non-real-time (Non-RT) time scales, supporting its implementation as an rApp within Open RAN (O-RAN) Non-RT RAN Intelligent Controller (RIC) control loops.",
+      "summary_cn": "本文研究5G工业4.0网络中面向uRLLC需求的RAN切片策略，对比四种在切片共享与隔离程度上不同的部署方案。不同于假设固定切片结构的已有工作，本文关注多产线与异构工业流下RAN切片的实例化方式。基于随机网络演算(SNC)分析框架与启发式切片规划器，评估逐流时延保障与无线资源利用率。结果表明：资源紧缺时仅逐流切片可避免时延违约，共享与混合部署提升聚合效率但削弱对时延关键流的保护。规划器运行于非实时尺度，可部署为O-RAN非实时RIC中的rApp。",
+      "arxiv_url": "https://arxiv.org/abs/2603.28657v2",
+      "pdf_url": "https://arxiv.org/pdf/2603.28657v2",
+      "is_enriched": true
     },
     {
       "arxiv_id": "2604.02370v1",
       "title": "A Survey on AI for 6G: Challenges and Opportunities",
-      "url": "https://arxiv.org/abs/2604.02370v1",
-      "published_date": "2026-03-30",
-      "crawled_date": "2026-04-18",
-      "abstract": "As wireless communication evolves, each generation of networks brings new technologies that change how we connect and interact. Artificial Intelligence (AI) is becoming crucial in shaping the future of sixth-generation (6G) networks. By combining AI and Machine Learning (ML), 6G aims to offer high data rates, low latency, and extensive connectivity for applications including smart cities, autonomous systems, holographic telepresence, and the tactile internet. This paper provides a detailed overview of the role of AI in supporting 6G networks. It focuses on key technologies like deep learning, reinforcement learning, federated learning, and explainable AI. It also looks at how AI integrates with essential network functions and discusses challenges related to scalability, security, and energy efficiency, along with new solutions. Additionally, this work highlights perspectives that connect AI-driven analytics to 6G service domains like Ultra-Reliable Low-Latency Communication (URLLC), Enhanced Mobile Broadband (eMBB), Massive Machine-Type Communication (mMTC), and Integrated Sensing and Communication (ISAC). It addresses concerns about standardization, ethics, and sustainability. By summarizing recent research trends and identifying future directions, this survey offers a valuable reference for researchers and practitioners at the intersection of AI and next-generation wireless communication.",
       "authors": "Constantina Chatzieleftheriou, Eirini Liotou",
-      "categories": "Networking and Internet Architecture (cs.NI)"
+      "affiliations": "research | University",
+      "published_date": "2026-03-30",
+      "crawled_date": "2026-04-19",
+      "categories": "cs.NI, cs.AI",
+      "abstract": "As wireless communication evolves, each generation of networks brings new technologies that change how we connect and interact. Artificial Intelligence (AI) is becoming crucial in shaping the future of sixth-generation (6G) networks. By combining AI and Machine Learning (ML), 6G aims to offer high data rates, low latency, and extensive connectivity for applications including smart cities, autonomous systems, holographic telepresence, and the tactile internet. This paper provides a detailed overview of the role of AI in supporting 6G networks. It focuses on key technologies like deep learning, reinforcement learning, federated learning, and explainable AI. It also looks at how AI integrates with essential network functions and discusses challenges related to scalability, security, and energy efficiency, along with new solutions. Additionally, this work highlights perspectives that connect AI-driven analytics to 6G service domains like Ultra-Reliable Low-Latency Communication (URLLC), Enhanced Mobile Broadband (eMBB), Massive Machine-Type Communication (mMTC), and Integrated Sensing and Communication (ISAC). It addresses concerns about standardization, ethics, and sustainability. By summarizing recent research trends and identifying future directions, this survey offers a valuable reference for researchers and practitioners at the intersection of AI and next-generation wireless communication.",
+      "summary_cn": "随着无线通信不断演进，每代网络都带来新技术改变我们的连接方式。人工智能正成为塑造第六代（6G）网络未来的关键力量。6G通过结合AI与机器学习，旨在为智能城市、自动驾驶、全息远程呈现及触觉互联网等应用提供高速率、低时延和广泛连接。本文详细综述了AI在6G网络中的角色，重点关注深度学习、强化学习、联邦学习和可解释性AI等关键技术，探讨AI如何与核心网络功能融合，并分析可扩展性、安全性和能效等方面的挑战与解决方案。同时，文章将AI驱动分析与URLLC、eMBB、mMTC、ISAC等服务领域相联系，涵盖标准化、伦理和可持续性等议题，为AI与下一代无线通信交叉领域的研究者和实践者提供有价值的参考。",
+      "arxiv_url": "https://arxiv.org/abs/2604.02370v1",
+      "pdf_url": "https://arxiv.org/pdf/2604.02370v1",
+      "is_enriched": true
     },
     {
       "arxiv_id": "2603.28680v1",
@@ -601,7 +649,7 @@
       "crawled_date": "2026-04-18",
       "categories": "cs.NI",
       "abstract": "The proliferation of users, devices, and novel vehicular applications - propelled by advancements in autonomous systems and connected technologies - is precipitating an unprecedented surge in novel services. These emerging services require substantial bandwidth allocation, adherence to stringent Quality of Service (QoS) parameters, and energy-efficient implementations, particularly within highly dynamic vehicular environments. The complexity of these requirements necessitates a fundamental paradigm shift in service orchestration methodologies to facilitate seamless and robust service delivery. This paper addresses this challenge by presenting a novel framework for service orchestration in Unmanned Aerial Vehicles (UAV)-assisted 6G aerial-terrestrial networks. The proposed framework synergistically integrates UAV trajectory planning, Multiple-Access Control (MAC), and service placement to facilitate energy-efficient service coverage while maintaining ultra-low latency communication for vehicular user service requests. We first present a non-linear programming model that formulates the optimization problem. Next, to address the problem, we employ a Hierarchical Deep Reinforcement Learning (HDRL) algorithm that dynamically predicts service requests, user mobility, and channel conditions, addressing the challenges of interference, resource scarcity, and mobility in heterogeneous networks. Simulation results demonstrate that the proposed framework outperforms state-of-the-art solutions in request acceptance, energy efficiency, and latency minimization, showcasing its potential to support the high demands of next-generation vehicular networks.",
-      "summary_cn": "自动驾驶与互联技术的发展催生了海量车联网应用与服务。这些服务在动态车联环境中对带宽、QoS及能效提出严苛要求，亟需服务编排范式的根本转变。本文提出一种面向无人机辅助6G空地网络的服务编排新框架，协同整合无人机轨迹规划、多址控制与服务放置，以实现节能覆盖与超低时延通信。首先构建非线性规划模型，进而采用分层深度强化学习算法动态预测服务请求、用户移动与信道状态，克服异构网络中的干扰与资源稀缺等挑战。仿真表明，该框架在请求接纳率、能效及降时延方面均优于现有方案，可有效支撑下一代车联网的高需求。",
+      "summary_cn": "自动驾驶与网联技术推动了用户、设备和新型车载应用的激增，催生了对高带宽、低时延和低能耗服务卸载的需求。本文提出无人机辅助6G空地网络的服务编排框架，通过联合优化无人机轨迹、多址接入控制和服务部署实现节能覆盖和超低时延通信。采用分层深度强化学习算法动态预测服务请求、用户移动性和信道条件。仿真结果表明该框架在请求接受率、能效和时延方面优于现有方案。",
       "arxiv_url": "https://arxiv.org/abs/2603.27870v1",
       "pdf_url": "https://arxiv.org/pdf/2603.27870v1",
       "is_enriched": true
@@ -623,32 +671,44 @@
     {
       "arxiv_id": "2604.01239v1",
       "title": "ML-Enabled Open RAN: A Comprehensive Survey of Architectures, Challenges, and Opportunities",
-      "url": "https://arxiv.org/abs/2604.01239v1",
-      "published_date": "2026-03-27",
-      "crawled_date": "2026-04-18",
-      "abstract": "As wireless communication systems become more advanced, Open Radio Access Networks (O-RAN) stand out as a notable framework that promotes interoperability and cost-effectiveness. An examination of the progression of RAN architectures, as well as O-RAN&#39;s underlying principles, reveals the importance of machine learning (ML) in addressing various challenges, including spectrum management, resource allocation, and security. Hence, this survey provides a comprehensive overview of the integration of ML within O-RAN, highlighting its transformative potential in enhancing network performance and efficiency. This survey aims to describe the current status of ML applications in O-RAN while indicating possible directions for future research by analyzing existing literature. The findings aim to assist researchers and stakeholders in formulating optimal service strategies and advancing the understanding of intelligent wireless networks.",
       "authors": "Mira Chandra Kirana, Patatchona Keyela, Fatemeh Rostamian, Deemah H. Tashman, Soumaya Cherkaoui",
-      "categories": "Networking and Internet Architecture (cs.NI)"
+      "affiliations": "research | Department | Montreal,Montreal",
+      "published_date": "2026-03-27",
+      "crawled_date": "2026-04-19",
+      "categories": "cs.NI, cs.AI",
+      "abstract": "As wireless communication systems become more advanced, Open Radio Access Networks (O-RAN) stand out as a notable framework that promotes interoperability and cost-effectiveness. An examination of the progression of RAN architectures, as well as O-RAN's underlying principles, reveals the importance of machine learning (ML) in addressing various challenges, including spectrum management, resource allocation, and security. Hence, this survey provides a comprehensive overview of the integration of ML within O-RAN, highlighting its transformative potential in enhancing network performance and efficiency. This survey aims to describe the current status of ML applications in O-RAN while indicating possible directions for future research by analyzing existing literature. The findings aim to assist researchers and stakeholders in formulating optimal service strategies and advancing the understanding of intelligent wireless networks.",
+      "summary_cn": "随着无线通信系统日益先进，开放无线接入网（O-RAN）凭借促进互操作性与降低成本而脱颖而出。本文综述机器学习在O-RAN中的集成应用，涵盖频谱管理、资源分配与安全等关键挑战，分析现有文献以揭示ML提升网络性能与效率的变革潜力，并指明未来研究方向，为研究人员与利益相关者制定最优服务策略提供参考。",
+      "arxiv_url": "https://arxiv.org/abs/2604.01239v1",
+      "pdf_url": "https://arxiv.org/pdf/2604.01239v1",
+      "is_enriched": true
     },
     {
       "arxiv_id": "2603.27025v1",
       "title": "Fixed-wing UAV relay optimization for coverage hole recovery",
-      "url": "https://arxiv.org/abs/2603.27025v1",
+      "authors": "Daniel T. Bonkowsky, Ibrahim Kilinc, Robert W. Heath",
+      "affiliations": "Department | University | rwheathjr}@ucsd.edu | center",
       "published_date": "2026-03-27",
-      "crawled_date": "2026-04-18",
+      "crawled_date": "2026-04-19",
+      "categories": "cs.IT, eess.SP",
       "abstract": "Unmanned aerial vehicles (UAVs) fill coverage holes as wireless relays during emergency situations. Fixed-wing UAVs offer longer flight duration and larger coverage in such situations than rotary-wing counterparts. Maximizing the effectiveness of fixed-wing UAV relay systems requires careful tuning of system and flight parameters. This process is challenging because factors including flight trajectory, timeshare, and user scheduling are not easily optimized. In this paper, we propose an optimization for UAV-based wireless relaying networks based on a setup which is applicable to arbitrary spatial user positions. In the setup, a fixed-wing UAV flies over a circular trajectory and relays data from ground users in a coverage hole to a distant base station (BS). Our optimization iteratively maximizes the average achievable spectral efficiency (SE) for the UAV trajectory, user scheduling, and relay timeshare. The simulation results show that our optimization is effective for varying user distributions and that it performs especially well on distributions with a high standard deviation.",
-      "authors": "Daniel T. Bonkowsky, Ibrahim Kilinc, Robert W. Heath Jr",
-      "categories": "Information Theory (cs.IT)"
+      "summary_cn": "本文提出固定翼无人机作为无线中继的覆盖空洞补盲方案。无人机沿圆形轨迹飞行，联合优化轨迹、用户调度和中继时间分配，最大化平均频谱效率。仿真表明该方案对用户分布变化具有鲁棒性，尤其适用于高标准差分布场景。",
+      "arxiv_url": "https://arxiv.org/abs/2603.27025v1",
+      "pdf_url": "https://arxiv.org/pdf/2603.27025v1",
+      "is_enriched": true
     },
     {
       "arxiv_id": "2603.25288v1",
       "title": "CSI-tuples-based 3D Channel Fingerprints Construction Assisted by MultiModal Learning",
-      "url": "https://arxiv.org/abs/2603.25288v1",
-      "published_date": "2026-03-26",
-      "crawled_date": "2026-04-18",
-      "abstract": "Low-altitude communications can promote the integration of aerial and terrestrial wireless resources, expand network coverage, and enhance transmission quality, thereby empowering the development of sixth-generation (6G) mobile communications. As an enabler for low-altitude transmission, 3D channel fingerprints (3D-CF), also referred to as the 3D radio map or 3D channel knowledge map, are expected to enhance the understanding of communication environments and assist in the acquisition of channel state information (CSI), thereby avoiding repeated estimations and reducing computational complexity. In this paper, we propose a modularized multimodal framework to construct 3D-CF. Specifically, we first establish the 3D-CF model as a collection of CSI-tuples based on Rician fading channels, with each tuple comprising the low-altitude vehicle&#39;s (LAV) positions and its corresponding statistical CSI. In consideration of the heterogeneous structures of different prior data, we formulate the 3D-CF construction problem as a multimodal regression task, where the target channel information in the CSI-tuple can be estimated directly by its corresponding LAV positions, together with communication measurements and geographic environment maps. Then, a high-efficiency multimodal framework is proposed accordingly, which includes a correlation-based multimodal fusion (Corr-MMF) module, a multimodal representation (MMR) module, and a CSI regression (CSI-R) module. Numerical results show that our proposed framework can efficiently construct 3D-CF and achieve at least 27.5% higher accuracy than the state-of-the-art algorithms under different communication scenarios, demonstrating its competitive performance and excellent generalization ability. We also analyze the computational complexity and illustrate its superiority in terms of the inference time.",
       "authors": "Chenjie Xie, Li You, Ruirong Chen, Gaoning He, Xiqi Gao",
-      "categories": "Information Theory (cs.IT)"
+      "affiliations": "nications Research Laboratory,Southeast University,Nanjing210096,China | Nanjing China | Huawei | Shenzhen Chinaruirongchen@huawei.com | ing@huawei.com)",
+      "published_date": "2026-03-26",
+      "crawled_date": "2026-04-19",
+      "categories": "cs.IT, cs.AI, cs.ET, cs.LG, eess.SP",
+      "abstract": "Low-altitude communications can promote the integration of aerial and terrestrial wireless resources, expand network coverage, and enhance transmission quality, thereby empowering the development of sixth-generation (6G) mobile communications. As an enabler for low-altitude transmission, 3D channel fingerprints (3D-CF), also referred to as the 3D radio map or 3D channel knowledge map, are expected to enhance the understanding of communication environments and assist in the acquisition of channel state information (CSI), thereby avoiding repeated estimations and reducing computational complexity. In this paper, we propose a modularized multimodal framework to construct 3D-CF. Specifically, we first establish the 3D-CF model as a collection of CSI-tuples based on Rician fading channels, with each tuple comprising the low-altitude vehicle's (LAV) positions and its corresponding statistical CSI. In consideration of the heterogeneous structures of different prior data, we formulate the 3D-CF construction problem as a multimodal regression task, where the target channel information in the CSI-tuple can be estimated directly by its corresponding LAV positions, together with communication measurements and geographic environment maps. Then, a high-efficiency multimodal framework is proposed accordingly, which includes a correlation-based multimodal fusion (Corr-MMF) module, a multimodal representation (MMR) module, and a CSI regression (CSI-R) module. Numerical results show that our proposed framework can efficiently construct 3D-CF and achieve at least 27.5% higher accuracy than the state-of-the-art algorithms under different communication scenarios, demonstrating its competitive performance and excellent generalization ability. We also analyze the computational complexity and illustrate its superiority in terms of the inference time.",
+      "summary_cn": "低空通信可赋能6G移动通感算一体化。3D信道指纹（3D-CF）通过建立位置与信道状态信息的映射关系，辅助CSI获取并降低运算复杂度。本文提出一种模块化多模态框架，基于Rician衰落信道建立CSI元组，将3D-CF构建问题建模为多模态回归任务，融合通信测量与环境地图。框架包含相关性多模态融合、元表示及CSI回归三模块。实验表明该方案精度较现有最优算法提升至少27.5%，具有优异性能与泛化能力。",
+      "arxiv_url": "https://arxiv.org/abs/2603.25288v1",
+      "pdf_url": "https://arxiv.org/pdf/2603.25288v1",
+      "is_enriched": true
     }
   ]
 }
