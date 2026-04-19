@@ -81,6 +81,9 @@ llm:
 # 日常运行（只处理新论文）
 python bot.py
 
+# 跳过 API 调用，直接翻译历史 pending/未翻译论文
+python bot.py --only-translate
+
 # 重试 pending 论文（API 恢复后使用）
 python bot.py --retry-pending
 
@@ -88,6 +91,8 @@ python bot.py --retry-pending
 python bot.py --rebuild          # 有3秒确认倒计时
 python bot.py --rebuild --yes    # 跳过倒计时
 ```
+
+> `--only-translate` 与 `--rebuild` / `--retry-pending` 互斥。
 
 ### 4. 查看网站
 
@@ -235,14 +240,19 @@ GPU RAN
 
 ## 已知限制与待改进
 
-- [ ] arXiv API 限流：按需迭代拉取，找到目标篇数立即停止（已优化）；429 时自动重试 5 次
+- [ ] arXiv API 限流：按需迭代拉取，找到目标篇数立即停止（已优化）；429 时自动重试（可配置冷却时间）
 - [ ] PDF 下载 SSL：Windows 无根证书时仍需 fallback 跳过验证，建议 `pip install certifi`
 - [ ] 作者-单位对应：PDF 双栏解析只能提取机构名，无法精确对应到具体作者
 - [ ] 翻译质量：依赖 LLM 能力，专业术语翻译可能不够精准
-- [ ] 溢出列表：暂无中文摘要，需运行 `--retry-pending` 翻译
-- [ ] pending 重试：方案 A 标记的 pending 论文需使用 `--retry-pending` 手动重试
 
 ## 版本历史
+
+### V2.10 — 溢出论文翻译流程 + --only-translate (2026-04-20)
+
+- **修复**：翻译循环从仅遍历主列表改为 `主列表 + overflow`，溢出论文从此参与翻译流程
+- **新增**：`--only-translate` 参数，跳过 arXiv API 调用，直接翻译历史 pending/未翻译/溢出论文
+- **新增**：`--only-translate` 与 `--rebuild` / `--retry-pending` 互斥检测
+- **文档**：移除已知限制中已解决的两项（溢出翻译、pending 重试）
 
 ### V2.9 — arXiv 按需迭代 + API 调用量说明 (2026-04-19)
 
