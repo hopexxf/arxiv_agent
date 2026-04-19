@@ -87,6 +87,11 @@ def parse_args():
         help="重试翻译 pending 状态的论文（默认不重试）"
     )
     parser.add_argument(
+        "--only-translate",
+        action="store_true",
+        help="跳过 arXiv API 调用，直接翻译历史 pending/未翻译论文"
+    )
+    parser.add_argument(
         "--rebuild",
         action="store_true",
         help="清空 papers.json 并从头重建（自动备份为 .rebuild.bak）"
@@ -96,7 +101,10 @@ def parse_args():
         action="store_true",
         help="跳过 --rebuild 的确认倒计时"
     )
-    return parser.parse_args()
+    args = parser.parse_args()
+    if args.only_translate and (args.rebuild or args.retry_pending):
+        parser.error("--only-translate 与 --rebuild / --retry-pending 互斥")
+    return args
 
 
 def main():
@@ -157,18 +165,22 @@ def main():
     logger.info(f"\n[2.6/6] 清理过期 PDF 文件...")
     removed_pdfs = storage.cleanup_pdfs(pdf_dir, keep_days)
     
-    # 搜索和下载
-    logger.info("\n[3/7] 搜索arXiv论文...")
-    fetcher = ArxivFetcher(storage, settings)
-    new_count, overflow_count = fetcher.run()
-    
-    # 如果没有新论文，检查是否需要重试 pending
-    if new_count == 0 and overflow_count == 0:
-        if not args.retry_pending:
-            logger.info("\n[INFO] 没有新论文，流程结束")
-            return
-        else:
-            logger.info("\n[INFO] 没有新论文，但启用重试 pending 模式")
+    # 搜索和下载（或跳过直接翻译）
+    if args.only_translate:
+        logger.info("\n[3/7] 跳过搜索，直接翻译历史论文...")
+        new_count, overflow_count = 0, 0
+    else:
+        logger.info("\n[3/7] 搜索arXiv论文...")
+        fetcher = ArxivFetcher(storage, settings)
+        new_count, overflow_count = fetcher.run()
+
+        # 如果没有新论文，检查是否需要重试 pending
+        if new_count == 0 and overflow_count == 0:
+            if not args.retry_pending:
+                logger.info("\n[INFO] 没有新论文，流程结束")
+                return
+            else:
+                logger.info("\n[INFO] 没有新论文，但启用重试 pending 模式")
     
     # 提取作者单位 + 收集待翻译论文（主列表 + overflow）
     logger.info("\n[4/7] 提取作者单位...")
