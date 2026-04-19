@@ -109,8 +109,8 @@ python -m http.server 8765
 
 | 优先级 | 方案 | 条件 | 说明 |
 |--------|------|------|------|
-| C | OpenClaw 上游代理 | `use_openclaw: true`（配置启用） | 调用 `127.0.0.1:19000` 上游 proxy，零 session 残留 |
 | B | 直接 API | `llm.api_key` 已配置 | 调用任意 OpenAI 兼容接口 |
+| C | OpenClaw 上游代理 | `use_openclaw: true`（配置启用） | 调用 `127.0.0.1:19000` 上游 proxy，零 session 残留 |
 | A | pending 状态 | 以上均不可用 | 标记 `abstract_zh_status=pending`，需手动 `--retry-pending` 重试 |
 | 失败 | 留空 | 以上均失败 | `summary_cn` 留空，前端显示「暂无中文摘要」 |
 

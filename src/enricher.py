@@ -383,26 +383,26 @@ class LLMEnricher:
         """
         翻译论文摘要为中文
 
-        降级链: 方案B(API Key) → 方案C(OpenClaw网关) → 方案A(pending状态) → 翻译失败(留空)
+        降级链: 方案B(API Key) → 方案C(OpenClaw) → 方案A(pending状态) → 翻译失败(留空)
         """
         if not abstract:
             return ""
 
-        # 方案C: OpenClaw 网关 LLM 代理（配置优先）
-        if self._use_openclaw:
-            print("[INFO] 使用方案C: OpenClaw 网关 LLM 代理")
-            result = self._call_openclaw_proxy(abstract)
-            if result:
-                return result
-            print("[WARN] 方案C失败，降级到方案B")
-
-        # 方案B: 使用配置的 API Key
+        # 方案B: 使用配置的 API Key（用户配置了 API 就优先用 API）
         if self.api_key:
             print("[INFO] 使用方案B: 直接调用LLM API")
             result = self._call_openai_compatible(abstract)
             if result:
                 return result
-            print("[WARN] 方案B失败，降级到方案A")
+            print("[WARN] 方案B失败，降级到方案C")
+
+        # 方案C: OpenClaw 上游代理（零配置）
+        if self._use_openclaw:
+            print("[INFO] 使用方案C: OpenClaw 上游代理")
+            result = self._call_openclaw_proxy(abstract)
+            if result:
+                return result
+            print("[WARN] 方案C失败，降级到方案A")
 
         # 方案A: 标记 pending 状态
         if paper:
