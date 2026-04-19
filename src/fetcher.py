@@ -6,33 +6,74 @@ Fetcher module - arXiv搜索 + PDF下载
 import os
 import re
 import time
+import random
+import logging
 from pathlib import Path
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional, Tuple
+from urllib.parse import urlparse
 import arxiv
 
 from src.storage import PaperStorage
 
+logger = logging.getLogger(__name__)
+
+
+class ArxivMirrorClient(arxiv.Client):
+    """
+    支持镜像URL的arXiv客户端，继承自arxiv.Client
+    通过覆盖query_url_format支持自定义API端点
+    """
+
+    def __init__(self, page_size: int = 50, delay_seconds: float = 5.0,
+                 num_retries: int = 5, mirror_url: str = ""):
+        super().__init__(page_size=page_size, delay_seconds=delay_seconds, num_retries=num_retries)
+        self._mirror_url = mirror_url.rstrip('/')
+        self._search_base_url = mirror_url or "https://export.arxiv.org"
+
+    def _format_url(self, search, offset: int, page_size: int) -> str:
+        """
+        覆盖父类方法，使用镜像URL构造查询URL
+        """
+        params = search._to_query_params(offset, page_size)
+        return f"{self._search_base_url}/api/query?{params}"
+
 
 class ArxivFetcher:
     """arXiv论文获取器"""
-    
+
     def __init__(self, storage: PaperStorage, settings: Dict):
         self.storage = storage
         self.settings = settings
-        self.client = arxiv.Client(
+
+        # 读取配置
+        retry_cfg = self.settings["search"]
+        cooldown_base = retry_cfg.get("retry_cooldown_base", 60)
+        max_retries = retry_cfg.get("max_retries", 10)
+        mirror_url = retry_cfg.get("mirror_url", "")
+        delay = retry_cfg.get("delay_seconds", 5.0)
+
+        # 持久化，供重试逻辑使用
+        self._cooldown_base = cooldown_base
+        self._max_retries = max_retries
+        self._mirror_url = mirror_url
+        self._start_time = None
+
+        # 使用支持镜像的客户端
+        self.client = ArxivMirrorClient(
             page_size=50,
-            delay_seconds=5.0,       # arXiv 建议 >=3s
-            num_retries=5,
+            delay_seconds=delay,
+            num_retries=0,  # 我们自己处理重试，不依赖客户端内置重试
+            mirror_url=mirror_url,
         )
-    
+
     def build_query(self) -> str:
         """
         构建arXiv查询语句
         从search_keywords.txt读取关键词，构建OR查询
         """
         keywords_file = self.settings["search"]["keywords_file"]
-        
+
         if not Path(keywords_file).exists():
             raise FileNotFoundError(f"关键词文件不存在: {keywords_file}")
         
@@ -140,10 +181,26 @@ class ArxivFetcher:
         scored.sort(key=lambda x: (x[1][0], x[1][1]), reverse=True)
         return [r for r, _ in scored]
     
+    def _heartbeat_wait(self, seconds: float, label: str) -> None:
+        """
+        带心跳日志的等待，每分钟打印一次进度
+        """
+        elapsed = 0
+        interval = 60
+        while elapsed < seconds:
+            sleep_time = min(interval, seconds - elapsed)
+            time.sleep(sleep_time)
+            elapsed += sleep_time
+            mins = int(elapsed // 60)
+            secs = int(elapsed % 60)
+            print(f"[INFO] 仍在等待 {label}（已等待 {mins}m{secs}s）...")
+
     def search_papers(self, query: str, max_results: int = None) -> List[arxiv.Result]:
         """
-        搜索arXiv论文，带429重试，按需迭代找到目标数量立即停止
-        日期过滤已前置到build_query()，无需后置过滤
+        搜索arXiv论文，带长静默重试（方案D）
+        - 429后静默等待 cooldown_base × attempt 秒
+        - 每分钟打印心跳日志，避免看起来像挂死
+        - 最多 max_retries 次重试
         """
         # 分离：拉取上限 vs 处理上限
         process_limit = self.settings["processing"]["max_papers_per_day"]  # 5
@@ -156,38 +213,54 @@ class ArxivFetcher:
             sort_by=arxiv.SortCriterion.SubmittedDate,
             sort_order=arxiv.SortOrder.Descending
         )
-        
-        # 手动重试429，按需迭代拉够 fetch_limit 篇才停止
+
         last_err = None
         results = []
-        for attempt in range(5):
+
+        for attempt in range(self._max_retries):
             try:
+                if attempt > 0:
+                    # 静默等待，指数退避
+                    jitter = random.uniform(0, self._cooldown_base * 0.1)
+                    wait = self._cooldown_base * (attempt + 1) + jitter
+                    mins = int(wait // 60)
+                    secs = int(wait % 60)
+                    print(f"[WARN] arXiv 429 限流，静默 {mins}m{secs}s 后重试 ({attempt+1}/{self._max_retries})...")
+                    self._heartbeat_wait(wait, f"429 冷却")
+
                 # 用迭代器按需拉取，拉够 fetch_limit 篇才停
                 for r in self.client.results(search):
                     results.append(r)
                     if len(results) >= fetch_limit:
                         break
-                break
+                break  # 成功，退出重试循环
+
             except arxiv.HTTPError as e:
                 last_err = e
                 if e.status == 429:
-                    wait = 15 * (attempt + 1)  # 15s, 30s, 45s, 60s, 75s
-                    print(f"[WARN] arXiv 429 限流，等待 {wait}s 后重试 ({attempt+1}/5)...")
-                    time.sleep(wait)
-                    continue
+                    continue  # 进入下一次静默重试
                 raise
+            except Exception as e:
+                last_err = e
+                print(f"[WARN] 搜索异常: {e}，静默等待后重试 ({attempt+1}/{self._max_retries})...")
+                self._heartbeat_wait(self._cooldown_base * (attempt + 1), "异常冷却")
+                continue
+
         else:
-            raise last_err
-        
+            # 所有重试耗尽
+            if last_err:
+                raise last_err
+            return []
+
         # 移除后置日期过滤（arXiv 已按日期返回）
         # 只做相关性排序
         sorted_results = self._sort_by_relevance(results)
-        
+
         # 打印相关性分数分布（调试用）
         if sorted_results:
             scores = [self._score_paper(r)[0] for r in sorted_results[:5]]
             print(f"[INFO] 相关性分数Top5: {scores}")
-        
+
         return sorted_results
     
     def download_pdf(self, result: arxiv.Result, pdf_dir: str) -> Optional[str]:
