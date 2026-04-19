@@ -201,6 +201,7 @@ class LLMEnricher:
         # 上游 proxy 只做 LLM 转发，不创建 session
         self._openclaw_proxy_url = "http://127.0.0.1:19000/proxy/llm/chat/completions"
         self._openclaw_key = self._load_openclaw_token()
+        self._gateway_port = self._load_gateway_port()
         
         # 优先读取配置，其次检测环境变量
         use_openclaw_config = self.llm_config.get("use_openclaw", False)
@@ -234,6 +235,26 @@ class LLMEnricher:
             except Exception:
                 continue
         return ""
+
+    @staticmethod
+    def _load_gateway_port() -> int:
+        """从 openclaw.json 读取网关端口，默认 28789"""
+        candidates = [
+            Path(os.environ.get("QCLAW_HOME", "")) / "openclaw.json",
+            Path.home() / ".qclaw" / "openclaw.json",
+        ]
+        for cfg_path in candidates:
+            if not cfg_path.is_file():
+                continue
+            try:
+                with open(cfg_path, encoding="utf-8") as f:
+                    cfg = json.load(f)
+                port = cfg.get("gateway", {}).get("port", 0)
+                if port:
+                    return int(port)
+            except Exception:
+                continue
+        return 28789
 
 
 
@@ -285,69 +306,64 @@ class LLMEnricher:
 
     def _call_openclaw_proxy(self, abstract: str) -> Optional[str]:
         """
-        方案C: 通过 OpenClaw 上游 LLM proxy 翻译
-        使用 19000 端口的上游代理，避免 /v1/chat/completions 创建多余 session
+        方案C: 通过 OpenClaw LLM 翻译
+        优先使用 19000 上游 proxy（不创建 session），失败时降级到 28789 网关端点
         """
-        try:
-            import urllib.request
+        payload = {
+            "model": "modelroute",
+            "messages": [
+                {"role": "system", "content": _SYSTEM_PROMPT},
+                {"role": "user", "content": _USER_PROMPT_TEMPLATE.format(abstract=abstract)}
+            ],
+            "temperature": 0,
+            "max_tokens": self.max_tokens
+        }
 
-            # OpenClaw 网关认证（使用 gateway.auth.token）
-            headers = {
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {self._openclaw_key}"
-            }
+        # 端点列表：优先上游 proxy，降级到网关
+        endpoints = [
+            ("http://127.0.0.1:19000/proxy/llm/chat/completions", "上游proxy(19000)"),
+            (f"http://127.0.0.1:{self._gateway_port}/v1/chat/completions", "网关端点(28789)"),
+        ]
 
-            payload = {
-                "model": "modelroute",
-                "messages": [
-                    {
-                        "role": "system",
-                        "content": _SYSTEM_PROMPT
-                    },
-                    {
-                        "role": "user",
-                        "content": _USER_PROMPT_TEMPLATE.format(abstract=abstract)
-                    }
-                ],
-                "temperature": 0,
-                "max_tokens": self.max_tokens
-            }
-
-            data = json.dumps(payload).encode('utf-8')
-            url = self._openclaw_proxy_url
-            req = urllib.request.Request(url, data=data, headers=headers, method="POST")
-
-            with urllib.request.urlopen(req, timeout=120) as response:
-                result = json.loads(response.read().decode('utf-8'))
-                choice = result["choices"][0]["message"]
-                content = choice.get("content", "").strip()
-                reasoning = choice.get("reasoning_content", "").strip()
-                
-                # modelroute 模型行为：思考过程在 reasoning_content，
-                # content 可能是空/草稿/逐句格式/字符编号格式，不可靠。
-                # 策略：优先从 reasoning 提取，content 仅作 fallback
-                
-                best = None
-                
-                # 优先：从 reasoning 提取最终翻译
-                if reasoning:
-                    extracted = _extract_translation_from_reasoning(reasoning)
-                    if extracted:
-                        cleaned = _clean_translation(extracted)
+        for url, desc in endpoints:
+            try:
+                import urllib.request
+                headers = {
+                    "Content-Type": "application/json",
+                    "Authorization": f"Bearer {self._openclaw_key}"
+                }
+                data = json.dumps(payload).encode('utf-8')
+                req = urllib.request.Request(url, data=data, headers=headers, method="POST")
+                with urllib.request.urlopen(req, timeout=120) as response:
+                    result = json.loads(response.read().decode('utf-8'))
+                    choice = result["choices"][0]["message"]
+                    content = choice.get("content", "").strip()
+                    reasoning = choice.get("reasoning_content", "").strip()
+                    
+                    best = None
+                    if reasoning:
+                        extracted = _extract_translation_from_reasoning(reasoning)
+                        if extracted:
+                            cleaned = _clean_translation(extracted)
+                            if cleaned and _looks_like_chinese(cleaned) and len(cleaned) >= 20:
+                                best = cleaned
+                    if not best and content:
+                        cleaned = _clean_translation(content)
                         if cleaned and _looks_like_chinese(cleaned) and len(cleaned) >= 20:
                             best = cleaned
-                
-                # Fallback：清洗 content
-                if not best and content:
-                    cleaned = _clean_translation(content)
-                    if cleaned and _looks_like_chinese(cleaned) and len(cleaned) >= 20:
-                        best = cleaned
-                
-                return best
+                    
+                    if best:
+                        return best
+                    else:
+                        print(f"[WARN] {desc}: 响应中无有效翻译内容")
 
-        except Exception as e:
-            print(f"[ERROR] OpenClaw LLM 代理调用失败: {_sanitize_error(e)}")
-            return None
+            except urllib.error.HTTPError as e:
+                print(f"[WARN] {desc}: HTTP {e.code}")
+            except Exception as e:
+                print(f"[WARN] {desc}: {_sanitize_error(e)}")
+
+        print(f"[ERROR] 方案C全部端点失败")
+        return None
 
     def _mark_pending(self, paper: dict) -> None:
         """方案A: 标记 pending 状态，等后续重试"""
