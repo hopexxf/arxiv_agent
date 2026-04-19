@@ -636,6 +636,34 @@ class LLMEnricher:
         if not to_remove_keys:
             return 0
 
+        # 归档到 logs 目录
+        log_dir = Path(__file__).resolve().parent.parent / "logs"
+        log_dir.mkdir(parents=True, exist_ok=True)
+        timestamp = time.strftime("%Y%m%d_%H%M%S")
+        archive_path = log_dir / f"sessions_cleanup_{timestamp}.json"
+        archive = {}
+        for key in to_remove_keys:
+            archive[key] = data[key]
+            # 同时尝试读取 jsonl 内容归档
+            session_data = data[key]
+            sid = session_data.get("sessionId", "") if isinstance(session_data, dict) else ""
+            for candidate_name in [key.replace(":", "_") + ".jsonl", f"{sid}.jsonl"]:
+                if not candidate_name:
+                    continue
+                jsonl_path = sessions_dir / candidate_name
+                if jsonl_path.is_file():
+                    try:
+                        with open(jsonl_path, "r", encoding="utf-8") as jf:
+                            archive[key]["_jsonl_content"] = jf.read()
+                    except Exception:
+                        pass
+        try:
+            with open(archive_path, "w", encoding="utf-8") as af:
+                json.dump(archive, af, ensure_ascii=False, indent=2)
+            print(f"[INFO] session 归档: {archive_path.name} ({len(to_remove_keys)} 条)")
+        except Exception as e:
+            print(f"[WARN] session 归档失败: {e}")
+
         # 删除对应的 jsonl 文件
         for key in to_remove_keys:
             jsonl_name = key.replace(":", "_") + ".jsonl"
