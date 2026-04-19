@@ -171,7 +171,7 @@ class ArxivFetcher:
             except arxiv.HTTPError as e:
                 last_err = e
                 if e.status == 429:
-                    wait = 10 * (attempt + 1)
+                    wait = 15 * (attempt + 1)  # 15s, 30s, 45s, 60s, 75s
                     print(f"[WARN] arXiv 429 限流，等待 {wait}s 后重试 ({attempt+1}/5)...")
                     time.sleep(wait)
                     continue
@@ -193,19 +193,23 @@ class ArxivFetcher:
     def download_pdf(self, result: arxiv.Result, pdf_dir: str) -> Optional[str]:
         """
         下载PDF，返回本地路径
+        优先检查全目录是否已存在该PDF
         """
         arxiv_id = result.entry_id.split('/')[-1]
         
+        # 先在整个 pdf_dir 下递归查找是否已存在
+        pdf_dir_path = Path(pdf_dir)
+        existing_files = list(pdf_dir_path.rglob(f"{arxiv_id}.pdf"))
+        if existing_files:
+            print(f"[INFO] PDF已存在，跳过下载: {existing_files[0]}")
+            return str(existing_files[0])
+        
         # 按月份分目录
         month_dir = datetime.now().strftime("%Y-%m")
-        pdf_path = Path(pdf_dir) / month_dir
+        pdf_path = pdf_dir_path / month_dir
         pdf_path.mkdir(parents=True, exist_ok=True)
         
         pdf_file = pdf_path / f"{arxiv_id}.pdf"
-        
-        # 如果已存在，跳过下载
-        if pdf_file.exists():
-            return str(pdf_file)
         
         try:
             result.download_pdf(dirpath=str(pdf_path), filename=f"{arxiv_id}.pdf")
@@ -218,18 +222,24 @@ class ArxivFetcher:
         """
         下载PDF
         优先使用 certifi CA 证书；若不可用则 fallback 禁用验证并打印警告
+        优先检查全目录是否已存在该PDF
         """
         import ssl
         import urllib.request
         
         arxiv_id = result.entry_id.split('/')[-1]
+        
+        # 先在整个 pdf_dir 下递归查找是否已存在
+        pdf_dir_path = Path(pdf_dir)
+        existing_files = list(pdf_dir_path.rglob(f"{arxiv_id}.pdf"))
+        if existing_files:
+            print(f"[INFO] PDF已存在，跳过下载: {existing_files[0]}")
+            return str(existing_files[0])
+        
         month_dir = datetime.now().strftime("%Y-%m")
-        pdf_path = Path(pdf_dir) / month_dir
+        pdf_path = pdf_dir_path / month_dir
         pdf_path.mkdir(parents=True, exist_ok=True)
         pdf_file = pdf_path / f"{arxiv_id}.pdf"
-        
-        if pdf_file.exists():
-            return str(pdf_file)
         
         pdf_url = result.pdf_url
         if not pdf_url:
