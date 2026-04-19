@@ -328,9 +328,10 @@ class LLMEnricher:
         }
 
         # 端点列表：优先上游 proxy，降级到网关
+        _port = self._gateway_port
         endpoints = [
             ("http://127.0.0.1:19000/proxy/llm/chat/completions", "上游proxy(19000)"),
-            (f"http://127.0.0.1:{self._gateway_port}/v1/chat/completions", "网关端点(28789)"),
+            (f"http://127.0.0.1:{_port}/v1/chat/completions", f"网关端点({_port})"),
         ]
 
         for url, desc in endpoints:
@@ -526,9 +527,10 @@ class LLMEnricher:
         }
 
         # 端点降级
+        _port = self._gateway_port
         endpoints = [
             ("http://127.0.0.1:19000/proxy/llm/chat/completions", "上游proxy(19000)"),
-            (f"http://127.0.0.1:{self._gateway_port}/v1/chat/completions", "网关端点({self._gateway_port})"),
+            (f"http://127.0.0.1:{_port}/v1/chat/completions", f"网关端点({_port})"),
         ]
 
         for url, desc in endpoints:
