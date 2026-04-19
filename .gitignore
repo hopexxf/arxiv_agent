@@ -2,8 +2,7 @@
 config/settings.yml
 
 # 数据文件
-data/papers.json
-data/papers.json.bak
+data/papers.json*
 histories.json
 
 # PDF 文件

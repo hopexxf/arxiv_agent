@@ -9,6 +9,9 @@ search:
     - "cs.SY"      # Systems and Control
     - "eess.SP"    # Signal Processing
   date_range_days: 30
+  retry_cooldown_base: 60       # 429后每次静默等待秒数（乘以attempt）
+  max_retries: 10               # 最大重试次数（包含短重试+长静默重试）
+  mirror_url: ""                # arXiv镜像URL，留空则使用官方(https://export.arxiv.org)
 
 # 处理配置
 processing:
@@ -20,7 +23,7 @@ processing:
 # LLM配置
 # 优先级: use_openclaw=true > api_key存在 > 方案A(pending)
 llm:
-  use_openclaw: true             # 是否使用 OpenClaw 上游代理（推荐）
+  use_openclaw: true             # 是否使用 OpenClaw 网关 LLM
   api_key: ""                    # 直接调用 LLM API 的密钥
   model: "gpt-3.5-turbo"
   base_url: "https://api.openai.com/v1"
