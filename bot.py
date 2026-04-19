@@ -84,7 +84,7 @@ def parse_args():
     parser.add_argument(
         "--retry-pending",
         action="store_true",
-        help="重试翻译 pending 状态的论文（默认不重试）"
+        help="下载新论文，并重试翻译 pending 状态的论文（默认不重试）"
     )
     parser.add_argument(
         "--only-translate",
