@@ -11,7 +11,7 @@ import logging
 from pathlib import Path
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional, Tuple
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urlencode
 import arxiv
 
 from src.storage import PaperStorage
@@ -31,12 +31,16 @@ class ArxivMirrorClient(arxiv.Client):
         self._mirror_url = mirror_url.rstrip('/')
         self._search_base_url = mirror_url or "https://export.arxiv.org"
 
-    def _format_url(self, search, offset: int, page_size: int) -> str:
+    def _format_url(self, search, start, page_size):
         """
         覆盖父类方法，使用镜像URL构造查询URL
         """
-        params = search._to_query_params(offset, page_size)
-        return f"{self._search_base_url}/api/query?{params}"
+        url_args = search._url_args()
+        url_args.update({
+            "start": str(start),
+            "max_results": str(page_size),
+        })
+        return f"{self._search_base_url}/api/query?{urlencode(url_args)}"
 
 
 class ArxivFetcher:
