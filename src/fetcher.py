@@ -60,8 +60,15 @@ class ArxivFetcher:
         categories = self.settings["search"]["categories"]
         cat_query = ' OR '.join([f'cat:{cat}' for cat in categories])
         
+        # 添加日期过滤（前置到查询，减少无效拉取）
+        date_range_days = self.settings["search"]["date_range_days"]
+        cutoff_date = datetime.now() - timedelta(days=date_range_days)
+        date_from = cutoff_date.strftime("%Y%m%d")  # 例：20260320
+        date_to = datetime.now().strftime("%Y%m%d")  # 例：20260419
+        date_filter = f'submittedDate:[{date_from} TO {date_to}]'
+        
         # 组合查询
-        final_query = f'({keyword_query}) AND ({cat_query})'
+        final_query = f'({keyword_query}) AND ({cat_query}) AND {date_filter}'
         
         return final_query
     
@@ -136,14 +143,12 @@ class ArxivFetcher:
     def search_papers(self, query: str, max_results: int = None) -> List[arxiv.Result]:
         """
         搜索arXiv论文，带429重试，按需迭代找到目标数量立即停止
+        日期过滤已前置到build_query()，无需后置过滤
         """
-        # 计算日期范围（最近N天）
-        date_range_days = self.settings["search"]["date_range_days"]
-        cutoff_date = datetime.now() - timedelta(days=date_range_days)
-
-        # 最多多取50%以应对去重/过滤
-        max_papers = self.settings["processing"]["max_papers_per_day"]
-        effective_max = (max_results or max_papers * 3 // 2)
+        # 分离：拉取上限 vs 处理上限
+        process_limit = self.settings["processing"]["max_papers_per_day"]  # 5
+        fetch_limit = process_limit * 5  # 25，确保 overflow 空间
+        effective_max = max_results or fetch_limit
 
         search = arxiv.Search(
             query=query,
@@ -152,16 +157,15 @@ class ArxivFetcher:
             sort_order=arxiv.SortOrder.Descending
         )
         
-        # 手动重试429，按需迭代找到 max_papers 篇就停止
+        # 手动重试429，按需迭代拉够 fetch_limit 篇才停止
         last_err = None
-        max_papers = self.settings["processing"]["max_papers_per_day"]
         results = []
         for attempt in range(5):
             try:
-                # 用迭代器按需拉取，找到足够论文立即停止，减少 arXiv 负载
+                # 用迭代器按需拉取，拉够 fetch_limit 篇才停
                 for r in self.client.results(search):
                     results.append(r)
-                    if len(results) >= max_papers:
+                    if len(results) >= fetch_limit:
                         break
                 break
             except arxiv.HTTPError as e:
@@ -175,14 +179,9 @@ class ArxivFetcher:
         else:
             raise last_err
         
-        # 过滤最近N天的论文
-        filtered_results = [
-            r for r in results 
-            if r.published.replace(tzinfo=None) >= cutoff_date
-        ]
-        
-        # 按相关性分数排序
-        sorted_results = self._sort_by_relevance(filtered_results)
+        # 移除后置日期过滤（arXiv 已按日期返回）
+        # 只做相关性排序
+        sorted_results = self._sort_by_relevance(results)
         
         # 打印相关性分数分布（调试用）
         if sorted_results:
