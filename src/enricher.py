@@ -612,6 +612,7 @@ class LLMEnricher:
     def _cleanup_gateway_sessions() -> int:
         """
         清理 gateway 产生的临时 openai session（翻译请求产生）。
+        sessions.json 格式: {session_key: session_data, ...}
         返回清理数量。
         """
         sessions_dir = Path.home() / ".qclaw" / "agents" / "main" / "sessions"
@@ -626,29 +627,17 @@ class LLMEnricher:
         except Exception:
             return 0
 
-        if not isinstance(data, list):
+        if not isinstance(data, dict):
             return 0
 
-        # 找出 openai 前缀的 session
-        to_remove = []
-        remaining = []
-        for entry in data:
-            if isinstance(entry, str):
-                key = entry
-            else:
-                key = entry.get("key", "") or entry.get("id", "")
-            if key.startswith("openai:"):
-                to_remove.append({"key": key})
-            else:
-                remaining.append(entry)
+        # 找出包含 :openai: 的 session key
+        to_remove_keys = [k for k in data if ":openai:" in k]
 
-        if not to_remove:
+        if not to_remove_keys:
             return 0
 
         # 删除对应的 jsonl 文件
-        removed_count = 0
-        for entry in to_remove:
-            key = entry.get("key", "")
+        for key in to_remove_keys:
             jsonl_name = key.replace(":", "_") + ".jsonl"
             jsonl_path = sessions_dir / jsonl_name
             if jsonl_path.is_file():
@@ -656,10 +645,24 @@ class LLMEnricher:
                     jsonl_path.unlink()
                 except Exception:
                     pass
-            removed_count += 1
+            # 删除 session data 中的 jsonl 引用
+            session_data = data[key]
+            if isinstance(session_data, dict):
+                sid = session_data.get("sessionId", "")
+                if sid:
+                    jsonl_alt = sessions_dir / f"{sid}.jsonl"
+                    if jsonl_alt.is_file():
+                        try:
+                            jsonl_alt.unlink()
+                        except Exception:
+                            pass
+
+        # 从 dict 中移除
+        for key in to_remove_keys:
+            del data[key]
 
         # 写回
         with open(sessions_json, "w", encoding="utf-8") as f:
-            json.dump(remaining, f, ensure_ascii=False, indent=2)
+            json.dump(data, f, ensure_ascii=False, indent=2)
 
-        return removed_count
+        return len(to_remove_keys)
