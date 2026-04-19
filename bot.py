@@ -170,13 +170,14 @@ def main():
         else:
             logger.info("\n[INFO] 没有新论文，但启用重试 pending 模式")
     
-    # 提取作者单位 + 收集待翻译论文
+    # 提取作者单位 + 收集待翻译论文（主列表 + overflow）
     logger.info("\n[4/7] 提取作者单位...")
     papers_to_enrich = []
     papers_to_translate = []
     today = storage.get_metadata().get("last_crawl", "")[:10]
-    
-    for paper in storage.get_all_papers():
+
+    # 合并主列表和 overflow，统一处理翻译逻辑
+    for paper in list(storage.get_all_papers()) + storage.get_overflow_list():
         # 只处理今天新增的论文
         if paper.get("crawled_date") == today:
             if not paper.get("affiliations") and paper.get("pdf_filename"):
@@ -185,10 +186,10 @@ def main():
             # 只处理新论文的翻译（无 summary_cn 且非 pending）
             if not paper.get("summary_cn") and paper.get("abstract_zh_status") != "pending":
                 papers_to_translate.append(paper)
-    
-    # 如果指定了 --retry-pending，也处理 pending 论文和从未翻译的论文
+
+    # 如果指定了 --retry-pending，也处理 pending 论文和从未翻译的论文（主列表 + overflow）
     if args.retry_pending:
-        for paper in storage.get_all_papers():
+        for paper in list(storage.get_all_papers()) + storage.get_overflow_list():
             # pending 状态的论文
             if paper.get("abstract_zh_status") == "pending" and paper not in papers_to_translate:
                 papers_to_translate.append(paper)
