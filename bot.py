@@ -214,9 +214,11 @@ def main():
         else:
             logger.info("  使用方案A: 标记pending状态，等后续重试")
         
-        for paper in papers_to_translate:
-            paper = enricher.enrich_paper(paper)
-            # 更新存储
+        # 批量翻译 + 逐条降级 + session清理
+        enriched_papers = enricher.enrich_papers(papers_to_translate)
+        
+        # 写回存储
+        for paper in enriched_papers:
             for i, p in enumerate(storage.data["papers"]):
                 if p["arxiv_id"] == paper["arxiv_id"]:
                     storage.data["papers"][i] = paper

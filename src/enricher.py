@@ -178,9 +178,17 @@ def _extract_translation_from_reasoning(reasoning: str) -> str:
     return ""
 
 
-# 翻译提示词：摘要通过分隔符隔离，防止提示词注入
-_SYSTEM_PROMPT = "Translate the following academic abstract into concise Chinese (under 300 chars). Output ONLY the Chinese text. No notes, no lists, no prefixes, no markdown."
+_BATCH_SYSTEM_PROMPT = (
+    "You are a professional translator. "
+    "Translate each abstract into concise Chinese (under 300 chars). "
+    "Output ONLY translations in the exact same order. "
+    "Each translation must start with '|||ARXIV_ID|||' on its own line, "
+    "followed by the Chinese translation on the next line. "
+    "No notes, no markdown, no extra text."
+)
 
+# 单条翻译提示词
+_SYSTEM_PROMPT = "Translate the following academic abstract into concise Chinese (under 300 chars). Output ONLY the Chinese text. No notes, no lists, no prefixes, no markdown."
 _USER_PROMPT_TEMPLATE = "<<<ABSTRACT>>>\n{abstract}\n<<</ABSTRACT>>>"
 
 
@@ -437,35 +445,219 @@ class LLMEnricher:
         return paper
 
     def enrich_papers(self, papers: list) -> list:
-        """批量为论文生成中文摘要"""
-        enriched = []
-        for i, paper in enumerate(papers):
-            print(f"[INFO] 处理 {i+1}/{len(papers)}: {paper.get('title', '')[:50]}...")
-            enriched_paper = self.enrich_paper(paper)
-            # 只有翻译成功才标记为已富化
-            enriched_paper["is_enriched"] = enriched_paper.get("abstract_zh_status") == "completed"
-            enriched.append(enriched_paper)
+        """
+        批量为论文生成中文摘要（方案C）。
+        策略：先批量翻译（1次API调用），失败的逐条降级，最后清理session。
+        """
+        if not papers:
+            return papers
 
-        return enriched
+        # ── Step 1: 批量翻译 ──
+        batch_results = self._batch_translate(papers)
+        batch_ok = sum(1 for v in batch_results.values() if v)
+        print(f"[INFO] 批量翻译完成: {batch_ok}/{len(papers)} 成功")
 
+        # ── Step 2: 逐条降级 ──
+        fallback_ids = [p["arxiv_id"] for p in papers if not batch_results.get(p["arxiv_id"])]
+        for paper in papers:
+            aid = paper["arxiv_id"]
+            if batch_results.get(aid):
+                # 批量翻译成功，直接写入
+                paper["summary_cn"] = batch_results[aid]
+                paper["abstract_zh_status"] = "completed"
+                paper["is_enriched"] = True
+            else:
+                # 逐条降级
+                print(f"[INFO] 逐条降级翻译: {aid}")
+                enriched = self.enrich_paper(paper)
+                paper["summary_cn"] = enriched.get("summary_cn", "")
+                paper["abstract_zh_status"] = enriched.get("abstract_zh_status", "pending")
+                paper["is_enriched"] = enriched.get("is_enriched", False)
 
-if __name__ == "__main__":
-    import yaml
+        # ── Step 3: 清理 gateway session ──
+        cleaned = self._cleanup_gateway_sessions()
+        if cleaned:
+            print(f"[INFO] 清理 {cleaned} 个临时 session")
 
-    with open("settings.yml", 'r', encoding='utf-8') as f:
-        settings = yaml.safe_load(f)
+        return papers
 
-    enricher = LLMEnricher(settings)
+    def _batch_translate(self, papers: list) -> Dict[str, str]:
+        """
+        批量翻译论文摘要，每次最多5篇。
+        返回 {arxiv_id: summary_cn} 字典，失败的论文 value 为空字符串。
+        """
+        if not self._use_openclaw and not self.api_key:
+            return {p["arxiv_id"]: "" for p in papers}
 
-    # 测试翻译
-    test_abstract = (
-        "We propose AI-RAN, a novel framework for integrating artificial intelligence "
-        "into radio access networks. Our approach leverages deep learning to optimize "
-        "resource allocation in O-RAN environments, achieving significant improvements "
-        "in spectral efficiency and latency reduction."
-    )
+        BATCH_SIZE = 5
+        results: Dict[str, str] = {}
 
-    print(f"=== 翻译测试 ===")
-    print(f"OpenClaw 网关: {'可用' if enricher._use_openclaw else '不可用'}")
-    result = enricher.translate_abstract(test_abstract)
-    print(f"\n中文摘要:\n{result if result else '(未生成)'}")
+        for i in range(0, len(papers), BATCH_SIZE):
+            batch = papers[i:i + BATCH_SIZE]
+            batch_num = i // BATCH_SIZE + 1
+            total_batches = (len(papers) + BATCH_SIZE - 1) // BATCH_SIZE
+            print(f"[INFO] 批量翻译 {batch_num}/{total_batches} ({len(batch)} 篇)...")
+
+            batch_result = self._call_batch(batch)
+            results.update(batch_result)
+            time.sleep(2)  # 批次间限流
+
+        return results
+
+    def _call_batch(self, papers: list) -> Dict[str, str]:
+        """单次批量 API 调用"""
+        # 构造用户消息：每篇论文用唯一分隔符
+        parts = []
+        for p in papers:
+            aid = p.get("arxiv_id", "")
+            abstract = p.get("abstract", "")[:2000]
+            parts.append(f"|||{aid}|||\n{abstract}")
+        user_content = "\n\n".join(parts)
+
+        # 构造请求
+        payload = {
+            "model": "modelroute",
+            "messages": [
+                {"role": "system", "content": _BATCH_SYSTEM_PROMPT},
+                {"role": "user", "content": user_content},
+            ],
+            "temperature": 0,
+            "max_tokens": 4000,
+        }
+
+        # 端点降级
+        endpoints = [
+            ("http://127.0.0.1:19000/proxy/llm/chat/completions", "上游proxy(19000)"),
+            (f"http://127.0.0.1:{self._gateway_port}/v1/chat/completions", "网关端点({self._gateway_port})"),
+        ]
+
+        for url, desc in endpoints:
+            try:
+                import urllib.request
+                headers = {
+                    "Content-Type": "application/json",
+                    "Authorization": f"Bearer {self._openclaw_key}",
+                }
+                data = json.dumps(payload).encode("utf-8")
+                req = urllib.request.Request(url, data=data, headers=headers, method="POST")
+                with urllib.request.urlopen(req, timeout=180) as resp:
+                    result = json.loads(resp.read().decode("utf-8"))
+                    choice = result["choices"][0]["message"]
+                    content = choice.get("content", "").strip()
+                    reasoning = choice.get("reasoning_content", "").strip()
+
+                    text = reasoning if reasoning and _looks_like_chinese(reasoning) else content
+                    if not text:
+                        continue
+
+                    parsed = self._parse_batch_response(text, papers)
+                    ok = sum(1 for v in parsed.values() if v)
+                    if ok > 0:
+                        print(f"[INFO] {desc}: {ok}/{len(papers)} 篇解析成功")
+                        return parsed
+                    else:
+                        print(f"[WARN] {desc}: 响应解析失败")
+
+            except urllib.error.HTTPError as e:
+                print(f"[WARN] {desc}: HTTP {e.code}")
+            except Exception as e:
+                print(f"[WARN] {desc}: {_sanitize_error(e)}")
+
+        return {p["arxiv_id"]: "" for p in papers}
+
+    @staticmethod
+    def _parse_batch_response(text: str, papers: list) -> Dict[str, str]:
+        """
+        从批量翻译响应中解析各篇翻译结果。
+        格式：|||arxiv_id|||\n中文翻译
+        """
+        results: Dict[str, str] = {}
+        expected_ids = {p.get("arxiv_id", "") for p in papers}
+
+        # 按分隔符分割
+        blocks = re.split(r'\|\|\|([A-Za-z0-9_.-]+)\|\|\|', text)
+        # blocks[0] 是第一个分隔符之前的文本（通常为空）
+        # blocks[1] 是第一个ID, blocks[2] 是第一个翻译, blocks[3] 是第二个ID, ...
+
+        current_id = None
+        for block in blocks:
+            if not block.strip():
+                continue
+            if current_id is None:
+                # 这是一个 ID
+                current_id = block.strip()
+                if current_id not in expected_ids:
+                    current_id = None  # 不是我们期望的 ID
+            else:
+                # 这是翻译内容
+                cleaned = _clean_translation(block.strip())
+                if cleaned and _looks_like_chinese(cleaned) and len(cleaned) >= 10:
+                    results[current_id] = cleaned
+                current_id = None  # 重置
+
+        # 兜底：按顺序分配（如果解析格式不标准，尝试按行分割+顺序匹配）
+        if len(results) < len(papers) and not results:
+            lines = [l.strip() for l in text.split('\n') if l.strip() and _looks_like_chinese(l.strip(), 0.3)]
+            for i, p in enumerate(papers):
+                if p["arxiv_id"] not in results and i < len(lines):
+                    cleaned = _clean_translation(lines[i])
+                    if cleaned and _looks_like_chinese(cleaned):
+                        results[p["arxiv_id"]] = cleaned
+
+        return results
+
+    @staticmethod
+    def _cleanup_gateway_sessions() -> int:
+        """
+        清理 gateway 产生的临时 openai session（翻译请求产生）。
+        返回清理数量。
+        """
+        sessions_dir = Path.home() / ".qclaw" / "agents" / "main" / "sessions"
+        sessions_json = sessions_dir / "sessions.json"
+
+        if not sessions_json.is_file():
+            return 0
+
+        try:
+            with open(sessions_json, "r", encoding="utf-8") as f:
+                data = json.load(f)
+        except Exception:
+            return 0
+
+        if not isinstance(data, list):
+            return 0
+
+        # 找出 openai 前缀的 session
+        to_remove = []
+        remaining = []
+        for entry in data:
+            if isinstance(entry, str):
+                key = entry
+            else:
+                key = entry.get("key", "") or entry.get("id", "")
+            if key.startswith("openai:"):
+                to_remove.append({"key": key})
+            else:
+                remaining.append(entry)
+
+        if not to_remove:
+            return 0
+
+        # 删除对应的 jsonl 文件
+        removed_count = 0
+        for entry in to_remove:
+            key = entry.get("key", "")
+            jsonl_name = key.replace(":", "_") + ".jsonl"
+            jsonl_path = sessions_dir / jsonl_name
+            if jsonl_path.is_file():
+                try:
+                    jsonl_path.unlink()
+                except Exception:
+                    pass
+            removed_count += 1
+
+        # 写回
+        with open(sessions_json, "w", encoding="utf-8") as f:
+            json.dump(remaining, f, ensure_ascii=False, indent=2)
+
+        return removed_count
