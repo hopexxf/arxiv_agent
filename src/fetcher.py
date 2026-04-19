@@ -133,26 +133,36 @@ class ArxivFetcher:
         scored.sort(key=lambda x: (x[1][0], x[1][1]), reverse=True)
         return [r for r, _ in scored]
     
-    def search_papers(self, query: str, max_results: int = 50) -> List[arxiv.Result]:
+    def search_papers(self, query: str, max_results: int = None) -> List[arxiv.Result]:
         """
-        搜索arXiv论文，带429重试
+        搜索arXiv论文，带429重试，按需迭代找到目标数量立即停止
         """
         # 计算日期范围（最近N天）
         date_range_days = self.settings["search"]["date_range_days"]
         cutoff_date = datetime.now() - timedelta(days=date_range_days)
-        
+
+        # 最多多取50%以应对去重/过滤
+        max_papers = self.settings["processing"]["max_papers_per_day"]
+        effective_max = (max_results or max_papers * 3 // 2)
+
         search = arxiv.Search(
             query=query,
-            max_results=max_results,
+            max_results=effective_max,
             sort_by=arxiv.SortCriterion.SubmittedDate,
             sort_order=arxiv.SortOrder.Descending
         )
         
-        # 手动重试429
+        # 手动重试429，按需迭代找到 max_papers 篇就停止
         last_err = None
+        max_papers = self.settings["processing"]["max_papers_per_day"]
+        results = []
         for attempt in range(5):
             try:
-                results = list(self.client.results(search))
+                # 用迭代器按需拉取，找到足够论文立即停止，减少 arXiv 负载
+                for r in self.client.results(search):
+                    results.append(r)
+                    if len(results) >= max_papers:
+                        break
                 break
             except arxiv.HTTPError as e:
                 last_err = e
