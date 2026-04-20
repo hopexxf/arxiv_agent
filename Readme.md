@@ -8,11 +8,13 @@
 - 📄 **PDF 下载** — 自动下载 PDF 到本地，按月分目录
 - 🗑️ **自动清理** — 旧论文/PDF 自动清理（保留收藏），可配置天数
 - 🏛️ **单位识别** — 从 PDF 双栏排版中提取作者所属机构
-- 🇨🇳 **中文摘要** — LLM 自动翻译（支持多种降级策略）
-- 📊 **静态网站** — 一键生成可部署的阅读网站
+- 🇨🇳 **中文摘要** — LLM 自动翻译（批量+降级策略）
+- 📊 **质量评估** — LLM 5维度评分（创新性/严谨/数据/实用/表达），批量评估+筛选
+- 🌐 **静态网站** — 一键生成可部署的阅读网站
 - ⭐ **收藏功能** — 浏览器本地收藏，跨会话保持
 - 🔍 **全文检索** — 标题/作者/单位/摘要关键词搜索，覆盖溢出列表
-- 🔀 **多维排序** — 相关性（关键词匹配评分）/ 发布时间 / 抓取时间 / 标题排序，支持升降序
+- 🔀 **多维排序** — 相关性/发布时间/抓取时间/标题/质量分数排序，支持升降序
+- 🎚️ **质量筛选** — 最低质量分数滑块，主列表+溢出列表联动
 - 📝 **结构化日志** — 按日期滚动的日志文件，方便调试
 - ⏰ **定时运行** — 支持 OpenClaw cron 或系统 crontab 定时执行
 
@@ -67,8 +69,9 @@ search:
 # 每日详细处理上限（超出记入溢出列表）
 processing:
   max_papers_per_day: 5
+  quality_assessment: true    # 启用质量评估（默认开启）
 
-# 中文摘要翻译（三档降级，详见下方说明）
+# 中文摘要翻译 + 质量评估（共用降级链，详见下方说明）
 llm:
   use_openclaw: true       # 启用 OpenClaw 上游代理（推荐）
   api_key: ""              # 直接调用 API 的密钥（留空则走方案C）
@@ -85,7 +88,10 @@ python bot.py
 # 跳过 API 调用，直接翻译历史 pending/未翻译论文
 python bot.py --only-translate
 
-# 重试 pending 论文（API 恢复后使用）
+# 仅对历史论文进行质量评估（跳过翻译和 API 调用）
+python bot.py --only-quality
+
+# 重试 pending 论文（API 恢复后使用，同时重试翻译+质量）
 python bot.py --retry-pending
 
 # 清空重建（备份 papers.json，从零开始搜索）
@@ -94,6 +100,7 @@ python bot.py --rebuild --yes    # 跳过倒计时
 ```
 
 > `--only-translate` 与 `--rebuild` / `--retry-pending` 互斥。
+> `--only-quality` 与 `--rebuild` / `--only-translate` 互斥。
 
 ### 4. 查看网站
 
@@ -106,18 +113,31 @@ python -m http.server 8765
 
 ## 中文摘要翻译策略
 
-按优先级自动降级：
+翻译和质量评估共用同一条降级链，均支持批量处理（每批5篇）：
 
 | 优先级 | 方案 | 条件 | 说明 |
 |--------|------|------|------|
 | B | 直接 API | `llm.api_key` 已配置 | 调用任意 OpenAI 兼容接口 |
 | C | OpenClaw 上游代理 | `use_openclaw: true`（配置启用） | 调用 `127.0.0.1:19000` 上游 proxy，零 session 残留 |
-| A | pending 状态 | 以上均不可用 | 标记 `abstract_zh_status=pending`，需手动 `--retry-pending` 重试 |
-| 失败 | 留空 | 以上均失败 | `summary_cn` 留空，前端显示「暂无中文摘要」 |
+| A | pending 状态 | 以上均不可用 | 标记 pending，需手动 `--retry-pending` 重试 |
+| 失败 | 留空 | 以上均失败 | 翻译留空 / 质量评估不存储 |
 
-**推荐**：在 OpenClaw 环境中运行时，设置 `use_openclaw: true` 启用方案 C，零配置即可翻译。
+**批量处理流程**：
 
-> **注意**：方案 C 使用 19000 端口的上游 LLM proxy（`/proxy/llm/chat/completions`），而非网关的 `/v1/chat/completions` 端点。后者每次请求会创建独立 session，翻译 N 篇论文会留下 N 个空会话。
+```
+enrich_papers()
+  Step 1: 批量翻译（每批5篇）→ _batch_translate → _call_batch
+  Step 2: 逐条降级翻译（失败的论文）
+  Step 3: 批量质量评估（每批5篇）→ batch_quality_assess → _call_batch_quality
+  Step 4: 清理 gateway session（统一清理）
+```
+
+- 翻译和质量评估各自独立批量调用，共享 403 计数器
+- session 清理遵循"编排者负责"原则：由 `enrich_papers()` / `bot.py` 统一清理，子方法不越权
+
+**推荐**：在 OpenClaw 环境中运行时，设置 `use_openclaw: true` 启用方案 C，零配置即可翻译+评估。
+
+> **注意**：方案 C 使用 19000 端口的上游 LLM proxy（`/proxy/llm/chat/completions`），而非网关的 `/v1/chat/completions` 端点。后者每次请求会创建独立 session，N 篇论文会留下 N 个空会话。
 
 ## 目录结构
 
@@ -135,7 +155,7 @@ arxiv_agent/
 │   ├── fetcher.py          # arXiv 搜索 + PDF 下载（含 429 重试）
 │   ├── storage.py          # papers.json 读写管理（含清理功能）
 │   ├── extract_affiliation.py # PDF 双栏解析提取作者单位
-│   ├── enricher.py         # LLM 中文摘要翻译（三档降级）
+│   ├── enricher.py         # LLM 中文摘要翻译 + 质量评估（批量+三档降级）
 │   ├── build_viewer.py     # papers.json → papers_data.json
 │   └── update_summaries.py # 批量更新摘要工具
 │
@@ -153,10 +173,13 @@ arxiv_agent/
 │   ├── favicon.svg
 │   └── papers_data.json    # 生成的数据文件
 │
-├── tests/                  # 单元测试
-│   ├── test_storage.py
-│   ├── test_fetcher.py
-│   └── test_config.py
+├── tests/                  # 单元测试（117 tests）
+│   ├── test_storage.py     # 存储模块（18）
+│   ├── test_fetcher.py     # arXiv 搜索（9）
+│   ├── test_enricher.py    # 翻译+降级链（29）
+│   ├── test_quality_assessment.py # 质量评估+批量（37）
+│   ├── test_quality_filter.py     # 质量筛选（16）
+│   └── test_config.py      # 配置（8）
 │
 ├── .github/workflows/
 │   └── pages.yml           # GitHub Pages 自动部署
@@ -245,8 +268,24 @@ GPU RAN
 - [ ] PDF 下载 SSL：Windows 无根证书时仍需 fallback 跳过验证，建议 `pip install certifi`
 - [ ] 作者-单位对应：PDF 双栏解析只能提取机构名，无法精确对应到具体作者
 - [ ] 翻译质量：依赖 LLM 能力，专业术语翻译可能不够精准
+- [ ] 质量评估主观性：LLM 评分受模型能力影响，标注为参考而非权威评估
+- [ ] 移动端适配：质量评估详情展开区域待移动端实测后优化
 
 ## 版本历史
+
+### V3.0 — 论文质量评估 (2026-04-21)
+
+- **新增**：LLM 5维度质量评估（创新性/严谨/数据/实用/表达，0-100百分制）
+- **新增**：批量质量评估（每批5篇，复用翻译批量架构，`_call_batch_quality`）
+- **新增**：`--only-quality` CLI 参数，仅对历史论文进行质量评估
+- **新增**：前端质量徽章（4级颜色：≥80 excellent/绿、≥65 good/蓝、≥50 fair/黄、<50 poor/红）
+- **新增**：前端"质量分数"排序（无评分论文排最后）
+- **新增**：前端"最低质量分数"滑块筛选，主列表+溢出列表联动
+- **新增**：403 计数器共享（翻译和质量评估共享 `_proxy_403_count`，连续 403 后跳过 19000 proxy）
+- **修复**：`--retry-pending` 同时重试翻译+质量 pending（原 bug：`quality_pending=True` 时跳过评估导致无法重试）
+- **优化**：session 清理遵循"编排者负责"原则，子方法不越权清理
+- **优化**：`enrich_papers()` 流程改为：批量翻译 → 逐条降级 → 批量质量评估 → 统一清理 session
+- 测试 117 passed（质量评估 37 + 质量筛选 16 + 其他 64）
 
 ### V2.11 — 网页排序功能 (2026-04-20)
 

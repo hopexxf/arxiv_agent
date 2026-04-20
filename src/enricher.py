@@ -178,6 +178,80 @@ def _extract_translation_from_reasoning(reasoning: str) -> str:
     return ""
 
 
+_QUALITY_SYSTEM_PROMPT = """You are an expert peer reviewer specializing in AI-RAN, 6G wireless networks, O-RAN, GPU-accelerated RAN, and mobile edge computing.
+
+Evaluate the research paper based on title and abstract. Be critical and objective.
+
+SCORING DIMENSIONS (each 0-100):
+
+1. Novelty (创新性): 
+   - Is the problem formulation or methodology novel?
+   - Does it go beyond incremental improvements?
+   - Score 0 = purely incremental; Score 100 = groundbreaking new formulation
+
+2. Technical Rigor (技术严谨):
+   - Are mathematical derivations sound?
+   - Is the methodology clearly described?
+   - Score 0 = hand-wavy; Score 100 = rigorous theory/proof
+
+3. Data Quality (数据质量) [IMPORTANT]:
+   - Does the evaluation use REAL datasets (not just simulations)?
+   - Is the dataset scale sufficient for the claim?
+   - Are baselines comprehensive and state-of-the-art?
+   - Score 0 = synthetic/toy data only; Score 100 = large-scale real-world data
+
+4. Practical Impact (实用价值):
+   - Is it applicable to real deployment scenarios?
+   - Can industry practitioners benefit from this work?
+   - Score 0 = purely theoretical; Score 100 = immediate industry relevance
+
+5. Presentation (表达质量):
+   - Is the writing clear and well-organized?
+   - Score 0 = poor English/organization; Score 100 = publication-ready
+
+OVERALL SCORE = novelty*0.25 + rigor*0.25 + data*0.25 + impact*0.15 + presentation*0.10 (already 0-100)
+
+Respond ONLY with valid JSON. No markdown, no explanations outside JSON."""
+
+_QUALITY_USER_TEMPLATE = """Title: {title}
+
+Abstract: {abstract}
+
+Evaluate this paper. Respond ONLY with valid JSON:
+{{
+  "overall_score": 0,
+  "confidence": "high|medium|low",
+  "novelty": 0,
+  "rigor": 0,
+  "data": 0,
+  "impact": 0,
+  "presentation": 0,
+  "strengths": ["..."],
+  "limitations": ["..."],
+  "data_quality_note": "...",
+  "prediction_reason": "..."
+}}"""
+
+
+_BATCH_QUALITY_SYSTEM_PROMPT = """You are an expert peer reviewer specializing in AI-RAN, 6G wireless networks, O-RAN, GPU-accelerated RAN, and mobile edge computing.
+
+You will evaluate MULTIPLE papers. For each paper, output a JSON object wrapped by its arxiv_id markers.
+
+SCORING DIMENSIONS (each 0-100):
+1. Novelty: Is the problem/methodology novel? (0=incremental, 100=groundbreaking)
+2. Rigor: Are derivations sound and methodology clear? (0=hand-wavy, 100=rigorous)
+3. Data Quality: Real datasets? Sufficient scale? Comprehensive baselines? (0=synthetic only, 100=large-scale real data)
+4. Practical Impact: Applicable to real deployment? (0=purely theoretical, 100=immediate industry relevance)
+5. Presentation: Clear and well-organized? (0=poor, 100=publication-ready)
+
+OVERALL = novelty*0.25 + rigor*0.25 + data*0.25 + impact*0.15 + presentation*0.10
+
+For EACH paper, output EXACTLY this format:
+|||ARXIV_ID|||
+{"overall_score": N, "confidence": "high|medium|low", "novelty": N, "rigor": N, "data": N, "impact": N, "presentation": N, "strengths": ["..."], "limitations": ["..."], "data_quality_note": "...", "prediction_reason": "..."}
+
+No markdown, no explanations outside the markers."""
+
 _BATCH_SYSTEM_PROMPT = (
     "You are a professional translator. "
     "Translate each abstract into concise Chinese (under 300 chars). "
@@ -214,9 +288,18 @@ class LLMEnricher:
         # 优先读取配置，其次检测环境变量
         use_openclaw_config = self.llm_config.get("use_openclaw", False)
         self._use_openclaw = use_openclaw_config
-        
+
+        # 质量评估开关（默认开启）
+        self._quality_enabled = settings.get("processing", {}).get("quality_assessment", True)
+
+        # 19000 proxy 连续 403 计数器：连续失败 2 次后跳过 19000，直接走网关端点
+        self._proxy_403_count = 0
+        self._proxy_403_max = 2
+
         if self._use_openclaw:
             print("[INFO] 使用方案C: OpenClaw 网关 LLM 代理 (配置启用)")
+        if self._quality_enabled:
+            print("[INFO] 质量评估: 开启")
 
     @staticmethod
     def _load_openclaw_token() -> str:
@@ -327,12 +410,12 @@ class LLMEnricher:
             "max_tokens": self.max_tokens
         }
 
-        # 端点列表：优先上游 proxy，降级到网关
+        # 端点列表：19000 连续 403 达上限后跳过，直接走网关
         _port = self._gateway_port
-        endpoints = [
-            ("http://127.0.0.1:19000/proxy/llm/chat/completions", "上游proxy(19000)"),
-            (f"http://127.0.0.1:{_port}/v1/chat/completions", f"网关端点({_port})"),
-        ]
+        endpoints = []
+        if self._proxy_403_count < self._proxy_403_max:
+            endpoints.append(("http://127.0.0.1:19000/proxy/llm/chat/completions", "上游proxy(19000)"))
+        endpoints.append((f"http://127.0.0.1:{_port}/v1/chat/completions", f"网关端点({_port})"))
 
         for url, desc in endpoints:
             try:
@@ -362,12 +445,18 @@ class LLMEnricher:
                             best = cleaned
                     
                     if best:
+                        # 成功请求，重置 403 计数
+                        self._proxy_403_count = 0
                         return best
                     else:
                         print(f"[WARN] {desc}: 响应中无有效翻译内容")
 
             except urllib.error.HTTPError as e:
                 print(f"[WARN] {desc}: HTTP {e.code}")
+                if e.code == 403 and "19000" in desc:
+                    self._proxy_403_count += 1
+                    if self._proxy_403_count >= self._proxy_403_max:
+                        print(f"[INFO] 上游proxy(19000) 连续 403 × {self._proxy_403_count}，后续跳过直接走网关端点")
             except Exception as e:
                 print(f"[WARN] {desc}: {_sanitize_error(e)}")
 
@@ -378,6 +467,227 @@ class LLMEnricher:
         """方案A: 标记 pending 状态，等后续重试"""
         paper["abstract_zh_status"] = "pending"
         print(f"[INFO] 方案A: 标记论文 {paper.get('arxiv_id', '')} 为 pending 状态")
+
+    def _mark_quality_pending(self, paper: dict) -> None:
+        """标记质量评估为 pending"""
+        paper["quality_pending"] = True
+        print(f"[INFO] 质量评估 pending: {paper.get('arxiv_id', '')}")
+
+    def _assess_quality_for_paper(self, paper: Dict) -> Dict:
+        """
+        对单篇论文进行质量评估。
+        失败时标记 quality_pending，不阻塞主流程。
+        """
+        aid = paper.get("arxiv_id", "?")
+
+        # 跳过：已有有效质量评估（非 pending）→ 不重复评估
+        if paper.get("quality_assessment") and not paper.get("quality_pending"):
+            return paper
+
+        # 允许重试：
+        # - quality_pending=True（之前失败的论文，由 --retry-pending 收集）
+        # - quality_assessment=None 且 quality_pending=False（从未评估过）
+        print(f"[INFO] 质量评估: {aid}")
+        quality = self._assess_quality(paper.get("title", ""), paper.get("abstract", ""))
+        if quality:
+            paper["quality_assessment"] = quality
+            paper["quality_pending"] = False
+            print(f"[INFO] 质量评估完成: {aid} → {quality['overall_score']}/100")
+        else:
+            self._mark_quality_pending(paper)
+            print(f"[WARN] 质量评估失败，标记为 pending: {aid}")
+
+        return paper
+
+    def _assess_quality(self, title: str, abstract: str) -> Optional[Dict]:
+        """
+        调用 LLM 评估论文质量。
+        复用现有降级链（API → OpenClaw proxy → None）。
+        """
+        user_prompt = _QUALITY_USER_TEMPLATE.format(title=title, abstract=abstract)
+
+        # 方案B: API Key
+        if self.api_key:
+            result = self._call_openai_compatible_quality(_QUALITY_SYSTEM_PROMPT, user_prompt)
+            if result:
+                return self._parse_quality_response(result)
+
+        # 方案C: OpenClaw 上游代理
+        if self._use_openclaw:
+            result = self._call_openclaw_proxy_quality(_QUALITY_SYSTEM_PROMPT, user_prompt)
+            if result:
+                return self._parse_quality_response(result)
+
+        return None
+
+    def _call_openai_compatible_quality(self, system: str, user: str) -> Optional[str]:
+        """方案B: 调用 OpenAI 兼容 API（质量评估专用）"""
+        try:
+            import urllib.request
+            headers = {
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {self.api_key}"
+            }
+            payload = {
+                "model": self.model,
+                "messages": [
+                    {"role": "system", "content": system},
+                    {"role": "user", "content": user}
+                ],
+                "temperature": 0.3,
+                "max_tokens": 1000
+            }
+            data = json.dumps(payload).encode('utf-8')
+            req = urllib.request.Request(
+                f"{self.base_url}/chat/completions",
+                data=data, headers=headers, method="POST"
+            )
+            with urllib.request.urlopen(req, timeout=60) as response:
+                result = json.loads(response.read().decode('utf-8'))
+                return result["choices"][0]["message"]["content"].strip()
+        except Exception as e:
+            print(f"[ERROR] 质量评估API调用失败: {_sanitize_error(e)}")
+            return None
+
+    def _call_openclaw_proxy_quality(self, system: str, user: str) -> Optional[str]:
+        """方案C: OpenClaw 上游代理（质量评估专用）"""
+        payload = {
+            "model": "modelroute",
+            "messages": [
+                {"role": "system", "content": system},
+                {"role": "user", "content": user}
+            ],
+            "temperature": 0.3,
+            "max_tokens": 1000
+        }
+
+        _port = self._gateway_port
+        endpoints = []
+        if self._proxy_403_count < self._proxy_403_max:
+            endpoints.append(("http://127.0.0.1:19000/proxy/llm/chat/completions", "上游proxy(19000)"))
+        endpoints.append((f"http://127.0.0.1:{_port}/v1/chat/completions", f"网关端点({_port})"))
+
+        for url, desc in endpoints:
+            try:
+                import urllib.request
+                headers = {
+                    "Content-Type": "application/json",
+                    "Authorization": f"Bearer {self._openclaw_key}"
+                }
+                data = json.dumps(payload).encode('utf-8')
+                req = urllib.request.Request(url, data=data, headers=headers, method="POST")
+                with urllib.request.urlopen(req, timeout=120) as response:
+                    result = json.loads(response.read().decode('utf-8'))
+                    choice = result["choices"][0]["message"]
+                    content = choice.get("content", "").strip()
+                    reasoning = choice.get("reasoning_content", "").strip()
+                    # 成功请求，重置 403 计数
+                    self._proxy_403_count = 0
+                    return content or reasoning or None
+            except urllib.error.HTTPError as e:
+                print(f"[WARN] 质量评估 {desc}: HTTP {e.code}")
+                if e.code == 403 and "19000" in desc:
+                    self._proxy_403_count += 1
+                    if self._proxy_403_count >= self._proxy_403_max:
+                        print(f"[INFO] 上游proxy(19000) 连续 403 × {self._proxy_403_count}，后续跳过直接走网关端点")
+            except Exception as e:
+                print(f"[WARN] 质量评估 {desc}: {_sanitize_error(e)}")
+
+        return None
+
+    def _parse_quality_response(self, raw: str) -> Optional[Dict]:
+        """
+        解析 LLM 质量评估 JSON 响应。
+        兜底：JSON 解析失败 → 正则提取 overall_score → 维度不全则丢弃。
+        """
+        if not raw:
+            return None
+
+        # 策略1: 直接 json.loads
+        try:
+            data = json.loads(raw)
+            return self._validate_quality_data(data)
+        except json.JSONDecodeError:
+            pass
+
+        # 策略2: 从 markdown 代码块提取
+        code_blocks = re.findall(r'```(?:json)?\s*([\s\S]*?)\s*```', raw)
+        for block in reversed(code_blocks):
+            try:
+                data = json.loads(block.strip())
+                return self._validate_quality_data(data)
+            except json.JSONDecodeError:
+                continue
+
+        # 策略3: 兜底正则（只提取 overall_score，其他维度置零）
+        m = re.search(r'"overall_score"\s*:\s*(\d+)', raw)
+        if m:
+            score = int(m.group(1))
+            if 0 <= score <= 100:
+                print(f"[WARN] 质量评估JSON解析失败，使用正则overall_score={score}")
+                return {
+                    "overall_score": score,
+                    "confidence": "low",
+                    "novelty": 0, "rigor": 0, "data": 0, "impact": 0, "presentation": 0,
+                    "strengths": [], "limitations": [],
+                    "data_quality_note": "", "prediction_reason": ""
+                }
+
+        print("[WARN] 质量评估响应无法解析，返回 None")
+        return None
+
+    def _validate_quality_data(self, data: Dict) -> Optional[Dict]:
+        """
+        校验质量评估数据完整性。
+        必须包含全部5个维度字段，维度不全则返回 None（不写脏数据）。
+        """
+        required_dims = {"novelty", "rigor", "data", "impact", "presentation"}
+
+        # 检查维度完整性
+        if not isinstance(data, dict):
+            return None
+        if not required_dims.issubset(data.keys()):
+            missing = required_dims - set(data.keys())
+            print(f"[WARN] 质量评估维度缺失: {missing}，丢弃该结果")
+            return None
+
+        # 校验分数范围
+        for dim in required_dims:
+            val = data.get(dim, 0)
+            if not isinstance(val, (int, float)) or not (0 <= val <= 100):
+                print(f"[WARN] 维度 {dim} 值非法: {val}，丢弃该结果")
+                return None
+
+        # 校验 overall_score 范围
+        overall = data.get("overall_score")
+        if not isinstance(overall, (int, float)) or not (0 <= overall <= 100):
+            print(f"[WARN] overall_score 非法: {overall}，丢弃该结果")
+            return None
+
+        # 校验 confidence
+        confidence = data.get("confidence", "medium")
+        if confidence not in ("high", "medium", "low"):
+            data["confidence"] = "medium"
+
+        # 补全可选字段
+        data.setdefault("strengths", [])
+        data.setdefault("limitations", [])
+        data.setdefault("data_quality_note", "")
+        data.setdefault("prediction_reason", "")
+
+        return {
+            "overall_score": int(overall),
+            "confidence": data["confidence"],
+            "novelty": int(data["novelty"]),
+            "rigor": int(data["rigor"]),
+            "data": int(data["data"]),
+            "impact": int(data["impact"]),
+            "presentation": int(data["presentation"]),
+            "strengths": data["strengths"],
+            "limitations": data["limitations"],
+            "data_quality_note": data["data_quality_note"],
+            "prediction_reason": data["prediction_reason"],
+        }
 
     def translate_abstract(self, abstract: str, paper: dict = None) -> str:
         """
@@ -412,33 +722,38 @@ class LLMEnricher:
         print("[INFO] 翻译失败，summary_cn 留空")
         return ""
 
-    def enrich_paper(self, paper: Dict[str, Any]) -> Dict[str, Any]:
-        """为论文生成中文摘要"""
+    def enrich_paper(self, paper: Dict[str, Any], skip_quality: bool = False) -> Dict[str, Any]:
+        """为论文生成中文摘要（可选：同时评估质量）"""
         if not self.settings.get("processing", {}).get("generate_chinese_summary", True):
             return paper
 
-        # 如果已有中文摘要且非 pending 状态，跳过
+        # 如果已有中文摘要且非 pending 状态，跳过翻译
         if paper.get("summary_cn") and paper.get("abstract_zh_status") != "pending":
-            return paper
+            if skip_quality:
+                return paper
+        else:
+            # 如果是 pending 状态，重新尝试翻译
+            if paper.get("abstract_zh_status") == "pending":
+                print(f"[INFO] 重试翻译 pending 论文: {paper.get('arxiv_id', '')}")
 
-        # 如果是 pending 状态，重新尝试翻译
-        if paper.get("abstract_zh_status") == "pending":
-            print(f"[INFO] 重试翻译 pending 论文: {paper.get('arxiv_id', '')}")
+            abstract = paper.get("abstract", "")
+            if not abstract:
+                return paper
 
-        abstract = paper.get("abstract", "")
-        if not abstract:
-            return paper
+            print(f"[INFO] 生成中文摘要: {paper.get('arxiv_id', '')}")
 
-        print(f"[INFO] 生成中文摘要: {paper.get('arxiv_id', '')}")
+            summary_cn = self.translate_abstract(abstract, paper)
+            paper["summary_cn"] = summary_cn or ""
 
-        summary_cn = self.translate_abstract(abstract, paper)
-        paper["summary_cn"] = summary_cn or ""
+            # 如果翻译成功（有中文内容且非英文原文），标记状态
+            if summary_cn and summary_cn != abstract and _looks_like_chinese(summary_cn):
+                paper["abstract_zh_status"] = "completed"
+                paper["is_enriched"] = True
+            # 否则翻译失败，由 translate_abstract 中的 _mark_pending 处理
 
-        # 如果翻译成功（有中文内容且非英文原文），标记状态
-        if summary_cn and summary_cn != abstract and _looks_like_chinese(summary_cn):
-            paper["abstract_zh_status"] = "completed"
-            paper["is_enriched"] = True
-        # 否则翻译失败，由 translate_abstract 中的 _mark_pending 处理
+        # 质量评估（跳过翻译的情况也走这里）
+        if self._quality_enabled and not skip_quality:
+            paper = self._assess_quality_for_paper(paper)
 
         # 延迟，避免限流
         time.sleep(2)
@@ -447,8 +762,8 @@ class LLMEnricher:
 
     def enrich_papers(self, papers: list) -> list:
         """
-        批量为论文生成中文摘要（方案C）。
-        策略：先批量翻译（1次API调用），失败的逐条降级，最后清理session。
+        批量为论文生成中文摘要 + 质量评估（方案C）。
+        策略：先批量翻译，失败的逐条降级，再批量质量评估，最后清理 session。
         """
         if not papers:
             return papers
@@ -458,7 +773,7 @@ class LLMEnricher:
         batch_ok = sum(1 for v in batch_results.values() if v)
         print(f"[INFO] 批量翻译完成: {batch_ok}/{len(papers)} 成功")
 
-        # ── Step 2: 逐条降级 ──
+        # ── Step 2: 逐条降级翻译 ──
         fallback_ids = [p["arxiv_id"] for p in papers if not batch_results.get(p["arxiv_id"])]
         for paper in papers:
             aid = paper["arxiv_id"]
@@ -470,17 +785,179 @@ class LLMEnricher:
             else:
                 # 逐条降级
                 print(f"[INFO] 逐条降级翻译: {aid}")
-                enriched = self.enrich_paper(paper)
+                enriched = self.enrich_paper(paper, skip_quality=True)  # 翻译时跳过质量评估，后面统一批量做
                 paper["summary_cn"] = enriched.get("summary_cn", "")
                 paper["abstract_zh_status"] = enriched.get("abstract_zh_status", "pending")
                 paper["is_enriched"] = enriched.get("is_enriched", False)
 
-        # ── Step 3: 清理 gateway session ──
+        # ── Step 3: 批量质量评估 ──
+        if self._quality_enabled:
+            papers_need_quality = [
+                p for p in papers
+                if not p.get("quality_assessment") or p.get("quality_pending")
+            ]
+            if papers_need_quality:
+                q_done = self.batch_quality_assess(papers_need_quality)
+                print(f"[INFO] 质量评估完成: {q_done}/{len(papers_need_quality)} 篇")
+
+        # ── Step 4: 清理 gateway session ──
         cleaned = self._cleanup_gateway_sessions()
         if cleaned:
             print(f"[INFO] 清理 {cleaned} 个临时 session")
 
         return papers
+
+    def batch_quality_assess(self, papers: list) -> int:
+        """
+        批量为论文进行质量评估。
+        策略：先批量评估（每批5篇），失败的逐条降级。
+        返回成功评估的论文数量。
+        
+        注意：不负责清理 gateway session，由调用方统一清理。
+        """
+        if not papers:
+            return 0
+
+        # ── Step 1: 批量质量评估 ──
+        batch_results = self._batch_quality(papers)
+        batch_ok = sum(1 for v in batch_results.values() if v)
+        print(f"[INFO] 批量质量评估完成: {batch_ok}/{len(papers)} 成功")
+
+        # ── Step 2: 逐条降级 ──
+        success_count = 0
+        for paper in papers:
+            aid = paper.get("arxiv_id", "?")
+            quality = batch_results.get(aid)
+            if quality:
+                paper["quality_assessment"] = quality
+                paper["quality_pending"] = False
+                success_count += 1
+            else:
+                # 逐条降级
+                paper = self._assess_quality_for_paper(paper)
+                if paper.get("quality_assessment"):
+                    success_count += 1
+
+        return success_count
+
+    def _batch_quality(self, papers: list) -> Dict[str, Dict]:
+        """
+        批量质量评估，每次最多5篇。
+        返回 {arxiv_id: quality_dict} 字典，失败的论文 value 为 None。
+        """
+        if not self._use_openclaw and not self.api_key:
+            return {p.get("arxiv_id", ""): None for p in papers}
+
+        BATCH_SIZE = 5
+        results: Dict[str, Optional[Dict]] = {}
+
+        for i in range(0, len(papers), BATCH_SIZE):
+            batch = papers[i:i + BATCH_SIZE]
+            batch_num = i // BATCH_SIZE + 1
+            total_batches = (len(papers) + BATCH_SIZE - 1) // BATCH_SIZE
+            print(f"[INFO] 批量质量评估 {batch_num}/{total_batches} ({len(batch)} 篇)...")
+
+            batch_result = self._call_batch_quality(batch)
+            results.update(batch_result)
+            time.sleep(2)  # 批次间限流
+
+        return results
+
+    def _call_batch_quality(self, papers: list) -> Dict[str, Optional[Dict]]:
+        """单次批量质量评估 API 调用"""
+        # 构造用户消息：每篇论文用唯一分隔符
+        parts = []
+        for p in papers:
+            aid = p.get("arxiv_id", "")
+            title = p.get("title", "")
+            abstract = p.get("abstract", "")[:2000]
+            parts.append(f"|||{aid}|||\nTitle: {title}\nAbstract: {abstract}")
+        user_content = "\n\n".join(parts)
+
+        # 构造请求
+        payload = {
+            "model": "modelroute",
+            "messages": [
+                {"role": "system", "content": _BATCH_QUALITY_SYSTEM_PROMPT},
+                {"role": "user", "content": user_content},
+            ],
+            "temperature": 0.3,
+            "max_tokens": 4000,
+        }
+
+        # 端点降级（复用 403 计数器逻辑）
+        _port = self._gateway_port
+        endpoints = []
+        if self._proxy_403_count < self._proxy_403_max:
+            endpoints.append(("http://127.0.0.1:19000/proxy/llm/chat/completions", "上游proxy(19000)"))
+        endpoints.append((f"http://127.0.0.1:{_port}/v1/chat/completions", f"网关端点({_port})"))
+
+        for url, desc in endpoints:
+            try:
+                import urllib.request
+                headers = {
+                    "Content-Type": "application/json",
+                    "Authorization": f"Bearer {self._openclaw_key}",
+                }
+                data = json.dumps(payload).encode("utf-8")
+                req = urllib.request.Request(url, data=data, headers=headers, method="POST")
+                with urllib.request.urlopen(req, timeout=180) as resp:
+                    result = json.loads(resp.read().decode("utf-8"))
+                    choice = result["choices"][0]["message"]
+                    content = choice.get("content", "").strip()
+                    reasoning = choice.get("reasoning_content", "").strip()
+
+                    text = reasoning if reasoning else content
+                    if not text:
+                        continue
+
+                    parsed = self._parse_batch_quality_response(text, papers)
+                    ok = sum(1 for v in parsed.values() if v)
+                    if ok > 0:
+                        self._proxy_403_count = 0
+                        print(f"[INFO] {desc}: 批量质量评估 {ok}/{len(papers)} 篇解析成功")
+                        return parsed
+                    else:
+                        print(f"[WARN] {desc}: 批量质量评估响应解析失败")
+
+            except urllib.error.HTTPError as e:
+                print(f"[WARN] 批量质量评估 {desc}: HTTP {e.code}")
+                if e.code == 403 and "19000" in desc:
+                    self._proxy_403_count += 1
+                    if self._proxy_403_count >= self._proxy_403_max:
+                        print(f"[INFO] 上游proxy(19000) 连续 403 × {self._proxy_403_count}，后续跳过直接走网关端点")
+            except Exception as e:
+                print(f"[WARN] 批量质量评估 {desc}: {_sanitize_error(e)}")
+
+        # 批量失败，尝试 API Key 方案
+        if self.api_key:
+            print("[INFO] 批量质量评估端点全部失败，尝试 API Key 方案...")
+            return {p.get("arxiv_id", ""): self._assess_quality(p.get("title", ""), p.get("abstract", "")) for p in papers}
+
+        return {p.get("arxiv_id", ""): None for p in papers}
+
+    def _parse_batch_quality_response(self, text: str, papers: list) -> Dict[str, Optional[Dict]]:
+        """从批量质量评估响应中解析各篇结果"""
+        results: Dict[str, Optional[Dict]] = {}
+        expected_ids = {p.get("arxiv_id", "") for p in papers}
+
+        # 按分隔符分割
+        blocks = re.split(r'\|\|\|([A-Za-z0-9_.-]+)\|\|\|', text)
+        current_id = None
+        for block in blocks:
+            if not block.strip():
+                continue
+            if current_id is None:
+                current_id = block.strip()
+                if current_id not in expected_ids:
+                    current_id = None
+            else:
+                quality = self._parse_quality_response(block.strip())
+                if quality:
+                    results[current_id] = quality
+                current_id = None
+
+        return results
 
     def _batch_translate(self, papers: list) -> Dict[str, str]:
         """

@@ -19,6 +19,7 @@ processing:
   download_pdf: true
   extract_affiliation: true
   generate_chinese_summary: true
+  quality_assessment: true       # 是否进行论文质量评估，默认开启
 
 # LLM配置
 # 优先级: use_openclaw=true > api_key存在 > 方案A(pending)

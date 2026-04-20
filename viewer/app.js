@@ -23,6 +23,8 @@ const els = {
   overflowList: document.getElementById('overflowList'),
   metaText: document.getElementById('metaText'),
   genTime: document.getElementById('genTime'),
+  qualityMin: document.getElementById('qualityMin'),
+  qualityMinLabel: document.getElementById('qualityMinLabel'),
 };
 
 // 排序状态
@@ -107,6 +109,30 @@ function renderCards(papers) {
         tagsDiv.appendChild(tag);
       });
     }
+
+    // 质量评分徽章
+    const qa = p.quality_assessment;
+    if (qa && qa.overall_score !== undefined) {
+      const score = qa.overall_score;
+      let level, label;
+      if (score >= 80) { level = 'excellent'; label = '★★★★★'; }
+      else if (score >= 65) { level = 'good';    label = '★★★★'; }
+      else if (score >= 50) { level = 'fair';    label = '★★★'; }
+      else                   { level = 'poor';   label = '★★'; }
+
+      const badge = document.createElement('span');
+      badge.className = `quality-badge ${level}`;
+      badge.title = `质量分数: ${score}/100 · ${level}`;
+      badge.innerHTML = `<span class="score">${score}</span><span>${label}</span>`;
+      tagsDiv.appendChild(badge);
+    } else {
+      // 无质量评估数据
+      const badge = document.createElement('span');
+      badge.className = 'quality-badge unknown';
+      badge.textContent = '（未评估）';
+      badge.title = '暂无质量评估数据';
+      tagsDiv.appendChild(badge);
+    }
     
     // 单位
     const aff = card.querySelector('.affiliations');
@@ -128,7 +154,7 @@ function renderCards(papers) {
 }
 
 // 渲染溢出列表
-function renderOverflowList(keyword = '', startDate = '', endDate = '') {
+function renderOverflowList(keyword = '', startDate = '', endDate = '', qualityMin = 0) {
   if (overflowList.length === 0) {
     els.overflowSection.style.display = 'none';
     return;
@@ -152,6 +178,14 @@ function renderOverflowList(keyword = '', startDate = '', endDate = '') {
     filtered = filtered.filter(item => {
       const text = `${item.title} ${item.arxiv_id || ''} ${item.authors || ''} ${item.abstract || ''}`.toLowerCase();
       return text.includes(kw);
+    });
+  }
+
+  // 质量分数筛选
+  if (qualityMin > 0) {
+    filtered = filtered.filter(item => {
+      const score = item.quality_assessment && item.quality_assessment.overall_score;
+      return score !== undefined && score >= qualityMin;
     });
   }
 
@@ -224,6 +258,20 @@ function renderOverflowCard(item) {
     meta.textContent = item.categories ? `${item.authors} · ${item.categories}` : item.authors;
     content.appendChild(meta);
   }
+
+  // 质量评分
+  const qa = item.quality_assessment;
+  if (qa && qa.overall_score !== undefined) {
+    const score = qa.overall_score;
+    const level = score >= 80 ? 'excellent' : score >= 65 ? 'good' : score >= 50 ? 'fair' : 'poor';
+    const stars = score >= 80 ? '★★★★★' : score >= 65 ? '★★★★' : score >= 50 ? '★★★' : '★★';
+    const badge = document.createElement('div');
+    badge.className = `quality-badge ${level}`;
+    badge.style.marginTop = '4px';
+    badge.style.display = 'inline-block';
+    badge.innerHTML = `<span class="score">${score}</span><span>${stars}</span>`;
+    content.appendChild(badge);
+  }
   
   // 单位
   if (item.affiliations) {
@@ -289,6 +337,12 @@ function sortPapers(papers, sortBy, sortDir, keyword) {
       va = (a.title || '').toLowerCase();
       vb = (b.title || '').toLowerCase();
       return sortDir === 'desc' ? vb.localeCompare(va) : va.localeCompare(vb);
+    } else if (sortBy === 'quality_score') {
+      // quality_assessment 缺失的论文排到最后
+      const qa = p => p.quality_assessment && p.quality_assessment.overall_score !== undefined;
+      va = qa(a) ? a.quality_assessment.overall_score : -1;
+      vb = qa(b) ? b.quality_assessment.overall_score : -1;
+      return sortDir === 'desc' ? vb - va : va - vb;
     } else {
       // published_date / crawled_date
       va = a[sortBy] || '';
@@ -324,6 +378,7 @@ function applyFilters() {
   const endDate = els.endDate.value;
   const keyword = els.keyword.value.toLowerCase().trim();
   const favOnly = els.favoriteOnly.checked;
+  const qualityMin = parseInt(els.qualityMin.value, 10);
   
   let filtered = allPapers.filter(p => {
     // 日期筛选
@@ -336,6 +391,12 @@ function applyFilters() {
     // 收藏筛选
     if (favOnly && !favorites.includes(p.arxiv_id)) {
       return false;
+    }
+
+    // 质量分数筛选
+    if (qualityMin > 0) {
+      const score = p.quality_assessment && p.quality_assessment.overall_score;
+      if (score === undefined || score < qualityMin) return false;
     }
 
     // 关键词筛选
@@ -351,13 +412,16 @@ function applyFilters() {
   filtered = sortPapers(filtered, sortBy, sortDir, keyword);
 
   renderCards(filtered);
-  renderOverflowList(keyword, startDate, endDate);
+  renderOverflowList(keyword, startDate, endDate, qualityMin);
 }
 
 // 重置筛选
 function resetFilters() {
   els.keyword.value = '';
   els.favoriteOnly.checked = false;
+  els.qualityMin.value = 0;
+  els.qualityMinLabel.textContent = '0';
+  els.qualityMin.style.setProperty('--pct', '0%');
   
   // 重置日期为最近7天
   if (allPapers.length > 0) {
@@ -421,6 +485,15 @@ els.sortDirBtn.addEventListener('click', () => {
   sortDir = sortDir === 'desc' ? 'asc' : 'desc';
   els.sortDirBtn.textContent = sortDir === 'desc' ? '↓' : '↑';
   els.sortDirBtn.title = sortDir === 'desc' ? '切换升序' : '切换降序';
+  applyFilters();
+});
+
+// 质量滑块：实时更新标签 + 触发筛选
+els.qualityMin.addEventListener('input', () => {
+  const val = parseInt(els.qualityMin.value, 10);
+  els.qualityMinLabel.textContent = val;
+  // 实时更新滑块轨道填充色
+  els.qualityMin.style.setProperty('--pct', val + '%');
   applyFilters();
 });
 

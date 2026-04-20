@@ -78,6 +78,7 @@ def load_papers(max_display: int = 10) -> tuple[List[Dict], List[Dict], List[Dic
             "pdf_url": f"https://arxiv.org/pdf/{p.get('arxiv_id', '')}",
             "arxiv_url": f"https://arxiv.org/abs/{p.get('arxiv_id', '')}",
             "is_enriched": p.get("is_enriched", False),
+            "quality_assessment": p.get("quality_assessment"),
         })
     
     # 按抓取日期倒序排列
@@ -133,6 +134,7 @@ def main() -> None:
                 "arxiv_url": od.get("arxiv_url", ""),
                 "pdf_url": od.get("pdf_url", ""),
                 "is_enriched": od.get("is_enriched", False),
+                "quality_assessment": od.get("quality_assessment"),
             })
     
     # 重新按发表日期排序

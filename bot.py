@@ -84,12 +84,17 @@ def parse_args():
     parser.add_argument(
         "--retry-pending",
         action="store_true",
-        help="下载新论文，并重试翻译 pending 状态的论文（默认不重试）"
+        help="下载新论文，并重试翻译 pending 状态的论文（默认不重试）；同时重试 pending 论文的质量评估"
     )
     parser.add_argument(
         "--only-translate",
         action="store_true",
         help="跳过 arXiv API 调用，直接翻译历史 pending/未翻译论文"
+    )
+    parser.add_argument(
+        "--only-quality",
+        action="store_true",
+        help="跳过 arXiv API 调用，仅对历史论文进行质量评估（不调用翻译）"
     )
     parser.add_argument(
         "--rebuild",
@@ -104,6 +109,8 @@ def parse_args():
     args = parser.parse_args()
     if args.only_translate and (args.rebuild or args.retry_pending):
         parser.error("--only-translate 与 --rebuild / --retry-pending 互斥")
+    if args.only_quality and (args.rebuild or args.only_translate):
+        parser.error("--only-quality 与 --rebuild / --only-translate 互斥")
     return args
 
 
@@ -117,7 +124,7 @@ def main():
     logger.info("=" * 60)
     
     # 加载配置
-    logger.info("\n[1/6] 加载配置...")
+    logger.info("\n[1/7] 加载配置...")
     script_dir = Path(__file__).resolve().parent
     settings = load_settings()
 
@@ -130,7 +137,7 @@ def main():
     logger.info(f"  每日上限: {settings['processing']['max_papers_per_day']} 篇")
     
     # 初始化存储
-    logger.info("\n[2/6] 初始化存储...")
+    logger.info("\n[2/7] 初始化存储...")
     papers_json_path = script_dir / settings["storage"]["papers_json"]
     storage = PaperStorage(str(papers_json_path))
     logger.info(f"  现有论文: {len(storage.get_all_papers())} 篇")
@@ -155,18 +162,21 @@ def main():
     # 清理旧论文
     keep_days = settings.get("storage", {}).get("keep_days", 90)
     if keep_days > 0:
-        logger.info(f"\n[2.5/6] 清理超过 {keep_days} 天的旧论文（保留收藏）...")
+        logger.info(f"\n[2.5/7] 清理超过 {keep_days} 天的旧论文（保留收藏）...")
         removed_papers, removed_overflow = storage.cleanup_old_papers(keep_days)
         if removed_papers > 0 or removed_overflow > 0:
             storage.save()
     
     # 清理过期 PDF
     pdf_dir = settings.get("storage", {}).get("pdf_dir", "data/pdfs")
-    logger.info(f"\n[2.6/6] 清理过期 PDF 文件...")
+    logger.info(f"\n[2.6/7] 清理过期 PDF 文件...")
     removed_pdfs = storage.cleanup_pdfs(pdf_dir, keep_days)
     
-    # 搜索和下载（或跳过直接翻译）
-    if args.only_translate:
+    # 搜索和下载（或跳过直接翻译/质量评估）
+    if args.only_quality:
+        logger.info("\n[3/7] 跳过搜索和翻译，仅进行质量评估...")
+        new_count, overflow_count = 0, 0
+    elif args.only_translate:
         logger.info("\n[3/7] 跳过搜索，直接翻译历史论文...")
         new_count, overflow_count = 0, 0
     else:
@@ -186,58 +196,121 @@ def main():
     logger.info("\n[4/7] 提取作者单位...")
     papers_to_enrich = []
     papers_to_translate = []
+    papers_to_quality = []
     today = storage.get_metadata().get("last_crawl", "")[:10]
 
-    # 合并主列表和 overflow，统一处理翻译逻辑
-    for paper in list(storage.get_all_papers()) + storage.get_overflow_list():
-        # 只处理今天新增的论文
-        if paper.get("crawled_date") == today:
-            if not paper.get("affiliations") and paper.get("pdf_filename"):
-                paper = enrich_paper_with_affiliation(paper)
-                papers_to_enrich.append(paper)
-            # 只处理新论文的翻译（无 summary_cn 且非 pending）
-            if not paper.get("summary_cn") and paper.get("abstract_zh_status") != "pending":
-                papers_to_translate.append(paper)
-
-    # 如果指定了 --retry-pending，也处理 pending 论文和从未翻译的论文（主列表 + overflow）
-    if args.retry_pending:
+    # --only-quality: 收集所有需要质量评估的历史论文
+    if args.only_quality:
         for paper in list(storage.get_all_papers()) + storage.get_overflow_list():
-            # pending 状态的论文
-            if paper.get("abstract_zh_status") == "pending" and paper not in papers_to_translate:
-                papers_to_translate.append(paper)
-            # 从未尝试翻译的论文（abstract_zh_status 为空且无 summary_cn）
-            if not paper.get("summary_cn") and not paper.get("abstract_zh_status") and paper not in papers_to_translate:
-                papers_to_translate.append(paper)
-        retry_msg = "（含重试 pending）"
+            if paper.get("quality_pending") or not paper.get("quality_assessment"):
+                papers_to_quality.append(paper)
+        logger.info(f"  待质量评估: {len(papers_to_quality)} 篇历史论文")
     else:
-        retry_msg = ""
+        # 合并主列表和 overflow，统一处理翻译逻辑
+        for paper in list(storage.get_all_papers()) + storage.get_overflow_list():
+            # 只处理今天新增的论文
+            if paper.get("crawled_date") == today:
+                if not paper.get("affiliations") and paper.get("pdf_filename"):
+                    paper = enrich_paper_with_affiliation(paper)
+                    papers_to_enrich.append(paper)
+                # 只处理新论文的翻译（无 summary_cn 且非 pending）
+                if not paper.get("summary_cn") and paper.get("abstract_zh_status") != "pending":
+                    papers_to_translate.append(paper)
+
+        # 如果指定了 --retry-pending，也处理 pending 论文和从未翻译的论文（主列表 + overflow）
+        if args.retry_pending:
+            for paper in list(storage.get_all_papers()) + storage.get_overflow_list():
+                # pending 状态的论文
+                if paper.get("abstract_zh_status") == "pending" and paper not in papers_to_translate:
+                    papers_to_translate.append(paper)
+                # 从未尝试翻译的论文（abstract_zh_status 为空且无 summary_cn）
+                if not paper.get("summary_cn") and not paper.get("abstract_zh_status") and paper not in papers_to_translate:
+                    papers_to_translate.append(paper)
+                # 同时收集 pending 质量评估的论文
+                if paper.get("quality_pending") and paper not in papers_to_quality:
+                    papers_to_quality.append(paper)
+            retry_msg = "（含重试 pending）"
+        else:
+            retry_msg = ""
+
+        logger.info(f"  处理 {len(papers_to_enrich)} 篇论文的单位信息")
+        logger.info(f"  待翻译 {len(papers_to_translate)} 篇新论文{retry_msg}")
+        if papers_to_quality:
+            logger.info(f"  待质量评估（含retry pending）: {len(papers_to_quality)} 篇")
     
-    logger.info(f"  处理 {len(papers_to_enrich)} 篇论文的单位信息")
-    logger.info(f"  待翻译 {len(papers_to_translate)} 篇新论文{retry_msg}")
-    
-    # 生成中文摘要
-    logger.info("\n[5/7] 生成中文摘要...")
-    if settings["processing"]["generate_chinese_summary"]:
+    # 生成中文摘要 & 质量评估
+    logger.info("\n[5/7] 生成中文摘要 & 质量评估...")
+
+    # --only-quality 模式：只做质量评估，跳过翻译
+    if args.only_quality:
+        if settings.get("processing", {}).get("quality_assessment", True):
+            enricher = LLMEnricher(settings)
+            logger.info("  [质量评估] 模式: --only-quality")
+            quality_done = enricher.batch_quality_assess(papers_to_quality)
+            # 写回存储（主列表或 overflow）
+            for paper in papers_to_quality:
+                for i, p in enumerate(storage.data["papers"]):
+                    if p["arxiv_id"] == paper["arxiv_id"]:
+                        storage.data["papers"][i] = paper
+                        break
+                else:
+                    for i, o in enumerate(storage.data["overflow_list"]):
+                        if o["arxiv_id"] == paper["arxiv_id"]:
+                            storage.data["overflow_list"][i] = paper
+                            break
+            storage.save()
+            # 清理 gateway session（batch_quality_assess 不负责清理，由调用方统一处理）
+            cleaned = enricher._cleanup_gateway_sessions()
+            if cleaned:
+                logger.info(f"  清理 {cleaned} 个临时 session")
+            logger.info(f"  质量评估完成: {quality_done}/{len(papers_to_quality)} 篇")
+        else:
+            logger.info("  质量评估已禁用")
+
+    elif settings["processing"]["generate_chinese_summary"]:
         enricher = LLMEnricher(settings)
-        
+
         if enricher.api_key:
             logger.info(f"  使用方案B: 直接调用LLM API ({enricher.model})")
         elif enricher._use_openclaw:
             logger.info("  使用方案C: OpenClaw网关LLM代理 (自动检测)")
         else:
             logger.info("  使用方案A: 标记pending状态，等后续重试")
-        
+
         # 批量翻译 + 逐条降级 + session清理
         enriched_papers = enricher.enrich_papers(papers_to_translate)
-        
+
         # 写回存储
         for paper in enriched_papers:
             for i, p in enumerate(storage.data["papers"]):
                 if p["arxiv_id"] == paper["arxiv_id"]:
                     storage.data["papers"][i] = paper
                     break
-        
+
         storage.save()
+
+        # --retry-pending 模式下，质量评估在翻译后批量跑
+        if args.retry_pending and papers_to_quality:
+            logger.info(f"  [质量评估] 批量评估 {len(papers_to_quality)} 篇 pending 论文...")
+            q_done = enricher.batch_quality_assess(papers_to_quality)
+            # 写回存储
+            for paper in papers_to_quality:
+                for i, p in enumerate(storage.data["papers"]):
+                    if p["arxiv_id"] == paper["arxiv_id"]:
+                        storage.data["papers"][i] = paper
+                        break
+                else:
+                    for i, o in enumerate(storage.data["overflow_list"]):
+                        if o["arxiv_id"] == paper["arxiv_id"]:
+                            storage.data["overflow_list"][i] = paper
+                            break
+            storage.save()
+            # 清理 gateway session（翻译 session 在 enrich_papers 已清理，这里清理质量评估的）
+            cleaned = enricher._cleanup_gateway_sessions()
+            if cleaned:
+                logger.info(f"  清理 {cleaned} 个临时 session")
+            logger.info(f"  质量评估完成: {q_done}/{len(papers_to_quality)} 篇")
+
     else:
         logger.info("  已禁用中文摘要生成")
     
