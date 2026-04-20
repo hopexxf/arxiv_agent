@@ -136,24 +136,71 @@ input[type="date"] {
   min-inline-size: 0;
 }
 
-.search-field {
-  grid-column: 1 / span 8;
-}
-
+/* 第一行：快捷时间 + 关键词 + 排序 + 操作 */
 .quick-range-field {
-  grid-column: 7 / span 4;
+  grid-column: 1 / span 4;
+  grid-row: 1;
 }
 
+.search-field {
+  grid-column: 5 / span 4;
+  grid-row: 1;
+}
+
+.sort-field {
+  grid-column: 9 / span 2;
+  grid-row: 1;
+}
+
+.sort-row {
+  display: flex;
+  gap: 6px;
+  align-items: stretch;
+}
+
+.sort-row select {
+  flex: 1;
+}
+
+.sort-dir-btn {
+  width: auto;
+  padding: 10px 10px;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.actions {
+  grid-column: 11 / span 2;
+  grid-row: 1;
+  display: flex;
+  gap: 8px;
+  align-items: end;
+}
+
+.actions .btn {
+  width: auto;
+}
+
+/* 第二行：日期范围 + 收藏 */
 .date-mode-field {
   grid-column: 1 / span 2;
+  grid-row: 2;
 }
 
 .start-date-field {
   grid-column: 3 / span 2;
+  grid-row: 2;
 }
 
 .end-date-field {
   grid-column: 5 / span 2;
+  grid-row: 2;
+}
+
+.favorite-only-field {
+  grid-column: 7 / span 2;
+  grid-row: 2;
+  justify-content: end;
 }
 
 .quick-range {
@@ -166,35 +213,6 @@ input[type="date"] {
   padding: 8px 12px;
   font-size: 13px;
   width: auto;
-}
-
-.favorite-only-field {
-  grid-column: 9 / span 2;
-  justify-content: end;
-}
-
-.sort-field {
-  grid-column: 13;
-  grid-row: 1;
-  display: flex;
-  flex-direction: row;
-  align-items: end;
-  gap: 6px;
-}
-
-.sort-field label {
-  align-self: center;
-}
-
-.sort-field select,
-.sort-dir-btn {
-  width: auto;
-}
-
-.sort-dir-btn {
-  padding: 10px 10px;
-  font-size: 16px;
-  flex-shrink: 0;
 }
 
 .switch-label {
@@ -210,18 +228,6 @@ input[type="date"] {
 
 .switch-label input {
   margin: 0;
-}
-
-.actions {
-  grid-column: 11 / span 2;
-  display: flex;
-  gap: 8px;
-  align-items: end;
-  grid-row: 1;
-}
-
-.actions .btn {
-  width: auto;
 }
 
 .btn {
@@ -525,19 +531,53 @@ summary:hover {
 /* 响应式 */
 @media (max-width: 768px) {
   .filters {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
   }
-  
-  .search-field,
-  .quick-range-field,
-  .date-mode-field,
-  .start-date-field,
-  .end-date-field,
-  .favorite-only-field,
-  .actions {
+
+  /* 第一行：关键词占满宽，快捷时间占满宽 */
+  .search-field {
+    grid-column: 1 / span 2;
+    grid-row: 1;
+  }
+
+  .quick-range-field {
+    grid-column: 1 / span 2;
+    grid-row: 2;
+  }
+
+  /* 排序 + 操作同一行 */
+  .sort-field {
     grid-column: 1;
+    grid-row: 3;
   }
-  
+
+  .actions {
+    grid-column: 2;
+    grid-row: 3;
+  }
+
+  /* 日期范围 */
+  .date-mode-field {
+    grid-column: 1 / span 2;
+    grid-row: 4;
+  }
+
+  .start-date-field {
+    grid-column: 1;
+    grid-row: 5;
+  }
+
+  .end-date-field {
+    grid-column: 2;
+    grid-row: 5;
+  }
+
+  .favorite-only-field {
+    grid-column: 1 / span 2;
+    grid-row: 6;
+  }
+
   .cards {
     grid-template-columns: 1fr;
   }
