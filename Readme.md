@@ -350,6 +350,7 @@ GPU RAN
 
 - 作者单位提取模块移植自 [hermes-arxiv-agent](https://github.com/genggng/hermes-arxiv-agent)
 - 网站设计参考 hermes-arxiv-agent
+- 论文质量评估方法参考 [NAIP](https://github.com/ssocean/NAIP)（Zhao P et al. *From Words to Worth: Newborn Article Impact Prediction with LLM*, AAAI 2025）
 
 ## License
 
