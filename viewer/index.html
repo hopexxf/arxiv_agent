@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=3">
+  <link rel="stylesheet" href="styles.css?v=4">
 </head>
 <body>
   <div class="bg-shape bg-shape-a"></div>
@@ -73,6 +73,17 @@
         <button id="applyBtn" class="btn btn-primary">筛选</button>
         <button id="resetBtn" class="btn">重置</button>
       </div>
+
+      <div class="field sort-field">
+        <label for="sortBy">排序</label>
+        <select id="sortBy">
+          <option value="relevance">相关性</option>
+          <option value="published_date">发布时间</option>
+          <option value="crawled_date">抓取时间</option>
+          <option value="title">标题</option>
+        </select>
+        <button id="sortDirBtn" class="btn sort-dir-btn" title="切换升序/降序">↓</button>
+      </div>
     </section>
 
     <section class="summary" id="summary"></section>
@@ -109,6 +120,6 @@
     </article>
   </template>
 
-  <script src="app.js?v=3"></script>
+  <script src="app.js?v=4"></script>
 </body>
 </html>

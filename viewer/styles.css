@@ -173,6 +173,30 @@ input[type="date"] {
   justify-content: end;
 }
 
+.sort-field {
+  grid-column: 13;
+  grid-row: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: end;
+  gap: 6px;
+}
+
+.sort-field label {
+  align-self: center;
+}
+
+.sort-field select,
+.sort-dir-btn {
+  width: auto;
+}
+
+.sort-dir-btn {
+  padding: 10px 10px;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
 .switch-label {
   display: inline-flex;
   align-items: center;

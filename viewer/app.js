@@ -15,6 +15,8 @@ const els = {
   applyBtn: document.getElementById('applyBtn'),
   resetBtn: document.getElementById('resetBtn'),
   quickRange: document.getElementById('quickRange'),
+  sortBy: document.getElementById('sortBy'),
+  sortDirBtn: document.getElementById('sortDirBtn'),
   summary: document.getElementById('summary'),
   cards: document.getElementById('cards'),
   overflowSection: document.getElementById('overflowSection'),
@@ -22,6 +24,10 @@ const els = {
   metaText: document.getElementById('metaText'),
   genTime: document.getElementById('genTime'),
 };
+
+// 排序状态
+let sortBy = 'relevance';   // 'relevance' | 'published_date' | 'crawled_date' | 'title'
+let sortDir = 'desc';       // 'asc' | 'desc'
 
 // 初始化
 async function init() {
@@ -127,9 +133,9 @@ function renderOverflowList(keyword = '', startDate = '', endDate = '') {
     els.overflowSection.style.display = 'none';
     return;
   }
-  
+
   let filtered = overflowList;
-  
+
   // 日期筛选（使用published_date）
   if (startDate || endDate) {
     filtered = filtered.filter(item => {
@@ -139,7 +145,7 @@ function renderOverflowList(keyword = '', startDate = '', endDate = '') {
       return true;
     });
   }
-  
+
   // 关键词筛选
   if (keyword) {
     const kw = keyword.toLowerCase();
@@ -148,6 +154,9 @@ function renderOverflowList(keyword = '', startDate = '', endDate = '') {
       return text.includes(kw);
     });
   }
+
+  // 排序
+  filtered = sortPapers(filtered, sortBy, sortDir, keyword);
   
   if (filtered.length === 0) {
     els.overflowSection.style.display = 'none';
@@ -242,6 +251,57 @@ function renderOverflowCard(item) {
   els.overflowList.appendChild(card);
 }
 
+// ─────────────────────────────────────────────
+// 排序函数
+// ─────────────────────────────────────────────
+function calcRelevance(p, keyword) {
+  if (!keyword) return 0;
+  const kw = keyword.toLowerCase();
+  let score = 0;
+  if (p.title && p.title.toLowerCase().includes(kw))       score += 3;
+  if (p.authors && p.authors.toLowerCase().includes(kw))  score += 2;
+  if (p.affiliations && p.affiliations.toLowerCase().includes(kw)) score += 2;
+  if (p.categories && p.categories.toLowerCase().includes(kw)) score += 1;
+  if (p.abstract && p.abstract.toLowerCase().includes(kw)) score += 1;
+  if (p.summary_cn && p.summary_cn.toLowerCase().includes(kw)) score += 1;
+  return score;
+}
+
+function sortPapers(papers, sortBy, sortDir, keyword) {
+  const sorted = [...papers];
+  sorted.sort((a, b) => {
+    let va, vb;
+
+    if (sortBy === 'relevance') {
+      if (keyword) {
+        va = calcRelevance(a, keyword);
+        vb = calcRelevance(b, keyword);
+        if (va !== vb) return sortDir === 'desc' ? vb - va : va - vb;
+        // 平分时 fallback 到发布时间
+        va = a.published_date || '';
+        vb = b.published_date || '';
+      } else {
+        // 无关键词，fallback 到发布时间
+        va = a.published_date || '';
+        vb = b.published_date || '';
+      }
+    } else if (sortBy === 'title') {
+      va = (a.title || '').toLowerCase();
+      vb = (b.title || '').toLowerCase();
+      return sortDir === 'desc' ? vb.localeCompare(va) : va.localeCompare(vb);
+    } else {
+      // published_date / crawled_date
+      va = a[sortBy] || '';
+      vb = b[sortBy] || '';
+    }
+
+    // 日期降序：b > a（更新日期在前）；升序：a > b
+    if (sortDir === 'desc') return vb > va ? 1 : vb < va ? -1 : 0;
+    return va > vb ? 1 : va < vb ? -1 : 0;
+  });
+  return sorted;
+}
+
 // 收藏切换
 function toggleFavorite(arxivId, btn) {
   const idx = favorites.indexOf(arxivId);
@@ -272,21 +332,24 @@ function applyFilters() {
       if (startDate && date < startDate) return false;
       if (endDate && date > endDate) return false;
     }
-    
+
     // 收藏筛选
     if (favOnly && !favorites.includes(p.arxiv_id)) {
       return false;
     }
-    
+
     // 关键词筛选
     if (keyword) {
       const searchText = `${p.title} ${p.authors} ${p.affiliations} ${p.abstract} ${p.summary_cn}`.toLowerCase();
       if (!searchText.includes(keyword)) return false;
     }
-    
+
     return true;
   });
-  
+
+  // 排序（在筛选之后）
+  filtered = sortPapers(filtered, sortBy, sortDir, keyword);
+
   renderCards(filtered);
   renderOverflowList(keyword, startDate, endDate);
 }
@@ -346,6 +409,19 @@ els.quickRange.addEventListener('click', e => {
   if (e.target.dataset.range) {
     setQuickRange(e.target.dataset.range);
   }
+});
+
+// 排序控件事件
+els.sortBy.addEventListener('change', () => {
+  sortBy = els.sortBy.value;
+  applyFilters();
+});
+
+els.sortDirBtn.addEventListener('click', () => {
+  sortDir = sortDir === 'desc' ? 'asc' : 'desc';
+  els.sortDirBtn.textContent = sortDir === 'desc' ? '↓' : '↑';
+  els.sortDirBtn.title = sortDir === 'desc' ? '切换升序' : '切换降序';
+  applyFilters();
 });
 
 // 启动
