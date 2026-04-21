@@ -72,7 +72,7 @@ def load_papers(max_display: int = 10) -> tuple[List[Dict], List[Dict], List[Dic
             "affiliations": normalize_text(affiliations),
             "published_date": normalize_text(p.get("published_date")),
             "crawled_date": normalize_text(p.get("crawled_date")),
-            "categories": ", ".join(p.get("categories", [])),
+            "categories": ", ".join(p.get("categories", [])) if isinstance(p.get("categories"), list) else p.get("categories", ""),
             "abstract": normalize_text(p.get("abstract")),
             "summary_cn": normalize_text(p.get("summary_cn")),
             "pdf_url": f"https://arxiv.org/pdf/{p.get('arxiv_id', '')}",
