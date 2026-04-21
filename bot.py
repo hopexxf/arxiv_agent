@@ -205,6 +205,13 @@ def main():
             if paper.get("quality_pending") or not paper.get("quality_assessment"):
                 papers_to_quality.append(paper)
         logger.info(f"  待质量评估: {len(papers_to_quality)} 篇历史论文")
+    # --only-translate: 收集所有需要翻译的历史论文（不限日期，包括 pending）
+    elif args.only_translate:
+        for paper in list(storage.get_all_papers()) + storage.get_overflow_list():
+            # 需要翻译的论文：无 summary_cn（包括 pending 和从未翻译的）
+            if not paper.get("summary_cn"):
+                papers_to_translate.append(paper)
+        logger.info(f"  待翻译历史论文: {len(papers_to_translate)} 篇")
     else:
         # 合并主列表和 overflow，统一处理翻译逻辑
         for paper in list(storage.get_all_papers()) + storage.get_overflow_list():

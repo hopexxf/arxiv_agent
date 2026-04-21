@@ -533,6 +533,7 @@ function resetFilters() {
   els.qualityMin.value = 0;
   els.qualityMinLabel.textContent = '0';
   els.qualityMin.style.setProperty('--pct', '0%');
+  els.qualityMin.style.removeProperty('--slider-color');
   
   // 重置日期为最近7天
   if (allPapers.length > 0) {
@@ -605,6 +606,13 @@ els.qualityMin.addEventListener('input', () => {
   els.qualityMinLabel.textContent = val;
   // 实时更新滑块轨道填充色
   els.qualityMin.style.setProperty('--pct', val + '%');
+  // 根据分数范围动态变色（与质量徽章分级一致）
+  let color;
+  if (val >= 80)      color = '#22c55e';      // excellent-绿色
+  else if (val >= 65) color = '#3b82f6';     // good-蓝色
+  else if (val >= 50) color = '#f59e0b';     // fair-黄色
+  else                color = '#ef4444';     // poor-红色
+  els.qualityMin.style.setProperty('--slider-color', color);
   applyFilters();
 });
 

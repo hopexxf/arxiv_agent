@@ -400,8 +400,19 @@ class LLMEnricher:
         方案C: 通过 OpenClaw LLM 翻译
         优先使用 19000 上游 proxy（不创建 session），失败时降级到 28789 网关端点
         """
-        payload = {
+        # 19000 上游 proxy 接受 modelroute
+        payload_19000 = {
             "model": "modelroute",
+            "messages": [
+                {"role": "system", "content": _SYSTEM_PROMPT},
+                {"role": "user", "content": _USER_PROMPT_TEMPLATE.format(abstract=abstract)}
+            ],
+            "temperature": 0,
+            "max_tokens": self.max_tokens
+        }
+        # 28789 网关只接受 openclaw
+        payload_gateway = {
+            "model": "openclaw",
             "messages": [
                 {"role": "system", "content": _SYSTEM_PROMPT},
                 {"role": "user", "content": _USER_PROMPT_TEMPLATE.format(abstract=abstract)}
@@ -414,10 +425,10 @@ class LLMEnricher:
         _port = self._gateway_port
         endpoints = []
         if self._proxy_403_count < self._proxy_403_max:
-            endpoints.append(("http://127.0.0.1:19000/proxy/llm/chat/completions", "上游proxy(19000)"))
-        endpoints.append((f"http://127.0.0.1:{_port}/v1/chat/completions", f"网关端点({_port})"))
+            endpoints.append(("http://127.0.0.1:19000/proxy/llm/chat/completions", "上游proxy(19000)", payload_19000))
+        endpoints.append((f"http://127.0.0.1:{_port}/v1/chat/completions", f"网关端点({_port})", payload_gateway))
 
-        for url, desc in endpoints:
+        for url, desc, payload in endpoints:
             try:
                 import urllib.request
                 headers = {
@@ -453,6 +464,11 @@ class LLMEnricher:
 
             except urllib.error.HTTPError as e:
                 print(f"[WARN] {desc}: HTTP {e.code}")
+                try:
+                    err_body = e.read().decode('utf-8')
+                    print(f"[DEBUG] Error body: {err_body[:300]}")
+                except:
+                    pass
                 if e.code == 403 and "19000" in desc:
                     self._proxy_403_count += 1
                     if self._proxy_403_count >= self._proxy_403_max:
@@ -586,6 +602,11 @@ class LLMEnricher:
                     return content or reasoning or None
             except urllib.error.HTTPError as e:
                 print(f"[WARN] 质量评估 {desc}: HTTP {e.code}")
+                try:
+                    err_body = e.read().decode('utf-8')
+                    print(f"[DEBUG] Error body: {err_body[:300]}")
+                except:
+                    pass
                 if e.code == 403 and "19000" in desc:
                     self._proxy_403_count += 1
                     if self._proxy_403_count >= self._proxy_403_max:
@@ -886,20 +907,25 @@ class LLMEnricher:
         }
 
         # 端点降级（复用 403 计数器逻辑）
+        # 注意：19000 上游代理接受 modelroute，28789 网关只接受 openclaw
         _port = self._gateway_port
         endpoints = []
         if self._proxy_403_count < self._proxy_403_max:
-            endpoints.append(("http://127.0.0.1:19000/proxy/llm/chat/completions", "上游proxy(19000)"))
-        endpoints.append((f"http://127.0.0.1:{_port}/v1/chat/completions", f"网关端点({_port})"))
+            # 19000 上游代理
+            payload_19000 = {**payload, "model": "modelroute"}
+            endpoints.append(("http://127.0.0.1:19000/proxy/llm/chat/completions", "上游proxy(19000)", payload_19000))
+        # 28789 网关
+        payload_gateway = {**payload, "model": "openclaw"}
+        endpoints.append((f"http://127.0.0.1:{_port}/v1/chat/completions", f"网关端点({_port})", payload_gateway))
 
-        for url, desc in endpoints:
+        for url, desc, req_payload in endpoints:
             try:
                 import urllib.request
                 headers = {
                     "Content-Type": "application/json",
                     "Authorization": f"Bearer {self._openclaw_key}",
                 }
-                data = json.dumps(payload).encode("utf-8")
+                data = json.dumps(req_payload).encode("utf-8")
                 req = urllib.request.Request(url, data=data, headers=headers, method="POST")
                 with urllib.request.urlopen(req, timeout=180) as resp:
                     result = json.loads(resp.read().decode("utf-8"))
@@ -922,6 +948,11 @@ class LLMEnricher:
 
             except urllib.error.HTTPError as e:
                 print(f"[WARN] 批量质量评估 {desc}: HTTP {e.code}")
+                try:
+                    err_body = e.read().decode('utf-8')
+                    print(f"[DEBUG] Error body: {err_body[:300]}")
+                except:
+                    pass
                 if e.code == 403 and "19000" in desc:
                     self._proxy_403_count += 1
                     if self._proxy_403_count >= self._proxy_403_max:
@@ -937,9 +968,33 @@ class LLMEnricher:
         return {p.get("arxiv_id", ""): None for p in papers}
 
     def _parse_batch_quality_response(self, text: str, papers: list) -> Dict[str, Optional[Dict]]:
-        """从批量质量评估响应中解析各篇结果"""
+        """从批量质量评估响应中解析各篇结果，支持两种格式：
+        1. 分隔符格式: |||arxiv_id|||{内容}
+        2. JSON数组格式: [{"paper_id": "...", ...}]
+        """
         results: Dict[str, Optional[Dict]] = {}
         expected_ids = {p.get("arxiv_id", "") for p in papers}
+
+        # 尝试 JSON 数组格式（LLM 倾向于返回这种格式）
+        try:
+            import json
+            # 提取 JSON（可能嵌套在 markdown 代码块中）
+            json_match = re.search(r'\[[\s\S]*\]', text)
+            if json_match:
+                data = json.loads(json_match.group())
+                if isinstance(data, list):
+                    for item in data:
+                        pid = item.get("paper_id", "")
+                        if pid in expected_ids:
+                            # 将 paper_id 转为 arxiv_id 格式用于解析
+                            item["arxiv_id"] = pid
+                            quality = self._parse_quality_response(json.dumps(item))
+                            if quality:
+                                results[pid] = quality
+                    if results:
+                        return results
+        except Exception:
+            pass  # 尝试分隔符格式
 
         # 按分隔符分割
         blocks = re.split(r'\|\|\|([A-Za-z0-9_.-]+)\|\|\|', text)
@@ -992,9 +1047,19 @@ class LLMEnricher:
             parts.append(f"|||{aid}|||\n{abstract}")
         user_content = "\n\n".join(parts)
 
-        # 构造请求
-        payload = {
+        # 19000 上游 proxy 接受 modelroute
+        payload_19000 = {
             "model": "modelroute",
+            "messages": [
+                {"role": "system", "content": _BATCH_SYSTEM_PROMPT},
+                {"role": "user", "content": user_content},
+            ],
+            "temperature": 0,
+            "max_tokens": 4000,
+        }
+        # 28789 网关只接受 openclaw
+        payload_gateway = {
+            "model": "openclaw",
             "messages": [
                 {"role": "system", "content": _BATCH_SYSTEM_PROMPT},
                 {"role": "user", "content": user_content},
@@ -1006,11 +1071,11 @@ class LLMEnricher:
         # 端点降级
         _port = self._gateway_port
         endpoints = [
-            ("http://127.0.0.1:19000/proxy/llm/chat/completions", "上游proxy(19000)"),
-            (f"http://127.0.0.1:{_port}/v1/chat/completions", f"网关端点({_port})"),
+            ("http://127.0.0.1:19000/proxy/llm/chat/completions", "上游proxy(19000)", payload_19000),
+            (f"http://127.0.0.1:{_port}/v1/chat/completions", f"网关端点({_port})", payload_gateway),
         ]
 
-        for url, desc in endpoints:
+        for url, desc, payload in endpoints:
             try:
                 import urllib.request
                 headers = {
@@ -1039,6 +1104,11 @@ class LLMEnricher:
 
             except urllib.error.HTTPError as e:
                 print(f"[WARN] {desc}: HTTP {e.code}")
+                try:
+                    err_body = e.read().decode('utf-8')
+                    print(f"[DEBUG] Error body: {err_body[:300]}")
+                except:
+                    pass
             except Exception as e:
                 print(f"[WARN] {desc}: {_sanitize_error(e)}")
 

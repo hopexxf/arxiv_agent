@@ -226,7 +226,7 @@ input[type="date"] {
 
 .quality-slider-wrap input[type="range"]::-webkit-slider-runnable-track {
   height: 4px;
-  background: linear-gradient(to right, var(--accent) 0%, var(--accent) var(--pct, 0%), var(--line) var(--pct, 0%), var(--line) 100%);
+  background: linear-gradient(to right, var(--slider-color, var(--accent)) 0%, var(--slider-color, var(--accent)) var(--pct, 0%), var(--line) var(--pct, 0%), var(--line) 100%);
   border-radius: 999px;
   border: none;
 }
@@ -236,10 +236,26 @@ input[type="date"] {
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--slider-color, var(--accent));
   border: 2px solid white;
   box-shadow: 0 1px 4px rgba(0,0,0,0.2);
   margin-top: -6px;
+}
+
+.quality-slider-wrap input[type="range"]::-moz-range-track {
+  height: 4px;
+  background: linear-gradient(to right, var(--slider-color, var(--accent)) 0%, var(--slider-color, var(--accent)) var(--pct, 0%), var(--line) var(--pct, 0%), var(--line) 100%);
+  border-radius: 999px;
+  border: none;
+}
+
+.quality-slider-wrap input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--slider-color, var(--accent));
+  border: 2px solid white;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
 }
 
 .quality-min-label {
