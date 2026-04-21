@@ -452,6 +452,95 @@ input[type="date"] {
 .quality-bar-fill.fair     { background: #eab308; }
 .quality-bar-fill.poor     { background: #ef4444; }
 
+/* ── 质量评分详情展开 ── */
+.quality-details {
+  margin-top: 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fafaf6;
+}
+.quality-details summary {
+  cursor: pointer;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  user-select: none;
+}
+.quality-details summary:hover {
+  color: var(--ink);
+}
+.quality-detail-content {
+  padding: 4px 12px 12px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.qa-overall {
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+.qa-dims {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.qa-dim-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.qa-dim-label {
+  width: 70px;
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--muted);
+  text-align: right;
+}
+.qa-dim-bar {
+  flex: 1;
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  overflow: hidden;
+}
+.qa-dim-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.3s;
+}
+.qa-dim-value {
+  width: 28px;
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: right;
+}
+.qa-section {
+  margin-top: 10px;
+}
+.qa-section-title {
+  font-weight: 600;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+.qa-section ul {
+  margin: 0;
+  padding-left: 18px;
+}
+.qa-section li {
+  font-size: 12.5px;
+  color: #374151;
+  margin-bottom: 2px;
+}
+.qa-section p {
+  margin: 0;
+  font-size: 12.5px;
+  color: #374151;
+}
+.overflow-quality-details {
+  font-size: 12px;
+}
+
 .section {
   margin-top: 4px;
 }

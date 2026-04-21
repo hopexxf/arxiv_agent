@@ -134,6 +134,13 @@ function renderCards(papers) {
       tagsDiv.appendChild(badge);
     }
     
+    // 质量评分详情
+    const qualityDetails = card.querySelector('.quality-details');
+    if (qa && qa.overall_score !== undefined) {
+      qualityDetails.style.display = '';
+      renderQualityDetails(qualityDetails, qa);
+    }
+
     // 单位
     const aff = card.querySelector('.affiliations');
     aff.textContent = p.affiliations || '（未识别）';
@@ -271,6 +278,17 @@ function renderOverflowCard(item) {
     badge.style.display = 'inline-block';
     badge.innerHTML = `<span class="score">${score}</span><span>${stars}</span>`;
     content.appendChild(badge);
+
+    // 质量详情展开
+    const details = document.createElement('details');
+    details.className = 'quality-details overflow-quality-details';
+    details.style.marginTop = '8px';
+    details.innerHTML = '<summary>📊 质量评分详情</summary>';
+    const detailContent = document.createElement('div');
+    detailContent.className = 'quality-detail-content';
+    renderQualityDetailsInto(detailContent, qa);
+    details.appendChild(detailContent);
+    content.appendChild(details);
   }
   
   // 单位
@@ -297,6 +315,99 @@ function renderOverflowCard(item) {
   card.appendChild(header);
   card.appendChild(content);
   els.overflowList.appendChild(card);
+}
+
+// ─────────────────────────────────────────────
+// 质量评分详情渲染
+// ─────────────────────────────────────────────
+const _QDIM_LABELS = {
+  novelty: '创新性',
+  rigor: '技术严谨',
+  data: '数据质量',
+  impact: '实用价值',
+  presentation: '表达质量'
+};
+
+function _dimColor(val) {
+  if (val >= 80) return '#166534';
+  if (val >= 65) return '#1e40af';
+  if (val >= 50) return '#854d0e';
+  return '#991b1b';
+}
+
+function renderQualityDetails(detailsEl, qa) {
+  const content = detailsEl.querySelector('.quality-detail-content');
+  if (!content) return;
+  renderQualityDetailsInto(content, qa);
+}
+
+function renderQualityDetailsInto(container, qa) {
+  container.innerHTML = '';
+  if (!qa || qa.overall_score === undefined) return;
+
+  // 综合评分
+  const overallDiv = document.createElement('div');
+  overallDiv.className = 'qa-overall';
+  const confLabel = qa.confidence === 'high' ? '高' : qa.confidence === 'medium' ? '中' : '低';
+  const confColor = qa.confidence === 'high' ? '#166534' : qa.confidence === 'medium' ? '#854d0e' : '#6b7280';
+  overallDiv.innerHTML = `<strong>综合评分: ${qa.overall_score}/100</strong> <span style="color:${confColor};font-size:0.85em">（置信度: ${confLabel}）</span>`;
+  container.appendChild(overallDiv);
+
+  // 5维度
+  const dimsDiv = document.createElement('div');
+  dimsDiv.className = 'qa-dims';
+  dimsDiv.style.marginTop = '10px';
+  for (const [key, label] of Object.entries(_QDIM_LABELS)) {
+    const val = qa[key];
+    if (val === undefined || val === null) continue;
+    const color = _dimColor(val);
+    const pct = Math.max(0, Math.min(100, val));
+    const row = document.createElement('div');
+    row.className = 'qa-dim-row';
+    row.innerHTML = `<span class="qa-dim-label">${label}</span>
+      <div class="qa-dim-bar"><div class="qa-dim-fill" style="width:${pct}%;background:${color}"></div></div>
+      <span class="qa-dim-value" style="color:${color}">${val}</span>`;
+    dimsDiv.appendChild(row);
+  }
+  container.appendChild(dimsDiv);
+
+  // 亮点
+  if (qa.strengths && qa.strengths.length) {
+    const sDiv = document.createElement('div');
+    sDiv.className = 'qa-section';
+    sDiv.innerHTML = '<div class="qa-section-title">✓ 亮点</div>';
+    const ul = document.createElement('ul');
+    qa.strengths.forEach(s => { const li = document.createElement('li'); li.textContent = s; ul.appendChild(li); });
+    sDiv.appendChild(ul);
+    container.appendChild(sDiv);
+  }
+
+  // 不足
+  if (qa.limitations && qa.limitations.length) {
+    const lDiv = document.createElement('div');
+    lDiv.className = 'qa-section';
+    lDiv.innerHTML = '<div class="qa-section-title">✗ 不足</div>';
+    const ul = document.createElement('ul');
+    qa.limitations.forEach(s => { const li = document.createElement('li'); li.textContent = s; ul.appendChild(li); });
+    lDiv.appendChild(ul);
+    container.appendChild(lDiv);
+  }
+
+  // 数据质量说明
+  if (qa.data_quality_note) {
+    const noteDiv = document.createElement('div');
+    noteDiv.className = 'qa-section';
+    noteDiv.innerHTML = `<div class="qa-section-title">📊 数据质量说明</div><p>${qa.data_quality_note}</p>`;
+    container.appendChild(noteDiv);
+  }
+
+  // 评估理由
+  if (qa.prediction_reason) {
+    const reasonDiv = document.createElement('div');
+    reasonDiv.className = 'qa-section';
+    reasonDiv.innerHTML = `<div class="qa-section-title">💡 评估理由</div><p>${qa.prediction_reason}</p>`;
+    container.appendChild(reasonDiv);
+  }
 }
 
 // ─────────────────────────────────────────────
