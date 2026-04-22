@@ -1,13 +1,124 @@
 {
-  "generated_at": "2026-04-21 21:31:15",
+  "generated_at": "2026-04-22 23:39:33",
   "count": 10,
-  "total_papers": 28,
-  "overflow_count": 24,
+  "total_papers": 31,
+  "overflow_count": 27,
   "crawled_date_min": "2026-04-19",
-  "crawled_date_max": "2026-04-21",
+  "crawled_date_max": "2026-04-22",
   "published_date_min": "2026-04-08",
-  "published_date_max": "2026-04-20",
+  "published_date_max": "2026-04-21",
   "papers": [
+    {
+      "arxiv_id": "2604.19040v1",
+      "title": "Integrated Sensing and Communications for Low-Altitude Economy with Deterministic Sensing and Gaussian Information Signals",
+      "authors": "Xianxin Song, Xianghao Yu, Jie Xu, Derrick Wing Kwan Ng",
+      "affiliations": "Engineering, City University of Hong Kong, Hong Kong, China ( | School of Science and Engineering(SSE),the Shenzhen | Future Network of Intelligence Institute(FNii-Shenzhen),and the Guangdong | Provincial Key Laboratory of Future Networks of Intelligence, The Chinese | University of Hong Kong (Shenzhen), Guangdong ( | School of Electrical Engineering and",
+      "published_date": "2026-04-21",
+      "crawled_date": "2026-04-22",
+      "categories": "eess.SP",
+      "abstract": "Reliable surveillance and communication for unmanned aerial vehicles (UAVs) are crucial for enabling and sustaining the accelerated growth of the low-altitude economy. Integrated sensing and communications (ISAC) offers a cost-effective and scalable framework for target sensing by leveraging existing wireless communication systems. This paper investigates a bistatic downlink ISAC architecture tailored to UAV operations, in which a BS communicates with a legitimate UAV and detects a potential unauthorized intruder in the surveillance region. We assume that the BS transmits superimposed ISAC waveforms comprising both Gaussian-information-bearing and deterministic sensing components. First, we develop a Neyman-Pearson (NP)-based optimal detector that jointly exploits both deterministic sensing and stochastic signal components. Subsequently, we optimize the transmit beamforming design at the BS to maximize the minimum detection probability over the entire surveillance region, subject to a minimum signal-to-interference-plus-noise ratio (SINR) requirement at the authorized UAV and a total transmit power budget at the BS. The resulting design problem is highly non-convex, which is efficiently addressed via semi-definite relaxation (SDR) and successive convex approximation (SCA) techniques. Simulation results demonstrate the superiority of the proposed NP-based detector, which fully leverages the synergy between both types of signals, over conventional benchmark schemes that treat information-bearing signals merely as interference. Furthermore, the results reveal a fundamental sensing-communication trade-off, where increasing the communication-rate threshold directs more transmit power to Gaussian-information-bearing signals, thereby reducing the power allocated to deterministic components and consequently weakening detection performance.",
+      "summary_cn": "本文研究面向无人机的双基地下行ISAC架构：基站向合法无人机通信，同时探测非法入侵者。提出基于NP准则的最优检测器，联合利用确定性感知与随机信息信号；通过SDR+SCA优化发射波束成形，最大化监视区域最小检测概率。结果表明，相比将信息信号视为干扰的基准方案，所提检测器性能更优，并揭示感知-通信基本权衡关系。",
+      "pdf_url": "https://arxiv.org/pdf/2604.19040v1",
+      "arxiv_url": "https://arxiv.org/abs/2604.19040v1",
+      "is_enriched": true,
+      "quality_assessment": {
+        "overall_score": 74,
+        "confidence": "high",
+        "novelty": 78,
+        "rigor": 80,
+        "data": 62,
+        "impact": 72,
+        "presentation": 78,
+        "strengths": [
+          "Novel NP-based detector that jointly exploits both deterministic and stochastic (Gaussian) ISAC signal components — a meaningful departure from treating information signals as interference",
+          "Rigorous derivation of detection probability expressions and beamforming optimization via SDR+SCA with clear convergence guarantees",
+          "Well-motivated problem: UAV surveillance + communication coexistence is timely for low-altitude economy (LAE) regulation"
+        ],
+        "limitations": [
+          "Simulation-only validation with synthetic channels; no real hardware or field-trial data",
+          "Bistatic assumption simplifies geometry significantly — practical monostatic or networked ISAC scenarios are more complex",
+          "Single authorized UAV and single intruder model limits scalability analysis; multi-target/multi-UAV extension not addressed",
+          "Sensing-communication trade-off result is expected and not surprising; the quantitative insight is limited to the simulated parameter range"
+        ],
+        "data_quality_note": "Purely simulation-based with standard Gaussian/Rayleigh channel models. No real UAV trajectory datasets or measured radar cross-section data. Baselines are reasonable but limited to two conventional schemes.",
+        "prediction_reason": "Solid theoretical contribution with clean problem formulation and rigorous optimization. Penalized for simulation-only evaluation and incremental scope relative to the broader ISAC literature."
+      }
+    },
+    {
+      "arxiv_id": "2604.19010v1",
+      "title": "SSB-Based Sensing-Assisted Robust Beamforming for High-Mobility UAV Communications in LAWN",
+      "authors": "Aimin Tang, Shuhan Wang, Yin Xu",
+      "affiliations": "Theauthorsare with Shanghai Jiao Tong University. Correspondingauthor | Sjtu",
+      "published_date": "2026-04-21",
+      "crawled_date": "2026-04-22",
+      "categories": "eess.SP",
+      "abstract": "High-mobility uncrewed aerial vehicle (UAV) communications in low-altitude wireless networks (LAWN) demand reliable beamforming, while conventional feedback-based schemes suffer from excessive overhead and severe misalignment under rapid trajectory variations. To address this challenge, this paper proposes an SSB-based sensing-assisted predictive robust beamforming framework that replaces explicit channel state information (CSI) feedback with sensing-driven state estimation and uncertainty-aware optimization. Leveraging the periodic 'always-on' synchronization signal block (SSB), a hierarchical sensing algorithm tailored for hybrid digital-analog uniform planar arrays is developed, combining 2D range-velocity profiling and augmented beamspace multiple signal classification (MUSIC). By integrating a locally-focused analog receive beamformer, the proposed sensing design can ensure energy accumulates across different radio-frequency (RF) chains while resolving angular ambiguity. An extended Kalman filter (EKF) is further employed to track UAV states between sparse synchronization-signal (SS) bursts, and a covariance correction is introduced to characterize maneuver-induced prediction uncertainties. Based on the derived statistical distributions of range and angular parameters, the communication channel is modeled through predictive correlation matrices rather than instantaneous CSI, leading to a multi-user robust beamforming formulation that maximizes average network sum-rate under uncertainty. The resulting nonconvex problem is efficiently solved via successive convex approximation and alternating minimization. Simulation results demonstrate that the proposed framework significantly enhances spectral efficiency and link stability compared with feedback-based beamforming and non-robust beamforming design, particularly in high-mobility and large-SSB-interval scenarios.",
+      "summary_cn": "针对低空无线网络中高机动无人机通信，提出基于SSB感知辅助的预测鲁棒波束成形框架，以感知驱动的状态估计替代显式CSI反馈。利用SSB周期信号，结合2D距离-速度分析与增强波束空间MUSIC算法实现无人机状态感知；采用EKF在稀疏SS突发间跟踪状态，并引入协方差修正表征机动不确定性；基于预测相关矩阵建立多用户鲁棒波束成形问题，通过SCA与交替最小化求解。仿真表明，在高机动和大SSB间隔场景下，所提框架显著提升频谱效率与链路稳定性。",
+      "pdf_url": "https://arxiv.org/pdf/2604.19010v1",
+      "arxiv_url": "https://arxiv.org/abs/2604.19010v1",
+      "is_enriched": true,
+      "quality_assessment": {
+        "overall_score": 72,
+        "confidence": "high",
+        "novelty": 72,
+        "rigor": 76,
+        "data": 60,
+        "impact": 74,
+        "presentation": 75,
+        "strengths": [
+          "End-to-end sensing-assisted beamforming pipeline that avoids explicit CSI feedback — practically relevant for high-mobility UAV scenarios",
+          "Hierarchical sensing design combining 2D range-velocity MUSIC with hybrid analog-digital UPA is technically detailed and well-motivated",
+          "EKF-based state tracking with covariance correction for maneuver uncertainty is a sensible and principled engineering choice",
+          "Robust beamforming formulation using predictive correlation matrices rather than instantaneous CSI is a clean abstraction"
+        ],
+        "limitations": [
+          "Simulation-only; no real UAV flight data or over-the-air measurements to validate EKF tracking accuracy under real maneuver profiles",
+          "SSB periodicity assumption may not hold under congested or interfered LAWN deployments",
+          "The combination of sensing + EKF + robust BF is an integration of known components; individual novelty of each block is moderate",
+          "Multi-user scenario is limited in scale; interference modeling between UAVs is simplified"
+        ],
+        "data_quality_note": "All results from numerical simulation with synthetic channel models. UAV mobility modeled as constant-acceleration; no real trajectory datasets used. Comparison baselines (feedback-based, non-robust) are standard but the benchmark set could be broader.",
+        "prediction_reason": "A well-engineered systems paper with solid methodology. The integration is the main contribution rather than any single breakthrough. Practical impact is good for LAWN/UAV deployment but limited by simulation-only evidence."
+      }
+    },
+    {
+      "arxiv_id": "2604.19610v1",
+      "title": "ZODIAC: Zero-shot Offline Diffusion for Inferring Multi-xApps Conflicts in Open Radio Access Networks",
+      "authors": "Zeyu Fang, Shu Hong, Huu Trung Thieu, Nakjung Choi, Tian Lan",
+      "affiliations": "George Washingt on University George Washingt on University | Parameters associationUE–BS RB/schedulingallocation power",
+      "published_date": "2026-04-21",
+      "crawled_date": "2026-04-22",
+      "categories": "cs.NI",
+      "abstract": "Open Radio Access Network (O-RAN) enables network control through multi-vendor xApps operating both within and across layers, subnets, and domains, whose concurrent execution can trigger conflicts that are latent during the development phase. Existing conflict management approaches rely heavily on joint-execution data, which is often unavailable in practice. To address this limitation, we formalize a novel problem termed conflict reasoning, which involves identifying conflict-inducing conditions given only marginal datasets from each individual xApp. We propose ZODIAC, a three-stage framework for zero-shot conflict condition inference that comprises uncertainty-aware surrogate model training, trajectory-level diffusion training, and compositional guided denoising for efficient, physics-constrained, and reliable condition search. We derive a theoretical lower confidence bound showing that the compositional reasoning in ZODIAC serves as a principled surrogate for true conflict severity, with the epistemic penalty directly controlling the approximation gap. We evaluate ZODIAC on both the lightweight Mobile-Env platform across all three O-RAN Alliance conflict types (direct, indirect, and implicit) and a realistic NS-O-RAN-Flexric simulator. ZODIAC consistently outperforms baseline condition search methods, achieving over 20% higher True Positive Rate at Top-20, substantially stronger Spearman rank correlation, greater scenario diversity, and competitive computational efficiency. Ablation studies confirm the necessity of each guidance component, with epistemic uncertainty penalties proving essential for filtering spurious conflicts. To the best of our knowledge, ZODIAC is the first framework in O-RAN that enables conflict reasoning from marginal offline data without requiring any joint-execution traces.",
+      "summary_cn": "O-RAN中多xApp并发执行可引发潜在冲突，现有方法依赖联合执行数据，实践中难以获取。本文提出\"冲突推理\"新问题：仅利用各xApp的边缘数据集识别冲突诱发条件。提出ZODIAC三阶段零样本框架，包含不确定性感知代理模型训练、轨迹级扩散训练和组合引导去噪。理论证明组合推理是真实冲突严重性的有原则代理。在Mobile-Env和NS-O-RAN-Flexric上评估，Top-20 TPR提升超20%，是首个无需联合执行数据即可进行O-RAN冲突推理的框架。",
+      "pdf_url": "https://arxiv.org/pdf/2604.19610v1",
+      "arxiv_url": "https://arxiv.org/abs/2604.19610v1",
+      "is_enriched": true,
+      "quality_assessment": {
+        "overall_score": 79,
+        "confidence": "medium",
+        "novelty": 88,
+        "rigor": 80,
+        "data": 72,
+        "impact": 76,
+        "presentation": 76,
+        "strengths": [
+          "Highly novel problem formulation: conflict reasoning from marginal (non-joint) offline data is a genuine gap in O-RAN conflict management literature",
+          "ZODIAC's three-stage pipeline (surrogate + diffusion + compositional guided denoising) is creative and technically ambitious",
+          "Theoretical lower confidence bound linking compositional reasoning to true conflict severity provides principled justification",
+          "Evaluated on both a lightweight simulator (Mobile-Env) and a more realistic NS-O-RAN-Flexric platform — broader than most O-RAN papers",
+          "Covers all three O-RAN Alliance conflict types (direct, indirect, implicit) comprehensively"
+        ],
+        "limitations": [
+          "Diffusion-based condition search is computationally heavy; inference latency for real-time O-RAN conflict detection is not analyzed",
+          "The surrogate model quality is critical but its generalization bounds under distribution shift between marginal and joint distributions are not fully characterized",
+          "NS-O-RAN-Flexric experiments appear limited in scale (number of xApps, network size); real multi-vendor deployments would be far more complex",
+          "Confidence is medium due to the complexity of the framework making independent reproducibility harder to assess from the paper alone"
+        ],
+        "data_quality_note": "Uses two simulation platforms rather than real O-RAN deployments. Mobile-Env is lightweight and well-known; NS-O-RAN-Flexric adds realism. No real operator data. Dataset scale for the Flexric experiments is not clearly stated. Baselines include several condition-search methods which is reasonable.",
+        "prediction_reason": "The most novel of the three papers. Zero-shot conflict reasoning from marginal data is a well-defined and practically important problem. The diffusion-based approach is creative and the theoretical grounding is a strength. Held back slightly by simulation-only evaluation and computational cost concerns."
+      }
+    },
     {
       "arxiv_id": "2604.18021v1",
       "title": "Paradigm Shift from Statistical Channel Modeling to Digital Twin Prediction: An Environment-Generalizable ChannelLM for 6G AI-enabled Air Interface",
@@ -277,7 +388,9 @@
         "data_quality_note": "UAV swarm and emergency communications validation scenarios are meaningful but appear synthetic. No external dataset reference. The key quantitative claims (near-zero violation rates, convergence to optimal policies) are from self-generated simulations — reproducibility depends on implementation details not fully disclosed.",
         "prediction_reason": "Top paper in this batch. Addresses a critical real-world problem (safety-critical 5G/6G wireless) with a novel algorithm (Safe-Deep Q-Learning) that has solid theoretical backing (convergence proofs) and dual real-world scenario validation. High impact and strong rigor. Minor deductions for synthetic-only validation and lack of real-world hardware deployment proof."
       }
-    },
+    }
+  ],
+  "overflow_list": [
     {
       "arxiv_id": "2604.15733v1",
       "title": "Adaptive Power Allocation and User Scheduling for LEO Satellites using Channel Predictions",
@@ -288,8 +401,8 @@
       "categories": "cs.IT, eess.SP",
       "abstract": "Low earth orbit (LEO) satellites are a key technology to enable connectivity for rural and remote users. Communication satellites in LEO can provide coverage to much larger areas than terrestrial or aerial systems, while offering improved data rates when compared with geostationary systems. However, a major challenge with LEO satellite communications is the high mobility of the satellite, which results in a rapidly changing communication channel. Due to this, it is challenging to fairly allocate communication resources to multiple users in the system. This work proposes an Adaptive Power Allocation and Scheduling Scheme (APASS) to ensure user fairness in the downlink of a LEO satellite system serving mobile ground users. First, a novel channel and transmission model is introduced to capture the variability in channel statistics due to the satellite's trajectory. Then, a non-convex optimization problem is formulated to maximize the minimum rate across all ground users over a fixed set of time slots. To solve this problem, the proposed APASS dynamically allocates power and schedules transmissions based on predicted future channel gains. Numerical results show that APASS achieves strong performance even with substantial prediction errors, faring close to an upper bound that assumes perfect future channel knowledge. Furthermore, it improves the minimum user rate by a factor of 2.98 compared to equal-power allocation and maintains user fairness with a Jain's fairness index of well above 0.99.",
       "summary_cn": "低轨（LEO）卫星是实现偏远地区连接的关键技术。相比地面或空中系统，LEO卫星覆盖范围更广；相比地球静止轨道系统，其数据速率更高。然而，LEO卫星的高移动性导致信道快速变化，使得多用户间的公平资源分配极具挑战。本文提出自适应功率分配与调度方案（APASS），以确保服务移动地面用户的LEO卫星下行链路的用户公平性。首先，引入新的信道与传输模型，刻画卫星轨迹引起的信道统计特性变化。然后，构建非凸优化问题，以最大化固定时隙集上所有地面用户的最小速率。APASS基于预测的未来信道增益动态分配功率和调度传输。数值结果表明，即使存在较大预测误差，APASS仍表现优异，接近假设完美未来信道知识的上限。此外，与等功率分配相比，其最小用户速率提升2.98倍，且Jain公平指数远超0.99，保持了用户公平性。",
-      "pdf_url": "https://arxiv.org/pdf/2604.15733v1",
       "arxiv_url": "https://arxiv.org/abs/2604.15733v1",
+      "pdf_url": "https://arxiv.org/pdf/2604.15733v1",
       "is_enriched": true,
       "quality_assessment": {
         "overall_score": 58,
@@ -325,8 +438,8 @@
       "categories": "cs.IT, cs.AI, eess.SP",
       "abstract": "To address high data traffic demands of sixth-generation (6G) networks, this paper proposes a novel architecture that integrates autonomous aerial vehicles (AAVs) and multi-functional reconfigurable intelligent surfaces (MF-RISs) as AM-RIS in fluid antenna (FA)-assisted full-duplex (FD) networks. The AM-RIS provides hybrid functionalities, including signal reflection, amplification, and energy harvesting (EH), potentially improving both signal coverage and sustainability. Meanwhile, FA facilitates fine-grained spatial adaptability at FD-enabled base station (BS), which complements residual self-interference (SI) suppression. We aim at maximizing the overall energy efficiency (EE) by jointly optimizing transmit DL beamforming at BS, UL user power, configuration of AM-RIS, and positions of the FA and AM-RIS. Owing to the hybrid continuous-discrete parameters and high dimensionality of the intractable problem, we have conceived a self-optimized multi-agent hybrid deep reinforcement learning (DRL) framework (SOHRL), which integrates multi-agent deep Q-networks (DQN) and multi-agent proximal policy optimization (PPO), respectively handling discrete and continuous actions. To enhance self-adaptability, an attention-driven state representation and meta-level hyperparameter optimization are incorporated, enabling multi-agents to autonomously adjust learning hyperparameters. Simulation results validate the effectiveness of the proposed AM-RIS-enabled FA-aided FD networks empowered by SOHRL algorithm. The results reveal that SOHRL outperforms benchmarks of the case without attention mechanism and conventional hybrid/multi-agent/standalone DRL. Moreover, AM-RIS in FD achieves the highest EE compared to half-duplex, conventional rigid antenna arrays, partial EH, and conventional RIS without amplification, highlighting its potential as a compelling solution for EE-aware wireless networks.",
       "summary_cn": "为应对6G高数据流量需求，本文提出融合自主飞行器与多功能可重构智能表面构成AM-RIS的新架构，应用于流体天线辅助全双工网络。AM-RIS具备反射、放大和能量收集混合功能，可同时提升覆盖和可持续性。FA实现FD基站细粒度空间适配，弥补残余自干扰抑制。通过联合优化下行波束成形、上行功率、AM-RIS配置及FA与AM-RIS位置最大化能效。针对混合连续-离散高维难解问题，设计自优化多智能体混合深度强化学习框架(SOHRL)，集成多智能体DQN和PPO分别处理离散和连续动作。引入注意力驱动状态表示和元层级超参数优化增强自适应性。仿真验证AM-RIS使能FA辅助FD网络与SOHRL算法的有效性。结果表明SOHRL优于无注意力机制及传统混合/多智能体/独立DRL基准。FD中AM-RIS能效优于半双工、传统刚性天线阵列、部分能量收集及无放大RIS，凸显其作为能效感知网络的潜力。",
-      "pdf_url": "https://arxiv.org/pdf/2604.14309v2",
       "arxiv_url": "https://arxiv.org/abs/2604.14309v2",
+      "pdf_url": "https://arxiv.org/pdf/2604.14309v2",
       "is_enriched": true,
       "quality_assessment": {
         "overall_score": 52,
@@ -352,8 +465,8 @@
       "categories": "eess.SP",
       "abstract": "Crack segmentation on edge devices can support continuous infrastructure monitoring and maintenance and thereby help to preserve public safety. Furthermore, autonomous infrastructure monitoring by using Unmanned Aerial Vehicles (UAVs) can reduce inspection risks, as human operators no longer need to enter hazardous areas. Edge processing reduces the cost of inspection by eliminating the need for high resolution image storage for offline processing and mitigates the security risks and bandwidth requirements of streaming to cloud servers. Edge inference is difficult due to the limited memory and computational capabilities of edge devices, which can affect both accuracy and latency. Furthermore, battery-powered devices are subject to strict power and energy constraints. Together, these limitations impose restrictions on the model size and computational complexity that can be deployed close to the sensor. In recent years, Transformers have achieved state-of-the-art accuracy in a variety of applications, including semantic segmentation. However, Transformer-based models are typically large and computationally intensive, making efficient edge deployment difficult. To address this, we first apply knowledge distillation to enhance the performance of the base models. We then use PTQ to compress the models further. Additionally, we consider the deployment of these models across multiple edge platforms. To maximize energy efficiency, we design and implement a custom hardware architecture for the models on an FPGA. Our results show that Knowledge Distillation (KD) improves all tested U-Net variants. Among the evaluated platforms, the selected FPGA implementation achieves 398 FPS at 204.99 Frames/J while maintaining a mean IoU of 69.42%. In addition, our best model reaches 71.92% mean IoU, which is 8.82 percentage points (pps) higher than the previously reported result on the CrackVision12K dataset.",
       "summary_cn": "边缘设备上的裂缝分割可支持基础设施持续监测与维护，助力公共安全保护。无人机自主基础设施监测可降低巡检风险，减少人员进入危险区域。边缘处理无需高分辨率图像存储用于离线计算，降低了云服务器传输的安全风险与带宽需求。但边缘设备内存与算力有限，边缘推理面临精度与延迟挑战。电池供电设备受严格功率与能量约束，限制可部署模型的规模与计算复杂度。近年Transformer在语义分割等任务达到最优精度，但通常模型庞大、计算密集，难以高效边缘部署。针对此，我们首先应用知识蒸馏提升基模型性能，再利用PTQ进一步压缩模型，并考虑跨多边缘平台部署。为最大化能源效率，我们为模型设计并实现FPGA自定义硬件架构。结果表明知识蒸馏提升了所有测试的U-Net变体。在评估平台中，选定FPGA实现达到398 FPS、204.99 Frames/J能耗，同时保持69.42%平均IoU。此外最佳模型达到71.92%平均IoU，较CrackVision12K数据集先前报告结果提升8.82个百分点。",
-      "pdf_url": "https://arxiv.org/pdf/2604.13933v1",
       "arxiv_url": "https://arxiv.org/abs/2604.13933v1",
+      "pdf_url": "https://arxiv.org/pdf/2604.13933v1",
       "is_enriched": true,
       "quality_assessment": {
         "overall_score": 70,
@@ -380,9 +493,7 @@
         "data_quality_note": "Uses CrackVision12K dataset with quantitative comparisons to prior reported result; however, no ablation on model type, no cross-dataset validation, and no real-world field deployment results disclosed.",
         "prediction_reason": "Strong engineering contribution with concrete hardware numbers (398 FPS) and meaningful accuracy improvement (+8.82 pps). Novelty is moderate as KD+PTQ+FPGA pipeline is known, but end-to-end demonstration across multiple U-Net variants and practical FPGA implementation adds value. Well-presented with clear quantitative claims."
       }
-    }
-  ],
-  "overflow_list": [
+    },
     {
       "arxiv_id": "2604.13635v1",
       "title": "Look One Step Ahead: Forward-Looking Incentive Design with Strategic Privacy for Proactive Service Provisioning over Air-Ground Integrated Edge Networks",

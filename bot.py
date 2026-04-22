@@ -16,7 +16,7 @@ from datetime import datetime
 # 添加当前目录到路径
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from src.storage import PaperStorage
+from src.modules.paper_storage import PaperStorage
 from src.fetcher import ArxivFetcher
 from src.extract_affiliation import enrich_paper_with_affiliation
 from src.enricher import LLMEnricher
@@ -279,7 +279,7 @@ def main():
 
         if enricher.api_key:
             logger.info(f"  使用方案B: 直接调用LLM API ({enricher.model})")
-        elif enricher._use_openclaw:
+        elif enricher.use_openclaw:
             logger.info("  使用方案C: OpenClaw网关LLM代理 (自动检测)")
         else:
             logger.info("  使用方案A: 标记pending状态，等后续重试")

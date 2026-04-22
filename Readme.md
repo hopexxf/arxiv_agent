@@ -152,12 +152,18 @@ arxiv_agent/
 │
 ├── src/                    # 核心模块
 │   ├── __init__.py
-│   ├── fetcher.py          # arXiv 搜索 + PDF 下载（含 429 重试）
-│   ├── storage.py          # papers.json 读写管理（含清理功能）
-│   ├── extract_affiliation.py # PDF 双栏解析提取作者单位
-│   ├── enricher.py         # LLM 中文摘要翻译 + 质量评估（批量+三档降级）
+│   ├── fetcher.py          # arXiv 搜索 + PDF 下载（含 429 重试），薄封装 src.modules
+│   ├── storage.py          # papers.json 读写管理（含清理功能），薄封装 src.modules
+│   ├── extract_affiliation.py # PDF 双栏解析提取作者单位，薄封装 src.modules
+│   ├── enricher.py         # LLM 中文摘要翻译 + 质量评估，薄封装 src.modules
 │   ├── build_viewer.py     # papers.json → papers_data.json
-│   └── update_summaries.py # 批量更新摘要工具
+│   ├── update_summaries.py # 批量更新摘要工具
+│   └── modules/            # 可复用独立模块
+│       ├── pdf_affiliation.py   # PDF 单位提取（纯函数，零外部依赖）
+│       ├── relevance_scorer.py  # 关键词相关性评分（纯函数）
+│       ├── llm_client.py        # LLM 调用客户端（翻译+质量评估+批量+降级）
+│       ├── arxiv_client.py      # arXiv API 搜索+下载
+│       └── paper_storage.py     # 论文存储 CRUD
 │
 ├── data/                   # 数据目录（不入 Git）
 │   ├── papers.json         # 论文索引
@@ -173,13 +179,16 @@ arxiv_agent/
 │   ├── favicon.svg
 │   └── papers_data.json    # 生成的数据文件
 │
-├── tests/                  # 单元测试（117 tests）
+├── tests/                  # 单元测试（125 tests）
 │   ├── test_storage.py     # 存储模块（18）
 │   ├── test_fetcher.py     # arXiv 搜索（9）
 │   ├── test_enricher.py    # 翻译+降级链（29）
 │   ├── test_quality_assessment.py # 质量评估+批量（37）
 │   ├── test_quality_filter.py     # 质量筛选（16）
-│   └── test_config.py      # 配置（8）
+│   ├── test_config.py      # 配置（8）
+│   ├── test_import.py      # 模块导入验证（5）
+│   ├── test_flow.py        # 端到端流程（1）
+│   └── test_affiliation_assignment.py # 单位分配（2）
 │
 ├── .github/workflows/
 │   └── pages.yml           # GitHub Pages 自动部署
@@ -272,6 +281,18 @@ GPU RAN
 - [ ] 移动端适配：质量评估详情展开区域待移动端实测后优化
 
 ## 版本历史
+
+### V3.1 — 模块拆分重构 (2026-04-22)
+
+- **新增**：`src/modules/` 目录，5 个可复用独立模块
+  - `pdf_affiliation.py` — PDF 单位提取（纯函数，零外部依赖）
+  - `relevance_scorer.py` — 关键词相关性评分（纯函数）
+  - `llm_client.py` — LLM 调用客户端（翻译+质量评估+批量+降级链）
+  - `arxiv_client.py` — arXiv API 搜索+下载
+  - `paper_storage.py` — 论文存储 CRUD
+- **兼容**：原文件（fetcher/enricher/storage/extract_affiliation）保留薄封装层，所有现有代码和测试无需修改
+- **修复**：bot.py 属性名 `_use_openclaw` → `use_openclaw`（模块拆分后命名同步）
+- 测试 125 passed
 
 ### V3.0 — 论文质量评估 (2026-04-21)
 

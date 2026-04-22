@@ -1,96 +1,80 @@
 #!/usr/bin/env python3
 """
 Fetcher module - arXiv搜索 + PDF下载
+
+编排层：配置读取 + 业务逻辑编排
+核心搜索/下载委托给 src.modules.arxiv_client
+相关性排序委托给 src.modules.relevance_scorer
 """
 
-import os
-import re
-import time
-import random
 import logging
-from pathlib import Path
 from datetime import datetime, timedelta
-from typing import List, Dict, Optional, Tuple
-from urllib.parse import urlparse, urlencode
+from pathlib import Path
+from typing import List, Dict, Tuple
+
 import arxiv
 
-from src.storage import PaperStorage
+from src.modules.paper_storage import PaperStorage
+from src.modules.arxiv_client import ArxivMirrorClient, ArxivSearcher
+from src.modules.relevance_scorer import (
+    parse_keywords_file,
+    score_paper,
+    sort_by_relevance,
+)
 
 logger = logging.getLogger(__name__)
 
 
-class ArxivMirrorClient(arxiv.Client):
-    """
-    支持镜像URL的arXiv客户端，继承自arxiv.Client
-    通过覆盖query_url_format支持自定义API端点
-    """
-
-    def __init__(self, page_size: int = 50, delay_seconds: float = 5.0,
-                 num_retries: int = 5, mirror_url: str = ""):
-        super().__init__(page_size=page_size, delay_seconds=delay_seconds, num_retries=num_retries)
-        self._mirror_url = mirror_url.rstrip('/')
-        self._search_base_url = mirror_url or "https://export.arxiv.org"
-
-    def _format_url(self, search, start, page_size):
-        """
-        覆盖父类方法，使用镜像URL构造查询URL
-        """
-        url_args = search._url_args()
-        url_args.update({
-            "start": str(start),
-            "max_results": str(page_size),
-        })
-        return f"{self._search_base_url}/api/query?{urlencode(url_args)}"
-
-
 class ArxivFetcher:
-    """arXiv论文获取器"""
+    """arXiv论文获取器 — 编排层"""
 
     def __init__(self, storage: PaperStorage, settings: Dict):
         self.storage = storage
         self.settings = settings
 
-        # 读取配置
         retry_cfg = self.settings["search"]
         cooldown_base = retry_cfg.get("retry_cooldown_base", 60)
         max_retries = retry_cfg.get("max_retries", 10)
         mirror_url = retry_cfg.get("mirror_url", "")
         delay = retry_cfg.get("delay_seconds", 5.0)
 
-        # 持久化，供重试逻辑使用
         self._cooldown_base = cooldown_base
         self._max_retries = max_retries
         self._mirror_url = mirror_url
         self._start_time = None
 
-        # 使用支持镜像的客户端
-        self.client = ArxivMirrorClient(
+        # 委托给 ArxivSearcher
+        client = ArxivMirrorClient(
             page_size=50,
             delay_seconds=delay,
-            num_retries=0,  # 我们自己处理重试，不依赖客户端内置重试
+            num_retries=0,
             mirror_url=mirror_url,
         )
+        self._searcher = ArxivSearcher(
+            client=client,
+            cooldown_base=cooldown_base,
+            max_retries=max_retries,
+        )
+        # 兼容：外部可能访问 self.client
+        self.client = client
+
+    def _parse_keywords(self, filepath: str) -> List[Dict]:
+        """兼容测试接口，内部委托给模块"""
+        return parse_keywords_file(filepath)
 
     def build_query(self) -> str:
-        """
-        构建arXiv查询语句
-        从search_keywords.txt读取关键词，构建OR查询
-        """
+        """构建arXiv查询语句"""
         keywords_file = self.settings["search"]["keywords_file"]
 
         if not Path(keywords_file).exists():
             raise FileNotFoundError(f"关键词文件不存在: {keywords_file}")
-        
-        # 解析关键词和权重
-        self.keywords = self._parse_keywords(keywords_file)
-        
-        # 转换关键词为arXiv查询语法（只用关键词，不用权重）
+
+        self.keywords = parse_keywords_file(keywords_file)
+
         query_parts = []
         for kw_data in self.keywords:
             kw = kw_data['keyword']
-            # 处理多词关键词
             if ' ' in kw and not kw.startswith('"'):
-                # 6G AI -> all:"6G" AND all:AI
                 words = kw.split()
                 if len(words) == 2:
                     query_parts.append(f'(all:"{words[0]}" AND all:{words[1]})')
@@ -98,268 +82,63 @@ class ArxivFetcher:
                     query_parts.append(f'all:"{kw}"')
             else:
                 query_parts.append(f'all:{kw}')
-        
+
         keyword_query = ' OR '.join(query_parts)
-        
-        # 添加分类过滤
+
         categories = self.settings["search"]["categories"]
         cat_query = ' OR '.join([f'cat:{cat}' for cat in categories])
-        
-        # 添加日期过滤（前置到查询，减少无效拉取）
+
         date_range_days = self.settings["search"]["date_range_days"]
         cutoff_date = datetime.now() - timedelta(days=date_range_days)
-        date_from = cutoff_date.strftime("%Y%m%d")  # 例：20260320
-        date_to = datetime.now().strftime("%Y%m%d")  # 例：20260419
+        date_from = cutoff_date.strftime("%Y%m%d")
+        date_to = datetime.now().strftime("%Y%m%d")
         date_filter = f'submittedDate:[{date_from} TO {date_to}]'
-        
-        # 组合查询
+
         final_query = f'({keyword_query}) AND ({cat_query}) AND {date_filter}'
-        
         return final_query
-    
-    def _parse_keywords(self, filepath: str) -> List[Dict]:
-        """
-        解析关键词文件，支持权重
-        格式: 关键词|权重 或 关键词
-        示例:
-            AI-RAN|10
-            6G AI|9
-            Aerial
-        """
-        keywords = []
-        with open(filepath, 'r', encoding='utf-8') as f:
-            for line in f:
-                line = line.strip()
-                if not line or line.startswith('#'):
-                    continue
-                
-                parts = line.split('|')
-                keyword = parts[0].strip()
-                weight = int(parts[1].strip()) if len(parts) > 1 else 5
-                
-                keywords.append({
-                    'keyword': keyword,
-                    'weight': weight,
-                    'terms': keyword.lower().split()  # 分词用于匹配
-                })
-        
-        return keywords
-    
-    def _score_paper(self, result: arxiv.Result) -> Tuple[int, datetime]:
-        """
-        计算论文相关性分数
-        返回: (分数, 发表日期)
-        分数计算:
-        - 标题匹配: 权重 * 3
-        - 摘要匹配: 权重 * 1
-        """
-        score = 0
-        title_lower = result.title.lower()
-        abstract_lower = result.summary.lower()
-        
-        for kw_data in self.keywords:
-            weight = kw_data['weight']
-            
-            # 检查标题匹配（完全匹配或分词匹配）
-            if kw_data['keyword'].lower() in title_lower:
-                score += weight * 3
-            
-            # 检查摘要匹配
-            for term in kw_data['terms']:
-                if term in title_lower:
-                    score += weight
-                    break
-                if term in abstract_lower:
-                    score += weight // 2
-                    break
-        
-        return score, result.published
-    
-    def _sort_by_relevance(self, results: List[arxiv.Result]) -> List[arxiv.Result]:
-        """
-        按相关性分数排序
-        相同时按发表日期倒序
-        """
-        scored = [(r, self._score_paper(r)) for r in results]
-        # 分数降序，相同时日期降序
-        scored.sort(key=lambda x: (x[1][0], x[1][1]), reverse=True)
-        return [r for r, _ in scored]
-    
+
     def _heartbeat_wait(self, seconds: float, label: str) -> None:
-        """
-        带心跳日志的等待，每分钟打印一次进度
-        """
-        elapsed = 0
-        interval = 60
-        while elapsed < seconds:
-            sleep_time = min(interval, seconds - elapsed)
-            time.sleep(sleep_time)
-            elapsed += sleep_time
-            mins = int(elapsed // 60)
-            secs = int(elapsed % 60)
-            print(f"[INFO] 仍在等待 {label}（已等待 {mins}m{secs}s）...")
+        """薄封装：委托给 searcher"""
+        self._searcher.heartbeat_wait(seconds, label)
 
     def search_papers(self, query: str, max_results: int = None) -> List[arxiv.Result]:
-        """
-        搜索arXiv论文，带长静默重试（方案D）
-        - 429后静默等待 cooldown_base × attempt 秒
-        - 每分钟打印心跳日志，避免看起来像挂死
-        - 最多 max_retries 次重试
-        """
-        # 分离：拉取上限 vs 处理上限
-        process_limit = self.settings["processing"]["max_papers_per_day"]  # 5
-        fetch_limit = process_limit * 5  # 25，确保 overflow 空间
+        """搜索论文 + 相关性排序"""
+        process_limit = self.settings["processing"]["max_papers_per_day"]
+        fetch_limit = process_limit * 5
         effective_max = max_results or fetch_limit
 
-        search = arxiv.Search(
-            query=query,
-            max_results=effective_max,
-            sort_by=arxiv.SortCriterion.SubmittedDate,
-            sort_order=arxiv.SortOrder.Descending
-        )
+        results = self._searcher.search(query, max_results=effective_max)
 
-        last_err = None
-        results = []
+        sorted_results = sort_by_relevance(results, self.keywords)
 
-        for attempt in range(self._max_retries):
-            try:
-                if attempt > 0:
-                    # 静默等待，指数退避
-                    jitter = random.uniform(0, self._cooldown_base * 0.1)
-                    wait = self._cooldown_base * (attempt + 1) + jitter
-                    mins = int(wait // 60)
-                    secs = int(wait % 60)
-                    print(f"[WARN] arXiv 429 限流，静默 {mins}m{secs}s 后重试 ({attempt+1}/{self._max_retries})...")
-                    self._heartbeat_wait(wait, f"429 冷却")
-
-                # 用迭代器按需拉取，拉够 fetch_limit 篇才停
-                for r in self.client.results(search):
-                    results.append(r)
-                    if len(results) >= fetch_limit:
-                        break
-                break  # 成功，退出重试循环
-
-            except arxiv.HTTPError as e:
-                last_err = e
-                if e.status == 429:
-                    continue  # 进入下一次静默重试
-                raise
-            except Exception as e:
-                last_err = e
-                print(f"[WARN] 搜索异常: {e}，静默等待后重试 ({attempt+1}/{self._max_retries})...")
-                self._heartbeat_wait(self._cooldown_base * (attempt + 1), "异常冷却")
-                continue
-
-        else:
-            # 所有重试耗尽
-            if last_err:
-                raise last_err
-            return []
-
-        # 移除后置日期过滤（arXiv 已按日期返回）
-        # 只做相关性排序
-        sorted_results = self._sort_by_relevance(results)
-
-        # 打印相关性分数分布（调试用）
         if sorted_results:
-            scores = [self._score_paper(r)[0] for r in sorted_results[:5]]
+            scores = [score_paper(r, self.keywords)[0] for r in sorted_results[:5]]
             print(f"[INFO] 相关性分数Top5: {scores}")
 
         return sorted_results
-    
-    def download_pdf(self, result: arxiv.Result, pdf_dir: str) -> Optional[str]:
-        """
-        下载PDF，返回本地路径
-        优先检查全目录是否已存在该PDF
-        """
-        arxiv_id = result.entry_id.split('/')[-1]
-        
-        # 先在整个 pdf_dir 下递归查找是否已存在
-        pdf_dir_path = Path(pdf_dir)
-        existing_files = list(pdf_dir_path.rglob(f"{arxiv_id}.pdf"))
-        if existing_files:
-            print(f"[INFO] PDF已存在，跳过下载: {existing_files[0]}")
-            return str(existing_files[0])
-        
-        # 按月份分目录
-        month_dir = datetime.now().strftime("%Y-%m")
-        pdf_path = pdf_dir_path / month_dir
-        pdf_path.mkdir(parents=True, exist_ok=True)
-        
-        pdf_file = pdf_path / f"{arxiv_id}.pdf"
-        
-        try:
-            result.download_pdf(dirpath=str(pdf_path), filename=f"{arxiv_id}.pdf")
-            return str(pdf_file)
-        except Exception as e:
-            print(f"[ERROR] 下载PDF失败 {arxiv_id}: {e}")
-            return None
 
-    def _download_pdf_no_ssl(self, result: arxiv.Result, pdf_dir: str) -> Optional[str]:
-        """
-        下载PDF
-        优先使用 certifi CA 证书；若不可用则 fallback 禁用验证并打印警告
-        优先检查全目录是否已存在该PDF
-        """
-        import ssl
-        import urllib.request
-        
-        arxiv_id = result.entry_id.split('/')[-1]
-        
-        # 先在整个 pdf_dir 下递归查找是否已存在
-        pdf_dir_path = Path(pdf_dir)
-        existing_files = list(pdf_dir_path.rglob(f"{arxiv_id}.pdf"))
-        if existing_files:
-            print(f"[INFO] PDF已存在，跳过下载: {existing_files[0]}")
-            return str(existing_files[0])
-        
-        month_dir = datetime.now().strftime("%Y-%m")
-        pdf_path = pdf_dir_path / month_dir
-        pdf_path.mkdir(parents=True, exist_ok=True)
-        pdf_file = pdf_path / f"{arxiv_id}.pdf"
-        
-        pdf_url = result.pdf_url
-        if not pdf_url:
-            return None
-        
-        # 尝试用 certifi 提供完整 CA 证书链
-        ssl_context = None
-        try:
-            import certifi
-            ssl_context = ssl.create_default_context(cafile=certifi.where())
-        except ImportError:
-            print("[WARN] certifi 未安装，PDF下载将跳过SSL验证（存在中间人攻击风险），建议: pip install certifi")
-            ssl_context = ssl.create_default_context()
-            ssl_context.check_hostname = False
-            ssl_context.verify_mode = ssl.CERT_NONE
-        
-        try:
-            req = urllib.request.Request(pdf_url, headers={"User-Agent": "Mozilla/5.0"})
-            with urllib.request.urlopen(req, context=ssl_context, timeout=60) as resp:
-                data = resp.read()
-                pdf_file.write_bytes(data)
-                return str(pdf_file)
-        except Exception as e:
-            print(f"[ERROR] 下载PDF失败 {arxiv_id}: {e}")
-            return None
-    
+    def download_pdf(self, result: arxiv.Result, pdf_dir: str):
+        """薄封装：委托给 searcher"""
+        return self._searcher.download_pdf(result, pdf_dir)
+
+    def _download_pdf_no_ssl(self, result: arxiv.Result, pdf_dir: str):
+        """薄封装：委托给 searcher"""
+        return self._searcher.download_pdf_no_ssl(result, pdf_dir)
+
     def process_papers(self, results: List[arxiv.Result]) -> Tuple[List[Dict], List[Dict]]:
-        """
-        处理搜索结果，返回 (详细处理列表, 溢出列表)
-        """
+        """处理搜索结果，返回 (详细处理列表, 溢出列表)"""
         max_papers = self.settings["processing"]["max_papers_per_day"]
         pdf_dir = self.settings["storage"]["pdf_dir"]
-        
+
         detailed_papers = []
         overflow_papers = []
-        
+
         for i, result in enumerate(results):
             arxiv_id = result.entry_id.split('/')[-1]
-            
-            # 跳过已存在的论文
+
             if self.storage.exists(arxiv_id):
                 continue
-            
+
             paper_info = {
                 "arxiv_id": arxiv_id,
                 "title": result.title,
@@ -372,18 +151,15 @@ class ArxivFetcher:
                 "pdf_filename": "",
                 "is_enriched": False
             }
-            
+
             if len(detailed_papers) < max_papers:
-                # 详细处理：下载PDF
                 if self.settings["processing"]["download_pdf"]:
                     pdf_path = self._download_pdf_no_ssl(result, pdf_dir)
                     if pdf_path:
                         paper_info["pdf_filename"] = pdf_path
-                
+
                 detailed_papers.append(paper_info)
             else:
-                # 溢出处理：保存完整信息（支持展开显示）
-                # authors 是 arxiv.Author 对象列表，转为字符串
                 authors_str = ", ".join(a.name for a in result.authors)
                 overflow_papers.append({
                     "arxiv_id": arxiv_id,
@@ -397,55 +173,51 @@ class ArxivFetcher:
                     "summary_cn": "",
                     "is_enriched": False
                 })
-        
+
         return detailed_papers, overflow_papers
-    
+
     def run(self) -> Tuple[int, int]:
-        """
-        执行完整流程，返回 (新增论文数, 溢出论文数)
-        """
+        """执行完整流程，返回 (新增论文数, 溢出论文数)"""
         print("[INFO] 构建arXiv查询...")
         query = self.build_query()
         print(f"[INFO] 查询: {query}")
-        
+
         print("[INFO] 搜索论文...")
         results = self.search_papers(query)
         print(f"[INFO] 找到 {len(results)} 篇论文（最近{self.settings['search']['date_range_days']}天）")
-        
+
         if not results:
             return 0, 0
-        
+
         print("[INFO] 处理论文...")
         detailed, overflow = self.process_papers(results)
-        
-        # 保存到存储
+
         added_detailed = 0
         for paper in detailed:
             if self.storage.add_paper(paper):
                 added_detailed += 1
-        
+
         added_overflow = 0
         for paper_info in overflow:
             if self.storage.add_to_overflow(paper_info):
                 added_overflow += 1
-        
+
         self.storage.save()
-        
+
         print(f"[INFO] 详细处理: {added_detailed} 篇（去重后）")
         print(f"[INFO] 溢出记录: {added_overflow} 篇（去重后）")
-        
+
         return added_detailed, added_overflow
 
 
 if __name__ == "__main__":
     import yaml
-    
-    # 测试
+
     with open("settings.yml", 'r', encoding='utf-8') as f:
         settings = yaml.safe_load(f)
-    
+
     storage = PaperStorage(settings["storage"]["papers_json"])
     fetcher = ArxivFetcher(storage, settings)
-    
+
     new_count, overflow_count = fetcher.run()
     print(f"\n新增论文: {new_count}, 溢出: {overflow_count}")
