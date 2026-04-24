@@ -1,13 +1,158 @@
 {
-  "generated_at": "2026-04-22 23:39:33",
+  "generated_at": "2026-04-24 15:24:58",
   "count": 10,
-  "total_papers": 31,
-  "overflow_count": 27,
+  "total_papers": 35,
+  "overflow_count": 31,
   "crawled_date_min": "2026-04-19",
-  "crawled_date_max": "2026-04-22",
+  "crawled_date_max": "2026-04-24",
   "published_date_min": "2026-04-08",
-  "published_date_max": "2026-04-21",
+  "published_date_max": "2026-04-22",
   "papers": [
+    {
+      "arxiv_id": "2604.20466v1",
+      "title": "Adaptive Multi-UAV Relay Deployment Framework in Satellite Aerial Ground Integrated Systems",
+      "authors": "Bhola, Yu-Jia Chen, Ashutosh Balakrishnan, Swades De, Li-Chun Wang",
+      "affiliations": "Thisworkhasbeenpartiallyfundedby the National Science and Technology | Department of Electrical and Computer Engineer | National Central University, Chung LiTaiwan | Department of Computer Science and Networks | Department of Electrical Engineering and Bharti School | Department of Electrical and Computer En",
+      "published_date": "2026-04-22",
+      "crawled_date": "2026-04-24",
+      "categories": "eess.SP, eess.IV, eess.SY",
+      "abstract": "The sixth generation (6G) communication networks are expected to provide high data rates, ultra-reliable communication, and massive connectivity, especially in challenging environments such as dense urban areas and disaster-affected regions. However, traditional terrestrial-only networks face significant challenges in these scenarios, including signal blockages from high-rise buildings, traffic congestion, and dynamic user distributions. To address these limitations, we propose the adaptive multi-UAV deployment (AMUD) framework within satellite air-ground integrated networks (SAGINs). The AMUD framework dynamically deploys amplify-and-forward multiple unmanned aerial vehicle relay (UAVr) in with low Earth orbit (LEO) satellites to improve coverage, alleviate congestion, and ensure reliable communication in non-line-of-sight and high-demand conditions. We formulate an optimization problem that aims to jointly maximize the energy efficiency of the total network and the total capacity while ensuring the fairness of the total capacity and satisfying the users' requirements. The simulation results demonstrate that AMUD improves the total capacity of the network, improves the total energy efficiency, and increases the fairness of the capacity compared to traditional LEO satellite and ground base station (LEO-GBS) only systems.",
+      "summary_cn": "第六代通信网络在密集城区与灾害场景中面临建筑遮挡、流量拥塞与动态用户分布等挑战。本文提出卫星空地一体化网络（SAGIN）中的自适应多无人机部署（AMUD）框架，通过动态部署低轨（LEO）卫星配合放大转发无人机中继（UAVr），在非视距与高需求条件下提升覆盖、缓解拥塞并保障通信可靠性。联合优化问题以最大化网络总能效与总容量为目标，同时确保容量公平性。仿真结果表明，AMUD在容量、能效与公平性方面均优于传统LEO卫星与地面基站方案。",
+      "pdf_url": "https://arxiv.org/pdf/2604.20466v1",
+      "arxiv_url": "https://arxiv.org/abs/2604.20466v1",
+      "is_enriched": true,
+      "quality_assessment": {
+        "overall_score": 75,
+        "confidence": "medium",
+        "novelty": 72,
+        "rigor": 75,
+        "data": 72,
+        "impact": 82,
+        "presentation": 74,
+        "strengths": [
+          "AMUD framework tackles a real and important problem — coverage in challenging environments via SAGIN",
+          "Joint optimization of energy efficiency + capacity + fairness is comprehensive and well-motivated",
+          "Integration of LEO satellites with multi-UAV relay is timely for 6G",
+          "Fairness constraint addresses a practical deployment concern",
+          "Simulation results show consistent improvements across multiple metrics"
+        ],
+        "limitations": [
+          "Formulation details sparse — the optimization problem lacks explicit mathematical expressions in the abstract",
+          "No theoretical performance bounds or optimality guarantees provided",
+          "Simulation methodology not detailed; baseline schemes not clearly described",
+          "Assumptions about LEO-UAV channel conditions not deeply analyzed",
+          "Q-learning or advanced learning components not actually used in the main algorithm (only mentioned as verification)"
+        ],
+        "data_quality_note": "Simulation-based evaluation; no real-world dataset. Scale and scenario diversity unclear. Baselines are standard but not comprehensively enumerated.",
+        "prediction_reason": "Solid practical motivation and system-level contribution. Novelty is moderate (UAV relay deployment is well-studied but SAGIN context adds value). Rigor is decent but formulation details are thin in the abstract. Impact is high given the 6G relevance. Presentation could be more precise."
+      }
+    },
+    {
+      "arxiv_id": "2604.20610v1",
+      "title": "Model Predictive Communication for Timely Status Updates in Low-Altitude Networks",
+      "authors": "Bowen Li, Jiping Luo, Themistoklis Charalambous, Nikolaos Pappas",
+      "affiliations": "Information Science, Linköping UniversityLinköping | UAV status monitoring. Another line of research adopts",
+      "published_date": "2026-04-22",
+      "crawled_date": "2026-04-24",
+      "categories": "eess.SY, cs.IT, eess.SP",
+      "abstract": "Timely information delivery in low-altitude networks is critical for many time-sensitive applications, such as unmanned aerial vehicle (UAV) navigation, inspection, and surveillance. The key challenge lies in balancing three competing factors: stringent data freshness requirements, UAV onboard energy consumption, and interference with terrestrial services. Addressing this challenge requires not only efficient power and channel allocation strategies but also effective communication timing over the entire operation horizon. In this work, we propose a model predictive communication (MPComm) framework, enabled by advanced channel sensing techniques, in which the channel conditions that the UAV will experience are largely predictable. Within this framework, we formulate a constrained bi-objective optimization problem to achieve a desired trade-off between energy consumption and terrestrial channel occupation, subject to a strict timeliness constraint. We solve this problem using Pareto analysis and show that the original non-convex, mixed-integer problem can be decomposed into a two-layer structure: the outer layer determines the optimal communication timing, while the inner layer determines the optimal power and channel allocation for each communication interval. An efficient algorithm for the inner problem is developed using non-convex analysis, with asymptotic optimality guarantees, while the outer problem is solved optimally via a simple graph search, with edges characterized by inner solutions. The proposed approach applies to a broad class of problem variants, including objective transformations and single-objective specializations. Numerical results demonstrate the efficiency of the proposed solution, achieving up to a six-fold reduction in terrestrial channel occupation and a 6dB energy saving compared to benchmark schemes.",
+      "summary_cn": "低空网络中无人机导航、巡检与监控等时敏应用对信息时效性要求极高，核心挑战在于平衡数据新鲜度、无人机能耗与对地面服务的干扰。本文提出基于高级信道感知技术的模型预测通信（MPComm）框架，在信道条件可预测的前提下，将能耗与地面信道占用建模为双目标约束优化问题。通过帕累托分析，原始非凸混合整数问题可分解为双层结构：外层确定最优通信时序，内层求解各通信间隔的最优功率与信道分配。内层采用非凸分析设计高效算法并提供渐近最优性保证，外层通过图搜索获得最优解。实验表明，该方案相比基线可减少约六倍地面信道占用，并节省6dB能耗。",
+      "pdf_url": "https://arxiv.org/pdf/2604.20610v1",
+      "arxiv_url": "https://arxiv.org/abs/2604.20610v1",
+      "is_enriched": true,
+      "quality_assessment": {
+        "overall_score": 88,
+        "confidence": "high",
+        "novelty": 85,
+        "rigor": 92,
+        "data": 80,
+        "impact": 92,
+        "presentation": 86,
+        "strengths": [
+          "Bi-objective optimization with rigorous Pareto analysis — strong theoretical foundation",
+          "Two-layer decomposition (outer timing + inner power/channel allocation) is elegant and well-justified",
+          "Non-convex analysis with asymptotic optimality guarantees — rare and valuable in this space",
+          "6x reduction in terrestrial channel occupation and 6dB energy saving — impressive and concrete numbers",
+          "Framework applies to broad class of variants — extensibility demonstrated",
+          "Channel predictability exploited via sensing — aligns with 6G sensing-communication integration trends",
+          "Strict timeliness constraint explicitly modeled — matches real UAV application requirements"
+        ],
+        "limitations": [
+          "Assumes channel predictability holds; practical sensing overhead and prediction errors not deeply analyzed",
+          "Graph search for outer problem — scalability with large horizon/many UAVs needs discussion",
+          "No hardware-in-the-loop or testbed validation",
+          "Trade-off between sensing overhead and communication gain not quantified"
+        ],
+        "data_quality_note": "Numerical results from simulation; realistic channel models but no real-world dataset. Good diversity of scenarios but limited to simulation. Still, the quantitative gains (6x, 6dB) are compelling.",
+        "prediction_reason": "Highest overall score — excellent balance of rigor, novelty, and practical impact. The bi-objective formulation with Pareto analysis and asymptotic optimality is theoretically strong. Practical impact is very high with concrete 6x/6dB gains. Presentation is well-organized. Confidence high given the mathematical depth and benchmark clarity."
+      }
+    },
+    {
+      "arxiv_id": "2604.17169v2",
+      "title": "Two-Tier High Altitude Platform Stations (HAPS) for Exploring Wireless Energy Harvesting",
+      "authors": "Faicel Khennoufa, Khelil Abdellatif, Halim Yanikomeroglu, Safwan Alfattani, Metin Ozturk, Ferdi Kara",
+      "affiliations": "Avancées (ENSTA), Department of Basic Training in Computer | LGEERE Laboratory, Department of Electrical | Engineering, Echahid Hamma Lakhdar University, ElOued, Al | Systems and Computer Engineering, Carleton University, Ottawa | K1S 5B6, ON, Canada. S. Alfattani | King AbdulAziz University, Saudi Arabiasmal | Engineering, Ankara Yıldırım Beyazıt University, Ankara, Turkiye | Ericsson AB | It is worth noting that the current research in the field | University of Tokyo,theprojectwascarriedoutatthe | Georgia Institute of Technology to collect energy at | (NASA)sponsored experiments yielded 34 kW of Sband",
+      "published_date": "2026-04-18",
+      "crawled_date": "2026-04-24",
+      "categories": "eess.SP",
+      "abstract": "In sixth-generation (6G) cellular networks and beyond, aerial platforms, such as uncrewed aerial vehicles (UAVs) and high-altitude platform stations (HAPS), are anticipated to play a crucial role in enhancing connectivity, expanding network coverage, and supporting advanced communication services. However, the deployment of energy-efficient onboard communication systems is essential for their widespread adoption and effectiveness. The integration of energy harvesting (EH) into aerial platforms is envisioned to be pivotal in promoting both energy and cost efficiency. In this paper, we propose a new paradigm for aerial platforms in which they can collect energy from the transmitted signals of nearby aerial platforms. The paper employs a two-tier architecture with HAPS super-macro base stations (HAPS-SMBS) system: regular HAPS-SMBS nodes serve as base stations, while a \"mother\" HAPS-SMBS node acts as a manager to coordinate communications between regular HAPS-SMBS and the ground station, thus enabling wireless energy transfer. Specifically, we analyze the characteristics of EH-enabled HAPS-SMBS and compare their performance with those without EH. Additionally, we derive the optimal regular HAPS-SMBS positioning to mitigate signal attenuation and power loss. Subsequently, we formulate a joint optimization problem for regular HAPS-SMBS positioning and the EH factor. We solve the problem using the iterative distance and EH factor algorithm (IDFA); however, we employ $Q$-learning to verify its effectiveness. Our findings indicate that, compared to conventional EH systems, IDFA and $Q$-learning exhibit higher data rate performance. In contrast, $Q$-learning outperforms IDFA systems in linear modelswith intensive training in approximating optimal values. Furthermore, maximizing transmit power achieves higher gains than systems without EH.",
+      "summary_cn": "第六代及未来蜂窝网络中，高空平台（HAPS）与无人机等空中节点有望扩展覆盖并支撑先进通信服务，但其能效部署是广泛普及的关键。本文提出空中平台间信号能量收集的新范式，采用双层HAPS超宏基站（HAPS-SMBS）架构：由常规HAPS-SMBS担任基站，一台\"母\"HAPS-SMBS协调通信并实现无线能量传输。论文分析了HAPS-SMBS能量收集特性，推导了最优节点部署位置以减轻信号衰减与功率损耗，并联合优化节点布局与能量收集因子。算法采用迭代距离与能量因子算法（IDFA）求解，以Q学习验证有效性。结果表明：IDFA与Q学习均优于传统无能量收集系统；Q学习在密集训练的线性模型中逼近最优值表现更优；最大发射功率策略相比无能量收集系统可获得更高增益。",
+      "pdf_url": "https://arxiv.org/pdf/2604.17169v2",
+      "arxiv_url": "https://arxiv.org/abs/2604.17169v2",
+      "is_enriched": true,
+      "quality_assessment": {
+        "overall_score": 70,
+        "confidence": "low",
+        "novelty": 0,
+        "rigor": 0,
+        "data": 0,
+        "impact": 0,
+        "presentation": 0,
+        "strengths": [],
+        "limitations": [],
+        "data_quality_note": "",
+        "prediction_reason": ""
+      }
+    },
+    {
+      "arxiv_id": "2604.11098v2",
+      "title": "Efficient Transceiver Design for Aerial Image Transmission and Large-scale Scene Reconstruction",
+      "authors": "Zeyi Ren, Jialin Dong, Wei Zuo, Yikun Wang, Bingyang Cheng, Sheng Zhou, Zhisheng Niu",
+      "affiliations": "Department of Electronic Engineering | Tsinghua University, Beijing, China | †Department of Electrical and Computer Engineering | Thisworkissupportedinpartby the State Key Laboratory of Internetof | Things for Smart City (University of Macau) Open Research Project under | UniversityToyota Joint Research Center for AI Technology of Automated",
+      "published_date": "2026-04-13",
+      "crawled_date": "2026-04-24",
+      "categories": "cs.CV, cs.LG, eess.SP",
+      "abstract": "Large-scale three-dimensional (3D) scene reconstruction in low-altitude intelligent networks (LAIN) demands highly efficient wireless image transmission. However, existing schemes struggle to balance severe pilot overhead with the transmission accuracy required to maintain reconstruction fidelity. To strike a balance between efficiency and reliability, this paper proposes a novel deep learning-based end-to-end (E2E) transceiver design that integrates 3D Gaussian Splatting (3DGS) directly into the training process. By jointly optimizing the communication modules via the combined 3DGS rendering loss, our approach explicitly improves scene recovery quality. Furthermore, this task-driven framework enables the use of a sparse pilot scheme, significantly reducing transmission overhead while maintaining robust image recovery under low-altitude channel conditions. Extensive experiments on real-world aerial image datasets demonstrate that the proposed E2E design significantly outperforms existing baselines, delivering superior transmission performance and accurate 3D scene reconstructions.",
+      "summary_cn": "低空智联网大规模三维场景重建需要高效的无线图像传输，但现有方案难以在导频开销与重建保真度之间取得平衡。本文提出一种基于深度学习的端到端收发机设计，将三维高斯溅射（3DGS）直接嵌入训练过程，通过联合优化通信模块与渲染损失，在低空信道条件下使用稀疏导频显著降低传输开销，同时保持鲁棒的图像恢复能力。真实航拍数据集实验表明，该方案在传输性能与三维重建精度上均大幅优于现有基线。",
+      "pdf_url": "https://arxiv.org/pdf/2604.11098v2",
+      "arxiv_url": "https://arxiv.org/abs/2604.11098v2",
+      "is_enriched": true,
+      "quality_assessment": {
+        "overall_score": 82,
+        "confidence": "high",
+        "novelty": 88,
+        "rigor": 76,
+        "data": 75,
+        "impact": 88,
+        "presentation": 80,
+        "strengths": [
+          "Novel integration of 3DGS rendering loss into E2E transceiver training — directly ties communication optimization to scene reconstruction quality",
+          "Sparse pilot scheme reduces overhead while maintaining fidelity — practically significant for aerial image transmission",
+          "End-to-end differentiable framework enables joint optimization of comm modules and rendering",
+          "Real-world aerial image datasets used for validation (not just synthetic)",
+          "Addresses a clear pain point: balancing pilot overhead vs reconstruction accuracy in LAIN"
+        ],
+        "limitations": [
+          "3DGS rendering loss integration details are high-level; lacks ablation on which rendering terms matter most",
+          "Channel model and low-altitude propagation assumptions not deeply analyzed — seems to rely on standard models",
+          "No discussion of computational complexity or real-time feasibility on UAV hardware",
+          "Ablation study limited; baseline comparisons could include more variants (e.g., separate optimization vs joint)",
+          "Generalization across diverse aerial scenes not validated"
+        ],
+        "data_quality_note": "Uses real-world aerial image datasets; scale moderate. Lacks large-scale multi-scenario evaluation across diverse environments, altitudes, and weather conditions.",
+        "prediction_reason": "Strong novelty and practical impact — integrating 3DGS into E2E transceiver is a fresh direction in joint communication-perception. Rigor is solid but slightly weaker on ablation depth. Data quality is good with real data but not large-scale. Presentation is clear and well-structured."
+      }
+    },
     {
       "arxiv_id": "2604.19040v1",
       "title": "Integrated Sensing and Communications for Low-Altitude Economy with Deterministic Sensing and Gaussian Information Signals",
@@ -229,7 +374,9 @@
         "data_quality_note": "No data — this is a conceptual/architectural paper. No simulations, no measurements, no numerical comparisons.",
         "prediction_reason": "A well-articulated vision paper that may stimulate future research but lacks the technical depth expected of a primary research contribution. Without any quantitative validation or analytical rigor, it is closer to an invited article or magazine paper than a research paper."
       }
-    },
+    }
+  ],
+  "overflow_list": [
     {
       "arxiv_id": "2604.18207v1",
       "title": "A Novel Piecewise Atmospheric Attenuation Model for Free Space Optical Links in Vertical Heterogeneous Networks",
@@ -240,8 +387,8 @@
       "categories": "eess.SP",
       "abstract": "Free-space optical (FSO) communication is emerging as a key backhaul technology for next-generation vertical heterogeneous networks (VHetNets), whose architecture spans satellites, high-altitude platform stations (HAPS), unmanned aerial vehicles (UAVs), and terrestrial nodes. Along these vertical and slant paths, optical beams traverse successive atmospheric layers that may contain clouds, fog, rain, and aerosols, conditions that conventional single-coefficient Beer-Lambert models typically handle only in isolation. Instead of such simplified formulas, we present a unified attenuation model that incorporates aerosols, fog, rain, cloud layers, and drizzle, accounts for the zenith angle, and provides a holistic estimate of the cumulative power loss across atmospheric layers. Numerical results show several-decibel attenuation variations across representative weather scenarios, while the difference between the proposed model predictions and the layer-resolved MODTRAN simulations remains within 1 dB, thereby validating the accuracy of the proposed model and its practical relevance for VHetNet link-budget studies.",
       "summary_cn": "自由空间光通信正成为下一代垂直异构网络的关键回传技术，其架构涵盖卫星、高空平台站、无人机和地面节点。光束在垂直和倾斜路径上穿过可能含云、雾、雨和气溶胶的连续大气层，传统单系数比尔-朗伯模型通常只能孤立处理。我们提出一种统一衰减模型，整合了气溶胶、雾、雨、云层和毛毛雨，考虑天顶角，全面估计跨大气层的累积功率损耗。数值结果表明典型天气下衰减变化达数分贝，且所提模型预测与分层MODTRAN模拟差异保持在1 dB内，验证了其准确性及在链路预算研究中的实用价值。",
-      "pdf_url": "https://arxiv.org/pdf/2604.18207v1",
       "arxiv_url": "https://arxiv.org/abs/2604.18207v1",
+      "pdf_url": "https://arxiv.org/pdf/2604.18207v1",
       "is_enriched": true,
       "quality_assessment": {
         "overall_score": 68,
@@ -279,8 +426,8 @@
       "categories": "eess.SP",
       "abstract": "Precise aerial radio environment characterization is vital for low-altitude planning. However, existing datasets and estimation methods lack the high-resolution granularity required for complex aerial spaces. Additionally, current schemes suffer from poor generalization and heavy reliance on environmental priors. To address these gaps, this paper introduces FARM, a pioneering foundation model for unified aerial radio map estimation. This model is supported by a newly curated, high-resolution dataset featuring multi-band and multi-antenna configurations specifically for low-altitude environments. FARM utilizes a masked autoencoder to extract deep latent representations of the aerial radio environment, which then guide a diffusion-based decoder to generate high-fidelity signal distributions through iterative refinement. Extensive experiments demonstrate that FARM significantly outperforms state-of-the-art benchmarks and exhibits superior generalization capabilities across unseen scenarios. Ultimately, FARM serves as a critical infrastructure for low-altitude economy by enabling autonomous aerial logistics and intelligent urban networking.",
       "summary_cn": "精确的空中无线电环境表征对低空规划至关重要。然而，现有数据集和估计方法缺乏复杂空中空间所需的高分辨率粒度，且当前方案泛化能力差、严重依赖环境先验。为解决这些不足，本文提出FARM，一个用于统一空中无线电地图估计的先驱基础模型。该模型由新构建的高分辨率数据集支撑，包含专门针对低空环境的多频段和多天线配置。FARM利用掩码自编码器提取空中无线电环境深度潜在表示，引导基于扩散的解码器通过迭代细化生成高保真信号分布。大量实验表明，FARM显著优于最先进的基准，并在未见场景中表现出优异泛化能力。最终，FARM作为低空经济关键基础设施，支持自主空中物流和智能城市组网。",
-      "pdf_url": "https://arxiv.org/pdf/2604.17362v1",
       "arxiv_url": "https://arxiv.org/abs/2604.17362v1",
+      "pdf_url": "https://arxiv.org/pdf/2604.17362v1",
       "is_enriched": true,
       "quality_assessment": {
         "overall_score": 66,
@@ -316,8 +463,8 @@
       "categories": "eess.SP",
       "abstract": "In sixth-generation (6G) cellular networks and beyond, aerial platforms, such as uncrewed aerial vehicles (UAVs) and high-altitude platform stations (HAPS), are anticipated to play a crucial role in enhancing connectivity, expanding network coverage, and supporting advanced communication services. However, the deployment of energy-efficient onboard communication systems is essential for their widespread adoption and effectiveness. The integration of energy harvesting (EH) into aerial platforms is envisioned to be pivotal in promoting both energy and cost efficiency. In this paper, we propose a new paradigm for aerial platforms in which they can collect energy from the transmitted signals of nearby aerial platforms. The paper employs a two-tier architecture with HAPS super-macro base stations (HAPS-SMBS) system: regular HAPS-SMBS nodes serve as base stations, while a \"mother\" HAPS-SMBS node acts as a manager to coordinate communications between regular HAPS-SMBS and the ground station, thus enabling wireless energy transfer. Specifically, we analyze the characteristics of EH-enabled HAPS-SMBS and compare their performance with those without EH. Additionally, we derive the optimal regular HAPS-SMBS positioning to mitigate signal attenuation and power loss. Subsequently, we formulate a joint optimization problem for regular HAPS-SMBS positioning and the EH factor. We solve the problem using the iterative distance and EH factor algorithm (IDFA); however, we employ $Q$-learning to verify its effectiveness. Our findings indicate that, compared to conventional EH systems, IDFA and $Q$-learning exhibit higher data rate performance. In contrast, $Q$-learning outperforms IDFA systems in linear modelswith intensive training in approximating optimal values. Furthermore, maximizing transmit power achieves higher gains than systems without EH.",
       "summary_cn": "在6G及未来网络中，无人机和高空平台站对增强连接至关重要。集成能量收集（EH）是提升其能效的关键。本文提出新范式，使空中平台能从邻近平台信号中收集能量。采用两层HAPS超级宏基站架构：常规节点作基站，“母”节点协调其与地面站通信以实现无线传能。我们分析了支持EH的HAPS-SMBS特性，推导了最优常规节点位置以减轻衰减，并构建了位置与EH因子的联合优化问题。使用迭代距离与EH因子算法（IDFA）求解，并用Q学习验证。结果表明，IDFA和Q学习比传统EH系统数据速率更高，Q学习在近似最优值上优于IDFA。最大化发射功率比无EH系统增益更高。",
-      "pdf_url": "https://arxiv.org/pdf/2604.17169v1",
       "arxiv_url": "https://arxiv.org/abs/2604.17169v1",
+      "pdf_url": "https://arxiv.org/pdf/2604.17169v1",
       "is_enriched": true,
       "quality_assessment": {
         "overall_score": 68,
@@ -357,8 +504,8 @@
       "categories": "eess.SP",
       "abstract": "Ensuring strict safety guarantees is the paramount challenge for emerging 5G/6G wireless systems, particularly as they increasingly govern mission-critical applications ranging from autonomous UAV swarms to industrial automation. While deep reinforcement learning (DRL) offers a promising solution for complex resource allocation, standard algorithms frequently violate essential constraints, such as QoS mandates and power limits, posing unacceptable risks of system failure and regulatory non-compliance. We propose Safe-Deep Q-Learning, a novel algorithm that simultaneously addresses all three challenges: it handles mixed-integer nonconvex problems by approximating the Q-function, adapts to stochastic dynamics, and enforces dual-timescale constraints using integrated Lagrangian methods. Our framework features adaptive penalty scaling and constraint violation tracking, specifically tailored for wireless environments, and is designed to operate in both distributed and centralized architectural modes. We prove convergence to optimal constraint-satisfying policies under mild conditions and demonstrate robustness through dual variable stabilization. Validation on unmanned aerial vehicle (UAV) swarm control network and post-disaster emergency communications applications shows that Safe-Deep Q-Learning achieves stringent adherence to safety bounds with near-zero violation rates, significantly outperforming existing constrained RL baselines, establishing its effectiveness for safety-critical wireless deployments.",
       "summary_cn": "确保严格的安全保障是5G/6G无线系统的首要挑战，因其日益主导无人机群控等关键任务。深度强化学习虽能解决复杂资源分配，但常违反QoS和功率等约束，带来系统故障风险。我们提出Safe-Deep Q-Learning算法，通过近似Q函数处理混合整数非凸问题，适应随机动态，并利用集成拉格朗日方法执行双时间尺度约束。该框架具备自适应惩罚缩放和违规跟踪功能，专为无线环境定制，支持分布式和集中式模式。我们在温和条件下证明了其收敛性。在无人机群控和灾后应急通信的验证表明，该算法以近零违规率严格遵守安全边界，显著优于现有约束RL基线，确立了其在安全关键无线部署中的有效性。",
-      "pdf_url": "https://arxiv.org/pdf/2604.17032v1",
       "arxiv_url": "https://arxiv.org/abs/2604.17032v1",
+      "pdf_url": "https://arxiv.org/pdf/2604.17032v1",
       "is_enriched": true,
       "quality_assessment": {
         "overall_score": 79,
@@ -388,9 +535,7 @@
         "data_quality_note": "UAV swarm and emergency communications validation scenarios are meaningful but appear synthetic. No external dataset reference. The key quantitative claims (near-zero violation rates, convergence to optimal policies) are from self-generated simulations — reproducibility depends on implementation details not fully disclosed.",
         "prediction_reason": "Top paper in this batch. Addresses a critical real-world problem (safety-critical 5G/6G wireless) with a novel algorithm (Safe-Deep Q-Learning) that has solid theoretical backing (convergence proofs) and dual real-world scenario validation. High impact and strong rigor. Minor deductions for synthetic-only validation and lack of real-world hardware deployment proof."
       }
-    }
-  ],
-  "overflow_list": [
+    },
     {
       "arxiv_id": "2604.15733v1",
       "title": "Adaptive Power Allocation and User Scheduling for LEO Satellites using Channel Predictions",
