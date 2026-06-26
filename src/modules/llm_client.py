@@ -345,8 +345,9 @@ class LLMClient:
         self.use_openclaw = use_openclaw
 
         # 19000 proxy 连续 403 计数器：连续失败 2 次后跳过
-        self._proxy_403_count = 0
+        # 强制跳过 19000（不可用），只走网关端点
         self._proxy_403_max = 2
+        self._proxy_403_count = self._proxy_403_max
 
     # ---- 翻译 ----
 
