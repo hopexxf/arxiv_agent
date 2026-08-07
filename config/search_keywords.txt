@@ -1,8 +1,9 @@
 # 格式：关键词|权重（1-10），权重越高越相关
 # 默认权重为5
 
+Aerial|10
+OCUDU|9
 AI-RAN|8
 6G AI|7
-Aerial|10
-O-RAN|4
 GPU RAN|5
+O-RAN|4

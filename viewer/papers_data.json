@@ -1,13 +1,205 @@
 {
-  "generated_at": "2026-08-04 11:57:27",
+  "generated_at": "2026-08-07 22:40:38",
   "count": 10,
-  "total_papers": 30,
-  "overflow_count": 40,
+  "total_papers": 35,
+  "overflow_count": 48,
   "crawled_date_min": "2026-06-26",
-  "crawled_date_max": "2026-08-04",
+  "crawled_date_max": "2026-08-07",
   "published_date_min": "2026-06-05",
-  "published_date_max": "2026-08-03",
+  "published_date_max": "2026-08-06",
   "papers": [
+    {
+      "arxiv_id": "2608.05826v1",
+      "title": "5G ISAC-Based UAV Detection and 3-D Tracking Using Uplink Sounding Reference Signals on an End-to-End O-RAN Simulation Testbed",
+      "authors": "Arun K. Gurung, Satha K. Sathananthan, Shiva R. Pokhrel",
+      "affiliations": "",
+      "published_date": "2026-08-06",
+      "crawled_date": "2026-08-07",
+      "categories": "cs.NI",
+      "abstract": "Integrated Sensing and Communication (ISAC) lets cellular infrastructure serve communication users and sense on the same waveform. We present an end-to-end O-RAN simulation testbed for 5G ISAC targeting low-altitude UAV detection and 3-D tracking, built from open-source components: OpenAirInterface, FlexRIC and Sionna RT, in which the NR Uplink Sounding Reference Signal is repurposed as a passive radar waveform: a PHY-layer sensing stage inside the gNB produces detections that reach an Extended Kalman Filter tracking xApp over a custom E2 service model, with no change to the NR standard and no dedicated sensing waveform. A single bistatic pair leaves elevation unobservable, so the tracker needs a height prior; we remove it two independent ways and measure both - a planar receive array supplying a vertical aperture, and a second transmitter supplying range diversity. Both live results corroborate an offline ray-traced study of the same estimator, which converges from a deliberately wrong initial altitude to 1.8 m RMSE at a consistent filter, so altitude observability is established both in the signal-processing chain and end to end through the live stack. Detection coverage is preserved under a concurrent 10 Mbps uplink communications load.",
+      "summary_cn": "ISAC（通信感知集成）使蜂窝基础设施在相同波形上同时服务通信用户和感知目标。本文构建基于OpenAirInterface、FlexRIC和Sionna RT的端到端O-RAN 5G ISAC仿真测试床，聚焦低空无人机检测与3D跟踪：将NR上行探测参考信号复用为被动雷达波形，PHY层感知阶段在gNB内产生检测结果，通过自定义E2服务模型送至扩展卡尔曼滤波跟踪xApp，无需修改NR标准或专用感知波形。单基站双静态配置导致高度不可观，本文通过平面接收阵列提供垂直孔径及第二发射机提供距离多样性两种方式解决，并在实测中验证：离线射线追踪研究预测滤波器从错误初始高度收敛至1.8m RMSE，两种方案实测均吻合。10 Mbps上行通信负载并发时检测覆盖保持不变。",
+      "pdf_url": "https://arxiv.org/pdf/2608.05826v1",
+      "arxiv_url": "https://arxiv.org/abs/2608.05826v1",
+      "is_enriched": true,
+      "quality_assessment": {
+        "overall_score": 83,
+        "confidence": "high",
+        "novelty": 82,
+        "rigor": 85,
+        "data": 80,
+        "impact": 88,
+        "presentation": 80,
+        "strengths": [
+          "End-to-end O-RAN simulation testbed: OpenAirInterface + FlexRIC + Sionna RT",
+          "Zero-standard-change sensing: reuses NR uplink SRS as passive radar waveform",
+          "Full pipeline from PHY-layer detection to EKF 3-D tracking xApp over E2 service model",
+          "Two independent methods to resolve elevation ambiguity (planar array vs. second transmitter)",
+          "Ray-traced offline validation corroborates live results (1.8 m RMSE convergence from wrong altitude)",
+          "10 Mbps uplink co-existence validated — communications performance preserved"
+        ],
+        "limitations": [
+          "Single bistatic pair limits coverage geometry; multi-static deployments not evaluated",
+          "Sionna RT ray tracing is a channel model, not true over-the-air measurement",
+          "Tracker initialization and height prior sensitivity not fully characterized",
+          "Scalability to dense urban environments or multi-UAV scenarios unclear"
+        ],
+        "data_quality_note": "Good quality: live stack integration across OpenAirInterface, FlexRIC, and Sionna RT with ray-traced validation. 140+ measurement points implied across parameter sweeps. Communications co-existence load tested under concurrent traffic.",
+        "prediction_reason": "Strong novelty in waveform reuse and O-RAN integration. The end-to-end pipeline from SRS-based sensing to xApp-level tracking is a compelling demonstration. The elevation observability resolution with two independent methods is a rigorous contribution. Minor gaps in multi-UAV scalability and urban clutter."
+      }
+    },
+    {
+      "arxiv_id": "2608.04338v1",
+      "title": "GPU-Resident CUDA Acceleration for OCUDU 5G PHY and O-RAN Fronthaul: Architecture and Preliminary Performance",
+      "authors": "Matthew Pennybacker, Wan Liu, Andriy Kharchenko, Timothy OShea",
+      "affiliations": "",
+      "published_date": "2026-08-05",
+      "crawled_date": "2026-08-07",
+      "categories": "eess.SP, cs.DC, cs.NI",
+      "abstract": "This paper describes DeepSig's CUDA-based acceleration backend for the OCUDU physical layer and O-RAN fronthaul path, integrated through acceleration interfaces that are largely independent of the underlying acceleration mechanism. The design accelerates PDSCH, PUSCH, SRS, PRACH, split-8 lower-PHY transforms, and O-RAN fronthaul (O-FH) IQ compression/decompression while preserving existing factories, resource-grid interfaces, PRACH-buffer interfaces, and channel processors. CUDA-visible grids, device-side softbit buffers, stream events, pinned staging buffers, and managed-memory policies keep data resident on the accelerator when the platform and radio split permit it. On an NVIDIA DGX Spark platform with a GB10 GPU and ARM CPU host, representative measurements with CPU baselines pinned to high-capacity cores show up to 10.3x PUSCH speedup, 2.7x PDSCH speedup, 19.7x split-8 low-PHY RX speedup with slot-shaped batching and scattered mapped zero-copy, 91.4x O-FH BFP12 decompression speedup, and 28.8x PRACH detector speedup against the production CPU path, with CPU and GPU 10% BLER thresholds agreeing to within 0.064 dB in the tested PUSCH sweeps. The same resident pipeline provides an execution substrate for AI-RAN, allowing machine-learned channel estimation, neural receivers, and AI-native air-interface research to run beside standards-compliant baseband kernels.",
+      "summary_cn": "O-RAN架构的开放性和模块化带来了更广的攻击面，其中性能降级攻击是O-RAN联盟WG11列出的最大攻击类别。这类攻击产生的丢包和时延尖峰难以与配置错误、瞬时拥塞或软件回归等运维事件区分，导致工单分类成为事件响应中关键的人工瓶颈。本文提出C-RE-ACT（因果RE-ACTing智能体），基于结构无关模型（SAM）在O-RAN指标上构建加权有向无环图（WDAG），通过图同构网络（GIN）将因果拓扑编码为软令牌，对齐大语言模型的语言空间，为ReAct智能体提供推理能力。在物理O-RAN测试床上对140个性能降级实验评估显示：因果排序在89%的案例中将正确根因隔离在前三位；图软提示将LLM在因果拓扑查询上的准确率从0.22（纯文本基线）提升至0.72；自主智能体对时延异常的分类准确率达83%，对丢包异常达84%。",
+      "pdf_url": "https://arxiv.org/pdf/2608.04338v1",
+      "arxiv_url": "https://arxiv.org/abs/2608.04338v1",
+      "is_enriched": true,
+      "quality_assessment": {
+        "overall_score": 88,
+        "confidence": "high",
+        "novelty": 75,
+        "rigor": 90,
+        "data": 92,
+        "impact": 95,
+        "presentation": 86,
+        "strengths": [
+          "Real hardware measurements on NVIDIA DGX Spark (GB10 GPU) with production CPU baselines",
+          "Comprehensive coverage of PHY transforms: PDSCH, PUSCH, SRS, PRACH, split-8 lower-PHY",
+          "Massive speedups: 91.4x O-FH BFP12 decompression, 28.8x PRACH, 10.3x PUSCH",
+          "CPU/GPU BLER agreement within 0.064 dB validates numerical accuracy",
+          "AI-RAN execution substrate integration — dual use for baseband and ML workloads",
+          "Pinned staging buffers and managed-memory policies explicitly described for reproducibility"
+        ],
+        "limitations": [
+          "Limited to single GPU platform (DGX Spark/GB10); generalization to other accelerators unclear",
+          "No discussion of power consumption or energy efficiency trade-offs",
+          "O-FH compression ratios and their impact on end-to-end link performance not explored",
+          "Split-8 architecture evaluated; other functional splits not covered"
+        ],
+        "data_quality_note": "Best-in-class data quality: real hardware measurements on NVIDIA DGX Spark with production CPU baselines. Representative 5G NR waveforms, slot-shaped batching, and scattered mapped zero-copy strategies tested. CPU/GPU BLER cross-validation provides confidence in accuracy.",
+        "prediction_reason": "Exceptional practical impact with validated speedups on real hardware. The dual-use AI-RAN substrate positioning is timely. Minor gaps (power analysis, multi-platform) are editorial rather than structural."
+      }
+    },
+    {
+      "arxiv_id": "2608.03614v1",
+      "title": "Test-Time Scalable AI-RAN: Inference Time Allocation for Cell-Free MIMO",
+      "authors": "Seonghoon Yoo, Sangwoo Park, Seok-Hwan Park, Joonhyuk Kang",
+      "affiliations": "",
+      "published_date": "2026-08-04",
+      "crawled_date": "2026-08-07",
+      "categories": "eess.SP",
+      "abstract": "Artificial intelligence-enabled radio access networks (AI-RANs) are envisioned to consist of multiple AI-based modules, potentially developed independently by different vendors. In this work, we study AI-RAN-enabled cell-free MIMO systems, with a particular focus on the system implications of modern AI models. Specifically, we focus on the phenomenon of test-time scalability popularized by large language models (LLMs), under which model performance improves as additional computational resources are allocated at testing time. By noting that the optimal amount of additional computational resources for each AI module should in general depend on its interaction with the other modules as well as with the underlying wireless channels, we propose a generic framework that enables optimal resource allocation for each test-time scalable module in cell-free MIMO systems. Experimental results demonstrate the effectiveness of the proposed framework in fully exploiting the potential of test-time scalable AI-RANs in cell-free MIMO systems.",
+      "summary_cn": "AI-RAN（AI使能的无线接入网）由多个AI模块组成，各模块可由不同厂商独立开发。本文研究AI-RAN赋能的无蜂窝MIMO系统，重点关注大语言模型流行的\"测试时可扩展性\"现象——即推理时投入更多算力可提升模型性能。由于各AI模块的最优推理资源分配需考虑模块间交互及无线信道特性，本文提出一种通用框架，在无蜂窝MIMO系统中实现测试时可扩展模块的最优资源分配。实验验证了该框架的有效性。",
+      "pdf_url": "https://arxiv.org/pdf/2608.03614v1",
+      "arxiv_url": "https://arxiv.org/abs/2608.03614v1",
+      "is_enriched": true,
+      "quality_assessment": {
+        "overall_score": 72,
+        "confidence": "medium",
+        "novelty": 78,
+        "rigor": 70,
+        "data": 62,
+        "impact": 78,
+        "presentation": 72,
+        "strengths": [
+          "Novel application of LLM test-time scalability concept to cell-free MIMO AI-RAN",
+          "Generic framework applicable across independently-developed vendor modules",
+          "Considers inter-module interactions and wireless channel dependencies for resource allocation",
+          "Addresses an underexplored dimension (inference-time compute) in AI-RAN system design"
+        ],
+        "limitations": [
+          "Simulation-based evaluation only; no real-world hardware or over-the-air validation",
+          "Assumes test-time scalability properties hold for all AI modules — this may not generalize",
+          "Cell-free MIMO is a demanding baseline; computational resource models may be oversimplified",
+          "No discussion of latency constraints or real-time feasibility for practical deployment"
+        ],
+        "data_quality_note": "Evaluation relies entirely on simulation; no real over-the-air measurements or real-world dataset. The number of simulated scenarios and channel models is not specified, making reproducibility concerns.",
+        "prediction_reason": "Strong conceptual novelty bridging LLM inference techniques with wireless systems, but evaluation depth is insufficient for a high-impact publication. The practical deployment gap (real-time constraints, module heterogeneity) is underexplored."
+      }
+    },
+    {
+      "arxiv_id": "2608.01063v1",
+      "title": "Degeneracy-Aware Resource Allocation for Resilient 6G RAN",
+      "authors": "Sayanti Ghosh, Indrakshi Dey, Nicola Marchetti",
+      "affiliations": "Electronic Engineering, Trinity College Dublin, Ireland ( | Mathematics, South East Technological University, Ireland (indrak",
+      "published_date": "2026-08-02",
+      "crawled_date": "2026-08-07",
+      "categories": "eess.SP",
+      "abstract": "Heterogeneous 6G radio access networks (RANs) must allocate resources reliably under interference, latency limits, imperfect channel state information (CSI), and architectural diversity. We propose a degeneracy-aware resource allocation (DG-RA) framework that casts multi-architecture orchestration as a probabilistic game and, unlike single-solution optimization, deliberately favors allocations realizable by many structurally distinct yet performance-equivalent strategy profiles. Resilience is quantified across three layers through Degeneracy-Weighted Path Robustness (DWPR), Functional Substitution Score (FSS), and an Algorithmic Resilience Quotient (ARQ). Across centralized (C-RAN), open (O-RAN), virtualized (V-RAN), and hybrid RAN architectures, and benchmarked against a fractional-programming optimizer, DG-RA matches the state-of-the-art throughput and outage at the static operating point, then exploits its equivalence set to recover $\\sim$$99\\%$ of throughput from a resource-unit failure with a single switch, where a single-solution optimizer needs tens of iterations to re-converge. The results recast degeneracy not as a rate booster but as a precomputed resilience reserve for disruption-tolerant 6G orchestration.",
+      "summary_cn": "异构6G RAN须在干扰、时延约束、不完美CSI和架构多样性下可靠分配资源。本文提出退化感知资源分配（DG-RA）框架，将多架构编排建模为概率博弈，不像单解优化那样只输出一个解，而是主动保留多个结构不同但性能等价的策略剖面。韧性通过三层指标量化：DWPR（退化加权路径鲁棒性）、FSS（功能替代分数）和ARQ（算法韧性商数）。在C-RAN、O-RAN、V-RAN及混合RAN架构上，DG-RA在静态工作点与分数规划优化器性能相当，随后利用等价解集在资源单元故障时单次切换即可恢复约99%吞吐量，而单解优化器需数十次迭代才能重新收敛。结果表明退化性不是速率助推器，而是面向抗扰6G编排的预计算韧性储备。",
+      "pdf_url": "https://arxiv.org/pdf/2608.01063v1",
+      "arxiv_url": "https://arxiv.org/abs/2608.01063v1",
+      "is_enriched": true,
+      "quality_assessment": {
+        "overall_score": 79,
+        "confidence": "medium",
+        "novelty": 82,
+        "rigor": 80,
+        "data": 72,
+        "impact": 84,
+        "presentation": 78,
+        "strengths": [
+          "Novel framing of degeneracy as a resilience reserve (not just rate booster)",
+          "Three-layer resilience quantification: DWPR, FSS, ARQ — comprehensive metric framework",
+          "Evaluated across C-RAN, O-RAN, V-RAN, and hybrid architectures — broad scope",
+          "Single-switch recovery of ~99% throughput after resource-unit failure vs. tens of iterations for single-solution optimizer",
+          "Probabilistic game formulation captures architectural diversity under interference, latency, and imperfect CSI"
+        ],
+        "limitations": [
+          "Multi-architecture orchestration as probabilistic game is theoretically interesting but practical implementation complexity unclear",
+          "Degeneracy equivalence set computation may be computationally prohibitive at scale",
+          "Simulation-based evaluation only; no real RAN deployment or hardware validation",
+          "The ~99% recovery figure depends on specific failure modes — broader fault scenarios not tested"
+        ],
+        "data_quality_note": "Moderate data quality: simulation-based benchmarks against fractional-programming optimizer across 4 architecture types. Static operating point and failure recovery scenarios evaluated. No physical testbed or real-world data.",
+        "prediction_reason": "Conceptually strong and timely (6G resilience is an emerging concern). The degeneracy-as-reserve reframe is genuinely novel. The evaluation lacks the physical testbed grounding of papers 2-4, which limits confidence in practical deployability. Multi-architecture scope is a strength."
+      }
+    },
+    {
+      "arxiv_id": "2607.25828v1",
+      "title": "C-RE-ACT: Causal RE-ACTing Agent for O-RAN Forensic Triage",
+      "authors": "Pau Baguer, J. Xavier Salvat Lozano, Gines Garcia-Aviles, Xavier Costa-Pérez",
+      "affiliations": "NECLaboratories Europe Gmb HHeidelberg, Germany | This broader attack surface has prompted research ef",
+      "published_date": "2026-07-28",
+      "crawled_date": "2026-08-07",
+      "categories": "cs.NI",
+      "abstract": "The shift to O-RAN architectures marks a turning point in cellular security, where increased openness and modularity directly translate into a broader attack surface. Among the security threats cataloged by the O-RAN Alliance Working Group 11, performance-degradation attacks constitute the largest class. These attacks induce packet losses and latency spikes that are hard to distinguish from operational events such as misconfigurations, transient congestion, or software regressions. Consequently, upon an adverse incident detection, support engineers must rapidly determine whether to route the corresponding incident ticket to network maintenance or escalate it to security operations. This triage phase represents a critical human-in-the-loop bottleneck in the incident response lifecycle. To address this vulnerability, we introduce C-RE-ACT (Causal RE-ACTing agent), an automated agentic triage framework designed to generate actionable incident reports. C-RE-ACT starts constructing a Weighted Directed Acyclic Graph (WDAG) over O-RAN metrics using the Structural Agnostic Model (SAM). The resulting causal topology is encoded into a continuous soft token via a Graph Isomorphism Network (GIN) aligned with the language space of the Large Language Model (LLM) powering a ReAct agent. We evaluate C-RE-ACT on a physical, O-RAN-compliant testbed across 140 distinct performance-degradation experiments. Empirical results demonstrate the causal ranking isolates the correct root cause within the top three candidates in 89% of instances. Furthermore, graph soft-prompting improves LLM accuracy on causal-topology queries from 0.22 (text-only baseline) to 0.72. The autonomous agent achieves anomaly classification accuracies of 83% for delay anomalies and 84% for packet-loss anomalies.",
+      "summary_cn": "向O-RAN架构的转变标志着蜂窝安全转折点，开放性与模块化直接扩大了攻击面。O-RAN联盟WG11列出的威胁中，性能退化攻击占比最大，其引发的丢包和时延尖峰难以与误配置、瞬时拥塞、软件回退等运维事件区分。为此我们提出C-RE-ACT自动化分诊框架：用结构无关模型(SAM)构建O-RAN指标的加权有向无环图(WDAG)，经图同构网络(GIN)将因果拓扑编码为与LLM语言空间对齐的连续软token，驱动ReAct智能体生成可操作的告警报告。在物理O-RAN测试台140次性能退化实验中：因果排序89%实例将根因锁定前三；图软提示使LLM因果拓扑查询准确率从0.22升至0.72；时延与丢包异常分类准确率分别达83%与84%。",
+      "pdf_url": "https://arxiv.org/pdf/2607.25828v1",
+      "arxiv_url": "https://arxiv.org/abs/2607.25828v1",
+      "is_enriched": true,
+      "quality_assessment": {
+        "overall_score": 86,
+        "confidence": "high",
+        "novelty": 88,
+        "rigor": 82,
+        "data": 90,
+        "impact": 82,
+        "presentation": 84,
+        "strengths": [
+          "Novel combination of causal discovery (SAM/WDAG) + graph representation (GIN) + LLM ReAct agent",
+          "Physical O-RAN-compliant testbed evaluation across 140 distinct experiments",
+          "Causal ranking isolates correct root cause in top-3 candidates in 89% of instances",
+          "Graph soft-prompting dramatically improves LLM accuracy from 0.22 to 0.72 on causal-topology queries",
+          "Anomaly classification: 83% delay, 84% packet-loss — meaningful for operational triage",
+          "Directly addresses a real human-in-the-loop bottleneck in incident response"
+        ],
+        "limitations": [
+          "SAM-based causal discovery may scale poorly with very large O-RAN metric spaces",
+          "LLM selection (model family, size) not ablated; results may be prompt/ model-dependent",
+          "Attack diversity in 140 experiments not fully characterized (synthetic vs. real attack patterns)",
+          "Integration complexity of SAM + GIN + LLM pipeline may hinder real-world adoption"
+        ],
+        "data_quality_note": "Excellent data quality: physical O-RAN testbed with 140 controlled experiments. Performance-degradation attacks catalogued per O-RAN Alliance WG11. Comparison against text-only baseline and ablation of graph soft-prompting provides strong evidence.",
+        "prediction_reason": "One of the strongest papers in the set. The causal graph + LLM ReAct combination for O-RAN security triage is highly novel and addresses a genuine operational pain point. The 0.22→0.72 accuracy jump from graph soft-prompting is a standout result. Evaluation on a physical testbed with 140 experiments is rigorous."
+      }
+    },
     {
       "arxiv_id": "2608.02082v1",
       "title": "Energy-Latency Trade-offs in O-RAN with Distributed Baseband Processing and AI Inference",
@@ -182,198 +374,124 @@
         "data_quality_note": "Strong empirical evaluation with both emulation and over-the-air tests; realistic 3GPP-compliant channel model; reproducible open-source implementation",
         "prediction_reason": "Solid systems contribution with practical open-source tooling, rigorous evaluation, and clear path to adoption; fills real gap between simulation-only research and production deployment"
       }
-    },
-    {
-      "arxiv_id": "2606.25714v1",
-      "title": "CSI-CLIP++: A Scalable Channel Foundation Model for Wireless Communication via CIR-CSI Consistency",
-      "authors": "Jun Jiang, Wenjun Yu, Yunfan Li, Yuan Gao, Shugong Xu",
-      "affiliations": "University, Suzhou, China",
-      "published_date": "2026-06-24",
-      "crawled_date": "2026-06-26",
-      "categories": "eess.SP",
-      "abstract": "Self-supervised learning can exploit large-scale unlabeled channel data to improve the transferability of wireless AI models. Existing channel foundation models are often built on single-domain representations or reconstruction-oriented objectives, which may not explicitly capture the physical correspondence between frequency- and delay-domain channel views. This paper proposes CSI-CLIP++, a scalable channel foundation model for MIMO wireless channels. CSI-CLIP++ treats frequency-domain channel state information (CSI) and delay-domain channel impulse response (CIR) as paired views of the same propagation process and learns transferable representations through CSI-CIR contrastive alignment. The pretrained CSI encoder is adapted to channel identification, beam prediction, and positioning, representing PHY, RAN, and ISAC applications. Experiments on large-scale DeepMIMO scenarios show consistent gains over supervised baselines across environments, carrier frequencies, and data scales. CSI-CLIP++ improves beam prediction Top-1 accuracy by up to 19.31 percentage points and achieves competitive positioning performance, including cross-simulator transfer on a Sionna RT dataset. Backbone scaling results further show that the proposed objective remains effective across encoder architectures and benefits from larger model capacity.",
-      "summary_cn": "CSI-CLIP++是一种可扩展的MIMO无线信道基础模型，将频域信道状态信息和时域信道冲激响应视为同一传播过程的配对视图，通过CSI-CIR对比对齐学习可迁移表示。预训练编码器可适配信道识别、波束预测和定位任务。在DeepMIMO场景中，波束预测Top-1精度提升最高19.31个百分点，并实现了跨仿真器迁移。",
-      "pdf_url": "https://arxiv.org/pdf/2606.25714v1",
-      "arxiv_url": "https://arxiv.org/abs/2606.25714v1",
-      "is_enriched": true,
-      "quality_assessment": {
-        "overall_score": 85,
-        "confidence": "high",
-        "novelty": 88,
-        "rigor": 85,
-        "data": 90,
-        "impact": 80,
-        "presentation": 82,
-        "strengths": [
-          "Novel CSI-CIR contrastive alignment explicitly captures physical correspondence between frequency and delay domains",
-          "Foundation model approach with self-supervised learning addresses key challenge of limited labeled channel data",
-          "Comprehensive evaluation across three distinct tasks: channel identification, beam prediction, and positioning",
-          "Cross-simulator transfer to Sionna RT dataset demonstrates strong generalization capability",
-          "Backbone scaling analysis shows architectural flexibility and path to improved performance"
-        ],
-        "limitations": [
-          "Contrastive learning requires paired CSI-CIR data which may not always be available in practice",
-          "Computational overhead of foundation model training may be prohibitive for some deployment scenarios",
-          "Real-world over-the-air validation not demonstrated; relies on ray-tracing simulations",
-          "Comparison with other recent wireless foundation models could be more extensive"
-        ],
-        "data_quality_note": "Large-scale DeepMIMO scenarios with cross-simulator transfer to Sionna; comprehensive synthetic but realistic data",
-        "prediction_reason": "Strong novelty in physical-layer foundation model design with rigorous evaluation across multiple tasks and simulators"
-      }
-    },
-    {
-      "arxiv_id": "2606.24483v1",
-      "title": "Adaptive Machine Learning Framework for UAV Trajectory Optimization in O-RAN",
-      "authors": "Chenrui Sun, Swarna Bindu Chetty, Gianluca Fontanesi, Mahnaz Arvaneh, Walid Saad, Hamed Ahmadi",
-      "affiliations": "Radio Systems Research, Nokia Bell Labs, Stuttgart, Germany | School of Electrical and Electronic Engineering | Department of Electrical and Computer Engineering, Virginia Tech, VA | Recent research has also explored distributed artificial in",
-      "published_date": "2026-06-23",
-      "crawled_date": "2026-06-26",
-      "categories": "eess.SP, cs.AI",
-      "abstract": "The deployment of unmanned aerial vehicles (UAV) as open radio units (O-RUs) in 6G cellular systems presents a promising opportunity to achieve scalable and adaptive network coverage. However, optimizing UAV trajectories in dynamic and unfamiliar environments remains a critical challenge, particularly due to the need for extensive retraining in each new scenario. In this paper, we introduce a novel UAV trajectory optimization framework that integrates enhanced continual transfer learning within the O-RAN architecture. The proposed system maintains a library of pre-trained models and employs a model selection mechanism to identify and transfer knowledge from the most relevant environments, minimizing adaptation time and improving efficiency. When no sufficiently similar model is available, a fallback model empowered by continuous refinements ensures baseline performance. The framework leverages real-world city maps and ray tracing techniques to enhance learning reliability and improve trajectory planning. Simulation results demonstrate that the proposed model selection-based transfer learning approach reduces convergence time by 44% to 56% compared to retraining from scratch, and up to 40% compared to traditional transfer learning without model selection.",
-      "summary_cn": "将无人机（UAV）作为6G蜂窝系统中的开放无线单元（O-RU）部署，可实现可扩展和自适应的网络覆盖。本文提出一种集成增强持续迁移学习的UAV轨迹优化框架，在O-RAN架构下维护预训练模型库，通过模型选择机制从最相关环境迁移知识，相比从头训练减少44%至56%的收敛时间，相比传统迁移学习减少高达40%。",
-      "pdf_url": "https://arxiv.org/pdf/2606.24483v1",
-      "arxiv_url": "https://arxiv.org/abs/2606.24483v1",
-      "is_enriched": true,
-      "quality_assessment": {
-        "overall_score": 72,
-        "confidence": "high",
-        "novelty": 70,
-        "rigor": 75,
-        "data": 68,
-        "impact": 72,
-        "presentation": 78,
-        "strengths": [
-          "Novel continual transfer learning with model selection for UAV O-RU trajectory optimization",
-          "44-56% convergence time reduction vs. from-scratch is a strong and clearly quantified result",
-          "Up to 40% improvement over traditional transfer learning without model selection is meaningful",
-          "Real-world city maps and ray tracing enhance learning reliability — realistic environment modeling",
-          "Concrete fallback mechanism ensures robustness when no similar model exists",
-          "Well-integrated with O-RAN architecture; directly applicable to 6G UAV deployment"
-        ],
-        "limitations": [
-          "Fully simulation-based; no real UAV experiments or hardware validation",
-          "Ray tracing fidelity and city map representativeness not characterized",
-          "Model library growth and selection overhead at scale not discussed",
-          "8-10% improvement variance suggests training instability not fully addressed",
-          "No analysis of failure cases or when transfer learning actually hurts performance"
-        ],
-        "data_quality_note": "Simulation using real-world city maps and ray tracing; convergence time and energy metrics are well-defined; comparison baselines (from-scratch, traditional TL) are appropriate; scale of simulation scenarios unspecified.",
-        "prediction_reason": "Solid methodological contribution with clear quantitative gains and practical O-RAN integration. Simulation-only evaluation is the primary limitation, but the results are well-motivated and clearly presented with meaningful baselines."
-      }
-    },
-    {
-      "arxiv_id": "2606.24193v1",
-      "title": "SkyChain Intelligence: A Blockchain-Secured Multi-Agent DRL Framework for Low-Altitude Embodied Artificial Intelligence",
-      "authors": "Haoxiang Luo, Tianqi Jiang, Ruichen Zhang, Yinqiu Liu, Gang Sun, Hongfang Yu, Abbas Jamalipour, Dong In Kim",
-      "affiliations": "",
-      "published_date": "2026-06-23",
-      "crawled_date": "2026-06-26",
-      "categories": "cs.NI, cs.DC",
-      "abstract": "With the rapid development of the Low-Altitude Economy (LAE) ecosystem, Low-Altitude Embodied Artificial Intelligence (LAEAI) agents have become the core carriers of autonomous aerial services, thereby enabling dynamic Low-altitude Computility Networks (LACNets) for distributed computing resource sharing. However, resource-constrained LAEAI agents in decentralized LACNets face a fundamental trilemma of autonomy, security, and efficiency. Existing solutions primarily focus on either optimizing computational performance or enhancing security in isolation, failing to address the inherent trade-offs among trust, performance, and overhead in untrusted dynamic environments with malicious agents. To tackle this challenge, this paper proposes SkyChain Intelligence, a holistic framework that synergistically integrates agentic AI, consortium blockchain, and Multi-Agent Deep Reinforcement Learning (MADRL). We design a lightweight blockchain-based decentralized trust management system with a dynamic reputation mechanism and develop a hybrid-action-space MADDPG algorithm that embeds on-chain reputation scores into the reward function to jointly optimize offloading decisions, resource allocation, and drone 3D trajectories. Extensive simulations demonstrate that our framework outperforms state-of-the-art baselines in task completion latency and energy consumption, while achieving a 94.1% task completion rate in the baseline scenario and stable convergence within 300 training episodes. This work provides a viable path for building secure, autonomous, and efficient machine-to-machine computing ecosystems in the low-altitude domain.",
-      "summary_cn": "低空具身智能体是低空计算网络的核心，但面临自主性、安全与效率的三难困境。本文提出SkyChain Intelligence框架，融合智能体AI、联盟链与多智能体深度强化学习。设计轻量级去中心化信任管理系统，并开发混合动作空间算法联合优化卸载决策与轨迹。仿真显示，该框架在时延与能耗上优于现有方案，任务完成率达94.1%。",
-      "pdf_url": "https://arxiv.org/pdf/2606.24193v1",
-      "arxiv_url": "https://arxiv.org/abs/2606.24193v1",
-      "is_enriched": true,
-      "quality_assessment": {
-        "overall_score": 64,
-        "confidence": "medium",
-        "novelty": 68,
-        "rigor": 70,
-        "data": 40,
-        "impact": 68,
-        "presentation": 75,
-        "strengths": [
-          "Addresses a genuine trilemma (autonomy, security, efficiency) in decentralized LACNets—problem framing is well-motivated",
-          "Integration of consortium blockchain with hybrid-action MADDPG is a reasonable approach to trust-aware resource management",
-          "Shows stable convergence within 300 episodes and 94.1% task completion rate in the baseline scenario"
-        ],
-        "limitations": [
-          "Entirely simulation-based; no real-world testing or even trace-driven evaluation with actual drone/network data",
-          "Blockchain overhead analysis (latency, gas cost, consensus delay) is largely absent—critical for resource-constrained LAEAI agents",
-          "The hybrid-action-space MADDPG is an incremental extension of existing MADDPG; core RL methodology is not novel"
-        ],
-        "data_quality_note": "Synthetic simulation only. No real datasets, no hardware experiments, no real-world workload traces. Blockchain performance metrics (throughput, transaction latency, consensus overhead) are not empirically evaluated.",
-        "prediction_reason": "The trilemma framing is relevant, and the architecture design is reasonable, but the lack of real-world or even realistic trace-based evaluation, combined with absent blockchain overhead measurement, significantly weakens the contribution."
-      }
-    },
-    {
-      "arxiv_id": "2606.23110v1",
-      "title": "LOLLA: Deep Reinforcement Learning for Closed-Loop Link Adaptation Towards a GPU-Accelerated AI-RAN",
-      "authors": "Rui Wang, Linchao Zhang, Qiang Liu, Kun Yang",
-      "affiliations": "Electronic Science and Technology of China, Quzhou | State Key Laboratory of Novel Software Technology | Engineering, Nanjing University (Suzhou Campus), Suzhou | University of Electronic Science and Technology of China, Chengdu",
-      "published_date": "2026-06-22",
-      "crawled_date": "2026-06-26",
-      "categories": "eess.SP, cs.LG, cs.NI",
-      "abstract": "Outer-loop link adaptation (OLLA) is widely deployed in 5G NR to track channel variations, yet its reliance on first-order, single-bit feedback degrades performance significantly under high-mobility and fast-varying channels. This paper presents LOLLA (Learned Outer-Loop Link Adaptation), a deep reinforcement learning framework that replaces the conventional OLLA staircase with a learned, continuous SINR offset conditioned on rich PHY/MAC telemetry inaccessible to OLLA. The offset modulates the SINR-to-MCS lookup table, preserving 3GPP-compliant MCS selection and provably subsuming the conventional OLLA update rule. A Proximal Policy Optimization (PPO) policy trained under a Lagrangian block error rate (BLER) constraint automatically enforces tunable reliability targets from 1% to 15% without manual penalty calibration. The framework is realized as the first closed-loop AI-native control dApp on a GPU-accelerated 5G NR stack, achieving end-to-end control latencies under 500 microseconds. Evaluations under 3GPP TDL channel models demonstrate 15% to 92% throughput gains over OLLA across Doppler frequencies up to 400 Hz, while attaining a Pareto frontier that strictly dominates OLLA across all evaluated reliability targets. The learned policy generalizes to unseen channel models and scales to eight concurrent UEs under shared-resource scheduling. In the uplink formulation, the gNB directly observes decoding outcomes, enabling simulation-to-deployment parity.",
-      "summary_cn": "传统外环链路自适应（OLLA）在5G NR中广泛部署，但其依赖一阶单比特反馈在高移动性和快变信道下性能显著下降。本文提出LOLLA框架，用深度强化学习替代传统OLLA阶梯式更新，基于丰富的PHY/MAC遥测数据学习连续SINR偏移量，保持3GPP兼容的MCS选择。该框架在GPU加速的5G NR协议栈上实现，端到端控制时延低于500微秒，在3GPP TDL信道模型下相比OLLA实现15%至92%的吞吐量增益，并在1%至15%可靠性目标范围内严格优于OLLA。",
-      "pdf_url": "https://arxiv.org/pdf/2606.23110v1",
-      "arxiv_url": "https://arxiv.org/abs/2606.23110v1",
-      "is_enriched": true,
-      "quality_assessment": {
-        "overall_score": 83,
-        "confidence": "high",
-        "novelty": 82,
-        "rigor": 85,
-        "data": 78,
-        "impact": 88,
-        "presentation": 82,
-        "strengths": [
-          "First closed-loop AI-native control dApp on GPU-accelerated 5G NR stack — novel system integration contribution",
-          "PPO policy with Lagrangian BLER constraint is principled; preserves 3GPP MCS selection compliance, enabling real deployment",
-          "15-92% throughput gains over OLLA across Doppler up to 400 Hz is a wide and impressive evaluation range",
-          "End-to-end control latency under 500 microseconds addresses a real and challenging engineering problem",
-          "Uplink formulation achieves sim-to-deployment parity — strong evidence of practical viability",
-          "Generalization to unseen channel models and scaling to 8 concurrent UEs demonstrates robustness"
-        ],
-        "limitations": [
-          "Evaluated only on 3GPP TDL channel models; no over-the-air or hardware-in-the-loop validation",
-          "GPU dependency for sub-500µs latency may limit deployment scope in low-cost RANs",
-          "BLER target range 1%-15% covers wide reliability but misses ultra-reliable URLLC regime (<0.1%)",
-          "Training complexity and hyperparameter sensitivity of PPO not discussed in detail"
-        ],
-        "data_quality_note": "3GPP TDL channel models (E, A, CDL) provide standardized and reproducible evaluation; 400 Hz Doppler covers high-mobility scenarios; no real-world over-the-air dataset; scale of 8 UEs is modest but reasonable for proof-of-concept.",
-        "prediction_reason": "Strong across all dimensions: novel system integration of DRL into 5G NR stack with provable compliance, impressive gains over baselines, sub-500µs latency is a genuine engineering achievement, and uplink parity demonstrates practical deployment readiness."
-      }
-    },
-    {
-      "arxiv_id": "2606.23569v1",
-      "title": "High Speed High Signal-to-Noise Ratio Antenna Measurements -- Demonstration for UAV-Based Near-Field Measurements of Modulated Terrestrial Navigation Signals",
-      "authors": "Thomas F. Eibert, Denis Unruh, Thomas Mittereder, Alexander H. Paulus",
-      "affiliations": "",
-      "published_date": "2026-06-22",
-      "crawled_date": "2026-06-26",
-      "categories": "eess.SP",
-      "abstract": "Antenna measurements with high signal-to-noise ratio (SNR) require long measurement or integration times of the receiver and can, thus, lead to a very long duration of the measurements, especially if many frequency and spatial samples need to be collected. In order to speed up such measurements, an approach is presented, which collects all measurement samples with short measurement times, performs a Fourier transform of the measurement samples, bandpass filters the desired measurement signals with a small bandwidth, and obtains high-SNR measurement samples according to the short measurement times by inverse Fourier transform. This approach can be utilized with single-frequency continuous wave (CW) transmit signals, but also with transmit signals containing several discrete frequency components, as, e.g., found for periodically modulated CW carriers. The approach is first worked out and demonstrated for simulated test data. Next, it is utilized for the processing of modulated near-field (NF) measurement data collected via an uninhabited aerial vehicle (UAV) at a Doppler high-frequency omnidirectional radio range (DVOR) and at the localizer of an instrument landing system (ILS). The extracted CW NF data is transformed into the far field (FF) and diagnostic information is obtained from the underlying inverse source solutions.",
-      "summary_cn": "为解决高信噪比天线测量耗时过长的问题，本文提出一种加速方法：采集短时测量样本，经傅里叶变换和带通滤波后，通过逆变换获得高信噪比数据。该方法适用于单频及调制连续波信号，并在DVOR和ILS的无人机近场测量数据中得到验证，成功提取诊断信息并转换至远场。",
-      "pdf_url": "https://arxiv.org/pdf/2606.23569v1",
-      "arxiv_url": "https://arxiv.org/abs/2606.23569v1",
-      "is_enriched": true,
-      "quality_assessment": {
-        "overall_score": 62,
-        "confidence": "low",
-        "novelty": 62,
-        "rigor": 78,
-        "data": 68,
-        "impact": 45,
-        "presentation": 75,
-        "strengths": [
-          "Methodologically sound approach to accelerating antenna measurements via FFT-bandpass-inverse FFT pipeline",
-          "Practical validation with real UAV-collected DVOR and ILS data (near-field to far-field transformation)",
-          "Addresses real-world measurement bottleneck of long integration times",
-          "Clear mathematical derivation and step-by-step signal processing chain"
-        ],
-        "limitations": [
-          "Peripheral relevance to AI-RAN/6G core topics; primarily an antenna/RF measurement paper",
-          "Limited algorithmic novelty — technique is an application of known Fourier-domain filtering principles",
-          "No discussion of applicability to 5G/6G communication signals beyond navigation signals (DVOR/ILS)",
-          "UAV platform specifics not deeply analyzed for generalizability"
-        ],
-        "data_quality_note": "Real UAV-based NF measurements for DVOR and ILS; simulations included for validation. Adequate for the antenna measurement focus but limited scale.",
-        "prediction_reason": "Solid antenna measurement contribution but low relevance to AI-RAN/6G network intelligence topics. Niche acceptance at antenna/RF venues but unlikely to be competitive at 6G/wireless communications conferences without stronger connection to communication system sensing."
-      }
     }
   ],
   "overflow_list": [
+    {
+      "arxiv_id": "2608.05216v1",
+      "title": "Multi-Target Micro-Motion Parameter Estimation using MIMO-FMCW Radar with Limited Measurements",
+      "authors": "Chandrashekhar Rai, Sanjay J. Alex, Arpan Chattopadhyay",
+      "affiliations": "",
+      "url": "https://arxiv.org/abs/2608.05216v1",
+      "published_date": "2026-08-05",
+      "crawled_date": "2026-08-07",
+      "categories": "eess.SP",
+      "abstract": "This work presents a compressive sensing-based approach for estimating the micro-motion parameters of targets with rotating components, such as small unmanned aerial vehicles (UAVs) with propellers, using fewer measurements than conventional methods. A multiple-input-multiple-output (MIMO) frequency-modulated continuous-wave (FMCW) radar employing a randomly spaced sparse linear antenna array is utilized. Random sequences of linear frequency-modulated (LFM) chirps are transmitted to enable random sampling in the slow-time domain. At first, the range, velocity, and angle of arrival (AoA) of the targets are estimated to identify the bulk motion. A three-dimensional point target response (3D-PTR) is then constructed using the estimated parameters and subtracted from the total radar return to extract the micro-Doppler signatures associated with target rotation. These residual signals are processed within a compressive sensing (CS) framework using the one-dimensional orthogonal matching pursuit (1D-OMP) algorithm to jointly estimate the propellers' rotation frequencies and blade lengths with the help of a parametric dictionary. The proposed approach is also extended to a multi-target scenario. Simulation results demonstrate that the proposed approach accurately estimates micro-motion parameters with limited measurements in the slow-time and the spatial dimensions, validating its potential for UAV detection applications. These estimated parameters are then used to distinguish among various UAV motion types using a classification framework based on a set of decision rules.",
+      "summary_cn": "本文提出基于压缩感知的方法，用少于传统方法的测量估计带旋转部件目标（如旋翼无人机）的微动参数。采用随机稀疏线阵MIMO FMCW雷达，发射随机LFM啁啾实现慢时间随机采样。先估计距离、速度与到达角识别整体运动，构建三维点目标响应并扣除以提取微多普勒；残差在压缩感知框架下用一维OMP联合估计旋翼转速与桨叶长度。扩展至多目标。仿真表明在慢时间与空间维度少量测量下可准确估计微动参数，并用于基于决策规则分类不同无人机运动类型。",
+      "is_enriched": true,
+      "abstract_zh_status": "completed",
+      "quality_assessment": {
+        "overall_score": 59,
+        "confidence": "medium",
+        "novelty": 55,
+        "rigor": 70,
+        "data": 50,
+        "impact": 55,
+        "presentation": 70,
+        "strengths": [
+          "Combines sparse array + random slow-time chirps for compressive sensing with fewer measurements than conventional methods",
+          "Clear two-stage pipeline: bulk motion estimation then 3D-PTR subtraction to isolate micro-Doppler",
+          "Extends to multi-target scenario and adds rule-based UAV motion classification",
+          "1D-OMP with parametric dictionary is computationally tractable"
+        ],
+        "limitations": [
+          "Core technique (CS + OMP) is incremental over established micro-Doppler literature",
+          "Validation is simulation-only with no real radar measurements or hardware experiments",
+          "No comparison against recent deep-learning or tensor-based micro-motion estimators",
+          "Assumptions on dictionary coverage and sparse target model may not hold in cluttered environments"
+        ],
+        "data_quality_note": "Simulation-only results; no real MIMO-FMCW measurements, datasets, or hardware validation. Limited empirical grounding.",
+        "prediction_reason": "Methodical but incremental application of compressive sensing to radar micro-motion; simulation-only evidence and modest novelty suggest a niche journal/specialized conference paper rather than broad impact."
+      },
+      "quality_pending": false
+    },
+    {
+      "arxiv_id": "2608.04630v1",
+      "title": "Generalizable and Computational Efficient Channel Extrapolation for 6G: A Configurable AI-Driven Framework Built from a Modular Perspective",
+      "authors": "Yuan Gao, Xinyi Wu, Jiang Jun, Yi Yu, Yanliang Jin, Shunqing Zhang, Zhu Han, Shugong Xu",
+      "affiliations": "",
+      "url": "https://arxiv.org/abs/2608.04630v1",
+      "published_date": "2026-08-05",
+      "crawled_date": "2026-08-07",
+      "categories": "eess.SP",
+      "abstract": "Acquiring channel state information (CSI) with manageable overhead has been essential to provide high-performance communication services, which is extremely challenging in the emerging sixth generation (6G) mobile network. Channel extrapolation has been proposed to infer complete CSI using a small portion of known CSI, its performance can be dramatically enhanced by artificial intelligence (AI). However, AI-driven channel extrapolation suffers from poor generalization across scenarios and high computational complexity, which is common in the broad research of AI and large language models. Inspired by the modular function of human brain, we propose a configurable AI-driven framework to achieve generalizable and computational efficient channel extrapolation from a modular perspective. We propose a three-stage framework, consisting of experts emergent, experts construction and experts selection. This framework assumes that CSI correlations can be captured by a small number of specialized functional modules (experts) that are activated differently across scenarios. Such modularity emerges in the experts emergent stage via pre-training using CSI data covering comprehensive scenarios. The neurons with similar weight-space patterns are grouped as experts in the experts construction stage. A lightweight gating function is added to control the routing of experts and is fine-tuned for each scenario in the experts selection stage. Simulation results demonstrate that the proposed three-stage framework reduce the channel extrapolation error and computational complexities dramatically by $1.1-19.1$ db and $38$ \\%, respectively. In addition, attributed to the proposed experts emergent and section modules, the proposed framework outperforms its counterpart mix-of-expert model dramatically in terms of channel extrapolation performance.",
+      "summary_cn": "在新兴6G中，以可控开销获取CSI极具挑战。信道外推用少量已知CSI推断完整CSI，AI可大幅提升性能，但存在跨场景泛化差与计算复杂度高的问题。受人脑模块化启发，我们提出可配置AI框架实现泛化且高效的信道外推。三阶段框架含专家涌现、专家构建与专家选择：预训练涌现捕获CSI相关性的专用功能模块；按权重空间模式分组构建专家；轻量门控控制路由并微调。仿真表明该框架将外推误差与计算复杂度分别降低1.1–19.1 dB与38%，且优于混合专家模型。",
+      "is_enriched": true,
+      "abstract_zh_status": "completed",
+      "quality_assessment": {
+        "overall_score": 62,
+        "confidence": "medium",
+        "novelty": 60,
+        "rigor": 65,
+        "data": 55,
+        "impact": 65,
+        "presentation": 70,
+        "strengths": [
+          "Brain-inspired modular framework (experts emergent/construction/selection) is a reasonable generalization strategy for channel extrapolation",
+          "Lightweight gating fine-tuned per scenario addresses scenario adaptation cost-effectively",
+          "Reports 1.1-19.1 dB error reduction and 38% lower complexity vs baseline",
+          "Outperforms Mixture-of-Experts counterpart, suggesting the modular design adds value"
+        ],
+        "limitations": [
+          "Modular/MoE framing is an adaptation of existing MoE ideas to CSI extrapolation, not fundamentally new",
+          "Validation is simulation-only with no real-channel measurements or standard benchmarks",
+          "Generalization claims need broader out-of-distribution and cross-band evidence",
+          "Complexity of the three-stage pre-training/construction pipeline may offset inference savings in practice"
+        ],
+        "data_quality_note": "Simulation-based channel extrapolation results comparing against a Mixture-of-Experts baseline; no real-world CSI datasets or field measurements.",
+        "prediction_reason": "Practically motivated AI-CSI work with a modest modular novelty and simulation-only evidence; suitable for a specialized signal-processing journal or conference rather than a top-tier venue."
+      },
+      "quality_pending": false
+    },
+    {
+      "arxiv_id": "2608.03852v1",
+      "title": "FedCritic-MIMO: Communication-Efficient Serverless Federated Critic Learning for Massive-MIMO Resource Control in Open and Disaggregated 6G RANs",
+      "authors": "Amin Farajzadeh, Melike Erol-Kantarci",
+      "affiliations": "",
+      "url": "https://arxiv.org/abs/2608.03852v1",
+      "published_date": "2026-08-04",
+      "crawled_date": "2026-08-07",
+      "categories": "cs.LG, cs.MA, cs.NI",
+      "abstract": "This paper proposes FedCritic-MIMO, a communication-efficient serverless federated multi-agent reinforcement learning framework for AI-native resource control across independently deployable cell-level controllers in open and disaggregated 6G RANs. Controllers share no trainer, retain local actors and personalized critic components, and exchange only compatible shared critic parameters. FedCritic-MIMO targets reuse-$1$ multi-cell massive-MIMO OFDMA deployments, where RAN controllers jointly manage user scheduling, per-stream power allocation, beamforming, interference, and long-term QoS with limited inter-controller signaling. Each base station locally executes its actor without centralized training or actor federation, while critic knowledge is exchanged peer-to-peer over an interference-aware graph. It enables this collaboration through wireless-aware event triggering, adaptive layer-wise top-$k$ sparse critic exchange with error feedback, and balanced interference-aware fusion. We establish conditional finite-time stationarity and consensus guarantees for the balanced, compressed peer-to-peer critic recursion under a fixed-policy, frozen-target critic-regression model. In strongly interference-coupled reuse-$1$ simulations, FedCritic-MIMO achieves the best performance-communication tradeoff among heuristic, independent-learning, centralized-training, and communication-ablation baselines. It achieves the highest held-out throughput, improves user-rate distribution and mean SINR, increases QoS satisfaction, and attains the lowest interference cost per delivered bit among learning baselines. It reduces critic-communication overhead by $76\\%$ relative to uncompressed distributed critic exchange. These results demonstrate that serverless exchange of compatible shared critic parameters can coordinate RAN controllers without centralized trajectory collection or parameter-server aggregation.",
+      "summary_cn": "本文提出FedCritic-MIMO，一种通信高效的Serverless联邦多智能体强化学习框架，用于开放解耦6G RAN中可独立部署的小区级控制器进行AI原生资源控制。控制器不共享训练器，保留本地执行器与个性化评论器，仅交换兼容的共享评论器参数。面向复用-1多小区大规模MIMO OFDMA，各基站本地执行执行器，评论器知识经干扰感知图点对点交换。通过无线感知事件触发、自适应分层top-k稀疏评论器交换与均衡干扰感知融合实现协作。在强干扰耦合复用-1仿真中取得最优性能-通信折中，相对未压缩分布式评论器交换降低76%通信开销。",
+      "is_enriched": true,
+      "abstract_zh_status": "completed",
+      "quality_assessment": {
+        "overall_score": 68,
+        "confidence": "medium",
+        "novelty": 65,
+        "rigor": 75,
+        "data": 60,
+        "impact": 70,
+        "presentation": 75,
+        "strengths": [
+          "Serverless peer-to-peer critic exchange avoids parameter-server aggregation, a clean fit for open/disaggregated RAN",
+          "Provides conditional finite-time stationarity and consensus guarantees for compressed critic recursion",
+          "Wireless-aware event triggering and adaptive layer-wise top-k sparse exchange with error feedback are practical comms-saving mechanisms",
+          "76% critic-communication reduction vs uncompressed exchange is a concrete, useful gain",
+          "Comprehensive baselines (heuristic, independent, centralized, ablation) in strongly coupled reuse-1 settings"
+        ],
+        "limitations": [
+          "Novelty is an adaptation of federated critic/MARL ideas to RAN rather than a fundamentally new paradigm",
+          "Guarantees are under fixed-policy, frozen-target critic-regression model, which is restrictive vs true online RL",
+          "Validation is simulation-based; no hardware-in-the-loop or O-RAN testbed evidence",
+          "Interference-aware graph construction cost and scalability to many cells not deeply analyzed"
+        ],
+        "data_quality_note": "Strongly interference-coupled reuse-1 simulations with multiple learning/heuristic baselines; no real-world or emulated testbed data. Good baseline coverage but simulation-only.",
+        "prediction_reason": "Solid engineering contribution with theoretical backing and clear comms benefit, but simulation-only validation and incremental novelty place it at a strong mid-tier conference level."
+      },
+      "quality_pending": false
+    },
     {
       "arxiv_id": "2608.02067v1",
       "title": "Cross-Layer Optimization and System-Level Design of Next-Generation Wireless Networks via Intelligent RAN Control",
@@ -454,42 +572,41 @@
       "quality_pending": false
     },
     {
-      "arxiv_id": "2608.01063v1",
-      "title": "Degeneracy-Aware Resource Allocation for Resilient 6G RAN",
-      "authors": "Sayanti Ghosh, Indrakshi Dey, Nicola Marchetti",
+      "arxiv_id": "2608.02067v2",
+      "title": "Cross-Layer Optimization and System-Level Design of Next-Generation Wireless Networks via Intelligent RAN Control",
+      "authors": "Maria Tsampazi",
       "affiliations": "",
-      "url": "https://arxiv.org/abs/2608.01063v1",
-      "published_date": "2026-08-02",
-      "crawled_date": "2026-08-04",
-      "categories": "eess.SP",
-      "abstract": "Heterogeneous 6G radio access networks (RANs) must allocate resources reliably under interference, latency limits, imperfect channel state information (CSI), and architectural diversity. We propose a degeneracy-aware resource allocation (DG-RA) framework that casts multi-architecture orchestration as a probabilistic game and, unlike single-solution optimization, deliberately favors allocations realizable by many structurally distinct yet performance-equivalent strategy profiles. Resilience is quantified across three layers through Degeneracy-Weighted Path Robustness (DWPR), Functional Substitution Score (FSS), and an Algorithmic Resilience Quotient (ARQ). Across centralized (C-RAN), open (O-RAN), virtualized (V-RAN), and hybrid RAN architectures, and benchmarked against a fractional-programming optimizer, DG-RA matches the state-of-the-art throughput and outage at the static operating point, then exploits its equivalence set to recover $\\sim$$99\\%$ of throughput from a resource-unit failure with a single switch, where a single-solution optimizer needs tens of iterations to re-converge. The results recast degeneracy not as a rate booster but as a precomputed resilience reserve for disruption-tolerant 6G orchestration.",
-      "summary_cn": "DG-RA：6G异构RAN的退化感知资源分配框架。将多架构编排建模为概率博弈，引入DWPR、FSS、ARQ三层韧性指标。在C-RAN/O-RAN/V-RAN/混合架构中，静态性能持平最优方案；遭遇资源单元故障时，单次切换即可恢复约99%吞吐量（传统优化器需数十次迭代）。将\"退化\"从速率助推器重构为抗扰动的韧性储备。",
+      "url": "https://arxiv.org/abs/2608.02067v2",
+      "published_date": "2026-08-03",
+      "crawled_date": "2026-08-07",
+      "categories": "cs.NI",
+      "abstract": "Recent years have seen the evolution of the traditional Radio Access Network (RAN) toward more open, programmable, disaggregated, and intelligent architectures, known as an Open RAN. Future Next Generation (NextG) networks are envisioned to be AI-native, enabling data-driven closed-loop optimization of Base Station resources, while Reconfigurable Intelligent Surfaces (RIS) emerge as key enablers for wireless propagation and spectral efficiency toward 6G and beyond. This dissertation focuses on the design, optimization, and experimental evaluation of NextG RANs integrating Open RAN principles, data-driven control loops, and intelligent resource allocation. The work emphasizes cross-layer optimization, including energy-efficient power control, and explores AI-driven network slicing, scheduling, and link adaptation, demonstrating NextG RANs reconfigurable in real time to meet 6G requirements, first analyzing architectural enablers and modeling frameworks, then prototyping and evaluating solutions on experimental platforms and Digital Twins. Main contributions include: (i) Deep Reinforcement Learning (DRL) solutions for network slicing and scheduling; (ii) PandORA, a framework for automatic design, training, and deployment of DRL-based Open RAN applications on the Colosseum wireless network emulator; (iii) physical-layer RIS channel modeling and optimized resource allocation across spectrum bands; (iv) system-level evaluation of RIS-assisted channels for eMBB and URLLC traffic; (v) integration of RIS within Open RAN; (vi) online RL solutions for link adaptation; and (vii) spectrum sharing between cellular and Non-Terrestrial Network links via power control and beamforming. This work provides algorithmic designs, frameworks, and validation from simulation and hardware-in-the-loop emulation to over-the-air 5G testbed experiments, addressing industry and academic needs for wireless research.",
+      "summary_cn": "近年来传统RAN向开放、可编程、解耦、智能的Open RAN演进。未来NextG网络拟AI原生，实现基站资源数据驱动闭环优化，RIS成为6G及以后无线传播与频谱效率关键使能技术。本论文聚焦融合Open RAN、数据驱动控制环与智能资源分配的NextG RAN设计、优化与实验评估，强调跨层优化与节能功率控制，探索AI网络切片、调度与链路自适应。主要贡献含DRL切片与调度、PandORA框架、RIS物理层信道建模、RIS辅助信道系统级评估、RIS与Open RAN集成、在线RL链路自适应及空地频谱共享。",
       "is_enriched": true,
       "abstract_zh_status": "completed",
       "quality_assessment": {
-        "overall_score": 70,
-        "confidence": "high",
-        "novelty": 78,
-        "rigor": 68,
-        "data": 62,
-        "impact": 80,
-        "presentation": 65,
+        "overall_score": 72,
+        "confidence": "medium",
+        "novelty": 55,
+        "rigor": 75,
+        "data": 80,
+        "impact": 75,
+        "presentation": 80,
         "strengths": [
-          "Highly original framing: degeneracy (multiple performance-equivalent solutions) as a resilience reserve rather than a performance booster",
-          "Three-layer resilience quantification (DWPR, FSS, ARQ) provides principled multi-dimensional evaluation",
-          "Cross-architecture validation across C-RAN, O-RAN, V-RAN, and hybrid — rare breadth",
-          "Single-switch recovery of ~99% throughput after resource failure, dramatically faster than iterative re-convergence",
-          "Probabilistic game formulation is theoretically grounded"
+          "Broad, coherent dissertation spanning DRL slicing/scheduling, PandORA framework, RIS modeling, and NTN spectrum sharing",
+          "Strong experimental depth: simulation, digital twins, hardware-in-the-loop emulation, and OTA 5G testbed",
+          "PandORA enables automatic design/training/deployment of DRL xApps on Colosseum - a reusable contribution",
+          "Cross-layer integration of RIS within Open RAN addresses a timely 6G challenge",
+          "Clear structure from architectural enablers to prototyping and validation"
         ],
         "limitations": [
-          "Simulation-only evaluation; no hardware testbed or real-world deployment data",
-          "Degeneracy quantification may be computationally expensive for large action spaces",
-          "Fractional-programming baseline comparison may not represent the strongest alternative (e.g., no comparison to robust optimization)",
-          "Theoretical assumptions about knowledge of equivalence sets may not hold in practice",
-          "Limited ablation: impact of each resilience layer (DWPR/FSS/ARQ) not isolated"
+          "As a dissertation, individual contributions are largely incremental extensions of known DRL/RIS methods",
+          "Novelty per contribution is moderate; breadth traded against depth on any single result",
+          "Heterogeneous results across chapters make unified quantitative comparison difficult",
+          "Some claims (real-time reconfigurability) depend on specific emulator/testbed setups"
         ],
-        "data_quality_note": "Simulation-based evaluation across four RAN architectures; no real hardware or operational data. Baselines include fractional-programming optimizer and single-solution approaches.",
-        "prediction_reason": "Novel and compelling idea — reframing degeneracy as resilience reserve is conceptually significant. Strong practical impact for 6G orchestration. Moderate deduction for simulation-only data and some clarity gaps in the three-metric framework presentation. Solid theoretical contribution with good architectural breadth."
+        "data_quality_note": "Among the strongest in this set: combines simulation, digital-twin, hardware-in-the-loop emulation, and over-the-air 5G testbed experiments across multiple platforms.",
+        "prediction_reason": "Excellent experimental rigor and practical validation across platforms; breadth over breakthrough novelty yields a strong doctoral thesis / survey-strong systems paper rather than a high-novelty archival contribution."
       },
       "quality_pending": false
     },
@@ -530,6 +647,45 @@
         ],
         "data_quality_note": "Frozen study on a 35B planner (model unspecified), ns-O-RAN simulation replay, and independent live E2 audit. No large-scale dataset; validation is experimental and multi-method but not comprehensive.",
         "prediction_reason": "High novelty — the async safety problem in agentic RAN controllers is underexplored and practically important. VeraSync + MI-POR solution is architecturally sound with strong state-reduction results. Confidence medium because key details (planner model, barrier overhead) are missing. Impact is very high if the problem is as prevalent as the 28.8% finding suggests."
+      },
+      "quality_pending": false
+    },
+    {
+      "arxiv_id": "2608.01047v3",
+      "title": "VeraRAN: Pre-Actuation Certification and Event-Causal Synchronization Repair for Asynchronous Multi-Interface RAN Plans",
+      "authors": "Yinghan Hou, Zongyou Yang",
+      "affiliations": "",
+      "url": "https://arxiv.org/abs/2608.01047v3",
+      "published_date": "2026-08-02",
+      "crawled_date": "2026-08-07",
+      "categories": "cs.NI",
+      "abstract": "Agentic RAN controllers combine mobility, energy, and resource actions across independently implemented interfaces. Even when each command is valid and the target state is safe, asynchronous actuation can drive the network through unsafe intermediate states. In a frozen study of a 35B planner, 28.8% of locally valid plans remained asynchronously unsafe. We introduce VeraRAN, which checks plans before actuation by modeling request, delivery, acceptance, application, completion, and observation for each action while exploring plausible delays and event orders. When VeraRAN finds a counterexample, VeraSync inserts versioned event barriers and rechecks the repaired plan for safety and completion. MI-POR prunes independent interleavings using RAN lifecycle and resource footprints. In a post-freeze stratified confirmation within the declared repair domain, VeraSync re-certified every confirmation plan while leaving 87% of action pairs unordered. MI-POR matched exact search in a property-stratified audit and reduced explored states by 94.6-95.0% on 20-40-action plans. Native ns-O-RAN replay and an independent live E2 audit showed why distinguishing these events matters: acceptance may precede the authoritative state transition, so dependent actions must wait for direct APPLY evidence or a contract-backed completion event causally downstream of APPLY.",
+      "summary_cn": "智能RAN控制器跨独立接口组合移动性、能耗与资源动作。即便每条命令有效且目标态安全，异步执行仍可能使网络经过不安全中间态。对35B规划器的冻结研究中，28.8%的局部有效方案异步下仍不安全。我们提出VeraRAN，在执行前建模每动作请求、投递、接受、应用、完成与观测并探索时延与事件序来校验方案；发现反例时VeraSync插入带版本事件屏障并复检；MI-POR依据RAN生命周期与资源足迹剪枝独立交错。在声明修复域内的分层确认中，VeraSync重新认证所有方案且保留87%动作对无序；MI-POR在属性分层审计中匹配精确搜索，并将探索状态数减少94.6–95.0%。原生ns-O-RAN回放与独立实时E2审计表明：接受可能早于权威状态转移，故依赖动作须等待直接APPLY证据或因果下游的契约完成事件。",
+      "is_enriched": true,
+      "abstract_zh_status": "completed",
+      "quality_assessment": {
+        "overall_score": 71,
+        "confidence": "medium",
+        "novelty": 75,
+        "rigor": 80,
+        "data": 55,
+        "impact": 75,
+        "presentation": 75,
+        "strengths": [
+          "Identifies a concrete and underexplored failure mode: locally valid RAN plans that are asynchronously unsafe (28.8% in frozen study)",
+          "Fine-grained event model (request/delivery/acceptance/application/completion/observation) with causal barriers is a clear conceptual contribution",
+          "VeraSync repair loop plus MI-POR pruning grounded in RAN lifecycle/resource footprints shows engineering depth",
+          "Validation spans ns-O-RAN replay and an independent live E2 audit, strengthening deployment relevance",
+          "94.6-95.0% state reduction with exact-search equivalence is a strong efficiency result"
+        ],
+        "limitations": [
+          "Evaluation is confined to a 'declared repair domain' and a post-freeze stratified confirmation, limiting external validity",
+          "Relies on a single frozen 35B planner study; generality across planners/controllers is asserted rather than shown",
+          "No large-scale real-world multi-vendor dataset; safety claims are within modeled delay/order assumptions",
+          "Counterexample-guided repair completeness depends on the fidelity of the event/delay model"
+        ],
+        "data_quality_note": "No public large-scale real dataset; evidence is a frozen 35B planner study plus ns-O-RAN replay and a live E2 audit within a declared repair domain. Solid for a systems paper but narrow in scope.",
+        "prediction_reason": "Strong conceptual novelty and rigor for agentic-RAN safety, but confined evaluation domain and single-planner basis cap confidence; fits a strong workshop or mid-tier conference paper rather than a top-venue flagship."
       },
       "quality_pending": false
     },
@@ -819,46 +975,6 @@
         ],
         "data_quality_note": "Conceptual and architectural contribution without empirical benchmarking. No evaluation against real AI models, no dataset for telecom-specific interpretability benchmarks, no runtime overhead measurements. Reliance on publicly available interpretability research (from CV/NLP domains) adapted to the wireless context. Findings are well-argued but the paper is primarily a position/framework paper awaiting empirical validation.",
         "prediction_reason": "Potentially the most influential paper in this set for the trustworthy AI-in-wireless direction. The problem framing is novel and addresses a genuine gap in AI adoption for critical networks. Likely to be highly cited and serve as a reference for future work on AI verification in telecommunications. Deductions for the current absence of empirical validation and the maturity gap of interpretability tools applied to wireless AI. Expected strong acceptance at top venues (IEEE S&P, TMC, ComMag) given the timeliness and originality of the problem framing."
-      },
-      "quality_pending": false
-    },
-    {
-      "arxiv_id": "2607.25828v1",
-      "title": "C-RE-ACT: Causal RE-ACTing Agent for O-RAN Forensic Triage",
-      "authors": "Pau Baguer, J. Xavier Salvat Lozano, Gines Garcia-Aviles, Xavier Costa-Pérez",
-      "affiliations": "",
-      "url": "https://arxiv.org/abs/2607.25828v1",
-      "published_date": "2026-07-28",
-      "crawled_date": "2026-08-04",
-      "categories": "cs.NI",
-      "abstract": "The shift to O-RAN architectures marks a turning point in cellular security, where increased openness and modularity directly translate into a broader attack surface. Among the security threats cataloged by the O-RAN Alliance Working Group 11, performance-degradation attacks constitute the largest class. These attacks induce packet losses and latency spikes that are hard to distinguish from operational events such as misconfigurations, transient congestion, or software regressions. Consequently, upon an adverse incident detection, support engineers must rapidly determine whether to route the corresponding incident ticket to network maintenance or escalate it to security operations. This triage phase represents a critical human-in-the-loop bottleneck in the incident response lifecycle. To address this vulnerability, we introduce C-RE-ACT (Causal RE-ACTing agent), an automated agentic triage framework designed to generate actionable incident reports. C-RE-ACT starts constructing a Weighted Directed Acyclic Graph (WDAG) over O-RAN metrics using the Structural Agnostic Model (SAM). The resulting causal topology is encoded into a continuous soft token via a Graph Isomorphism Network (GIN) aligned with the language space of the Large Language Model (LLM) powering a ReAct agent. We evaluate C-RE-ACT on a physical, O-RAN-compliant testbed across 140 distinct performance-degradation experiments. Empirical results demonstrate the causal ranking isolates the correct root cause within the top three candidates in 89% of instances. Furthermore, graph soft-prompting improves LLM accuracy on causal-topology queries from 0.22 (text-only baseline) to 0.72. The autonomous agent achieves anomaly classification accuracies of 83% for delay anomalies and 84% for packet-loss anomalies.",
-      "summary_cn": "C-RE-ACT：面向O-RAN的性能退化攻击自动化研判框架。利用SAM构建O-RAN指标加权有向无环图（WDAG），经GIN编码后作为LLM ReAct agent的软提示词。在140个物理O-RAN测试床实验中，根因定位Top-3命中率达89%；图软提示使因果拓扑查询准确率从0.22提升至0.72；延迟异常分类83%，丢包异常84%。",
-      "is_enriched": true,
-      "abstract_zh_status": "completed",
-      "quality_assessment": {
-        "overall_score": 72,
-        "confidence": "high",
-        "novelty": 72,
-        "rigor": 70,
-        "data": 75,
-        "impact": 75,
-        "presentation": 72,
-        "strengths": [
-          "Novel integration of causal discovery (SAM) + graph encoding (GIN) + LLM ReAct agent for O-RAN triage",
-          "Physical O-RAN-compliant testbed evaluation (140 experiments) with strong empirical rigor",
-          "Addresses a genuine operational bottleneck: human-in-the-loop triage delay in incident response",
-          "Caual ranking hits top-3 in 89% of cases; graph soft-prompting dramatically improves LLM accuracy from 0.22 to 0.72",
-          "End-to-end agentic pipeline from causal graph to actionable incident reports"
-        ],
-        "limitations": [
-          "SAM causal discovery quality not independently validated; relies on SAM assumptions",
-          "LLM accuracy on causal topology queries (0.72) still moderate; room for improvement",
-          "Single LLM model tested; generalizability to other LLMs unclear",
-          "Anomaly classification accuracy (83-84%) not exceptional for binary classification tasks",
-          "WDAG construction complexity and scalability for large O-RAN deployments not addressed"
-        ],
-        "data_quality_note": "Physical O-RAN testbed with 140 distinct performance-degradation experiments; real hardware, not simulation. Baselines include text-only LLM and BM25/vector retrieval methods.",
-        "prediction_reason": "Strong practical motivation, solid empirical validation on physical testbed, novel causal-graph-LLM integration. Slight concern that 0.72 LLM accuracy on causal queries is modest and the 83-84% classification is not state-of-the-art-level for binary tasks. Overall a solid, well-motivated contribution with clear deployment relevance."
       },
       "quality_pending": false
     },
@@ -1184,6 +1300,195 @@
         "prediction_reason": "Strong conceptual novelty with the bidirectional scheduling-trajectory coupling and ISAC-assisted mobility estimation. Practical impact is high for UAV charging in WRSNs. Deductions for centralized architecture scalability concerns and lack of real-world dataset validation. Expected to be well-received in UAV-wireless and ISAC communities, with potential as a foundations paper for integrated sensing and wireless power transfer."
       },
       "quality_pending": false
+    },
+    {
+      "arxiv_id": "2606.25714v1",
+      "title": "CSI-CLIP++: A Scalable Channel Foundation Model for Wireless Communication via CIR-CSI Consistency",
+      "authors": "Jun Jiang, Wenjun Yu, Yunfan Li, Yuan Gao, Shugong Xu",
+      "affiliations": "University, Suzhou, China",
+      "published_date": "2026-06-24",
+      "crawled_date": "2026-06-26",
+      "categories": "eess.SP",
+      "abstract": "Self-supervised learning can exploit large-scale unlabeled channel data to improve the transferability of wireless AI models. Existing channel foundation models are often built on single-domain representations or reconstruction-oriented objectives, which may not explicitly capture the physical correspondence between frequency- and delay-domain channel views. This paper proposes CSI-CLIP++, a scalable channel foundation model for MIMO wireless channels. CSI-CLIP++ treats frequency-domain channel state information (CSI) and delay-domain channel impulse response (CIR) as paired views of the same propagation process and learns transferable representations through CSI-CIR contrastive alignment. The pretrained CSI encoder is adapted to channel identification, beam prediction, and positioning, representing PHY, RAN, and ISAC applications. Experiments on large-scale DeepMIMO scenarios show consistent gains over supervised baselines across environments, carrier frequencies, and data scales. CSI-CLIP++ improves beam prediction Top-1 accuracy by up to 19.31 percentage points and achieves competitive positioning performance, including cross-simulator transfer on a Sionna RT dataset. Backbone scaling results further show that the proposed objective remains effective across encoder architectures and benefits from larger model capacity.",
+      "summary_cn": "CSI-CLIP++是一种可扩展的MIMO无线信道基础模型，将频域信道状态信息和时域信道冲激响应视为同一传播过程的配对视图，通过CSI-CIR对比对齐学习可迁移表示。预训练编码器可适配信道识别、波束预测和定位任务。在DeepMIMO场景中，波束预测Top-1精度提升最高19.31个百分点，并实现了跨仿真器迁移。",
+      "arxiv_url": "https://arxiv.org/abs/2606.25714v1",
+      "pdf_url": "https://arxiv.org/pdf/2606.25714v1",
+      "is_enriched": true,
+      "quality_assessment": {
+        "overall_score": 85,
+        "confidence": "high",
+        "novelty": 88,
+        "rigor": 85,
+        "data": 90,
+        "impact": 80,
+        "presentation": 82,
+        "strengths": [
+          "Novel CSI-CIR contrastive alignment explicitly captures physical correspondence between frequency and delay domains",
+          "Foundation model approach with self-supervised learning addresses key challenge of limited labeled channel data",
+          "Comprehensive evaluation across three distinct tasks: channel identification, beam prediction, and positioning",
+          "Cross-simulator transfer to Sionna RT dataset demonstrates strong generalization capability",
+          "Backbone scaling analysis shows architectural flexibility and path to improved performance"
+        ],
+        "limitations": [
+          "Contrastive learning requires paired CSI-CIR data which may not always be available in practice",
+          "Computational overhead of foundation model training may be prohibitive for some deployment scenarios",
+          "Real-world over-the-air validation not demonstrated; relies on ray-tracing simulations",
+          "Comparison with other recent wireless foundation models could be more extensive"
+        ],
+        "data_quality_note": "Large-scale DeepMIMO scenarios with cross-simulator transfer to Sionna; comprehensive synthetic but realistic data",
+        "prediction_reason": "Strong novelty in physical-layer foundation model design with rigorous evaluation across multiple tasks and simulators"
+      }
+    },
+    {
+      "arxiv_id": "2606.24483v1",
+      "title": "Adaptive Machine Learning Framework for UAV Trajectory Optimization in O-RAN",
+      "authors": "Chenrui Sun, Swarna Bindu Chetty, Gianluca Fontanesi, Mahnaz Arvaneh, Walid Saad, Hamed Ahmadi",
+      "affiliations": "Radio Systems Research, Nokia Bell Labs, Stuttgart, Germany | School of Electrical and Electronic Engineering | Department of Electrical and Computer Engineering, Virginia Tech, VA | Recent research has also explored distributed artificial in",
+      "published_date": "2026-06-23",
+      "crawled_date": "2026-06-26",
+      "categories": "eess.SP, cs.AI",
+      "abstract": "The deployment of unmanned aerial vehicles (UAV) as open radio units (O-RUs) in 6G cellular systems presents a promising opportunity to achieve scalable and adaptive network coverage. However, optimizing UAV trajectories in dynamic and unfamiliar environments remains a critical challenge, particularly due to the need for extensive retraining in each new scenario. In this paper, we introduce a novel UAV trajectory optimization framework that integrates enhanced continual transfer learning within the O-RAN architecture. The proposed system maintains a library of pre-trained models and employs a model selection mechanism to identify and transfer knowledge from the most relevant environments, minimizing adaptation time and improving efficiency. When no sufficiently similar model is available, a fallback model empowered by continuous refinements ensures baseline performance. The framework leverages real-world city maps and ray tracing techniques to enhance learning reliability and improve trajectory planning. Simulation results demonstrate that the proposed model selection-based transfer learning approach reduces convergence time by 44% to 56% compared to retraining from scratch, and up to 40% compared to traditional transfer learning without model selection.",
+      "summary_cn": "将无人机（UAV）作为6G蜂窝系统中的开放无线单元（O-RU）部署，可实现可扩展和自适应的网络覆盖。本文提出一种集成增强持续迁移学习的UAV轨迹优化框架，在O-RAN架构下维护预训练模型库，通过模型选择机制从最相关环境迁移知识，相比从头训练减少44%至56%的收敛时间，相比传统迁移学习减少高达40%。",
+      "arxiv_url": "https://arxiv.org/abs/2606.24483v1",
+      "pdf_url": "https://arxiv.org/pdf/2606.24483v1",
+      "is_enriched": true,
+      "quality_assessment": {
+        "overall_score": 72,
+        "confidence": "high",
+        "novelty": 70,
+        "rigor": 75,
+        "data": 68,
+        "impact": 72,
+        "presentation": 78,
+        "strengths": [
+          "Novel continual transfer learning with model selection for UAV O-RU trajectory optimization",
+          "44-56% convergence time reduction vs. from-scratch is a strong and clearly quantified result",
+          "Up to 40% improvement over traditional transfer learning without model selection is meaningful",
+          "Real-world city maps and ray tracing enhance learning reliability — realistic environment modeling",
+          "Concrete fallback mechanism ensures robustness when no similar model exists",
+          "Well-integrated with O-RAN architecture; directly applicable to 6G UAV deployment"
+        ],
+        "limitations": [
+          "Fully simulation-based; no real UAV experiments or hardware validation",
+          "Ray tracing fidelity and city map representativeness not characterized",
+          "Model library growth and selection overhead at scale not discussed",
+          "8-10% improvement variance suggests training instability not fully addressed",
+          "No analysis of failure cases or when transfer learning actually hurts performance"
+        ],
+        "data_quality_note": "Simulation using real-world city maps and ray tracing; convergence time and energy metrics are well-defined; comparison baselines (from-scratch, traditional TL) are appropriate; scale of simulation scenarios unspecified.",
+        "prediction_reason": "Solid methodological contribution with clear quantitative gains and practical O-RAN integration. Simulation-only evaluation is the primary limitation, but the results are well-motivated and clearly presented with meaningful baselines."
+      }
+    },
+    {
+      "arxiv_id": "2606.24193v1",
+      "title": "SkyChain Intelligence: A Blockchain-Secured Multi-Agent DRL Framework for Low-Altitude Embodied Artificial Intelligence",
+      "authors": "Haoxiang Luo, Tianqi Jiang, Ruichen Zhang, Yinqiu Liu, Gang Sun, Hongfang Yu, Abbas Jamalipour, Dong In Kim",
+      "affiliations": "",
+      "published_date": "2026-06-23",
+      "crawled_date": "2026-06-26",
+      "categories": "cs.NI, cs.DC",
+      "abstract": "With the rapid development of the Low-Altitude Economy (LAE) ecosystem, Low-Altitude Embodied Artificial Intelligence (LAEAI) agents have become the core carriers of autonomous aerial services, thereby enabling dynamic Low-altitude Computility Networks (LACNets) for distributed computing resource sharing. However, resource-constrained LAEAI agents in decentralized LACNets face a fundamental trilemma of autonomy, security, and efficiency. Existing solutions primarily focus on either optimizing computational performance or enhancing security in isolation, failing to address the inherent trade-offs among trust, performance, and overhead in untrusted dynamic environments with malicious agents. To tackle this challenge, this paper proposes SkyChain Intelligence, a holistic framework that synergistically integrates agentic AI, consortium blockchain, and Multi-Agent Deep Reinforcement Learning (MADRL). We design a lightweight blockchain-based decentralized trust management system with a dynamic reputation mechanism and develop a hybrid-action-space MADDPG algorithm that embeds on-chain reputation scores into the reward function to jointly optimize offloading decisions, resource allocation, and drone 3D trajectories. Extensive simulations demonstrate that our framework outperforms state-of-the-art baselines in task completion latency and energy consumption, while achieving a 94.1% task completion rate in the baseline scenario and stable convergence within 300 training episodes. This work provides a viable path for building secure, autonomous, and efficient machine-to-machine computing ecosystems in the low-altitude domain.",
+      "summary_cn": "低空具身智能体是低空计算网络的核心，但面临自主性、安全与效率的三难困境。本文提出SkyChain Intelligence框架，融合智能体AI、联盟链与多智能体深度强化学习。设计轻量级去中心化信任管理系统，并开发混合动作空间算法联合优化卸载决策与轨迹。仿真显示，该框架在时延与能耗上优于现有方案，任务完成率达94.1%。",
+      "arxiv_url": "https://arxiv.org/abs/2606.24193v1",
+      "pdf_url": "https://arxiv.org/pdf/2606.24193v1",
+      "is_enriched": true,
+      "quality_assessment": {
+        "overall_score": 64,
+        "confidence": "medium",
+        "novelty": 68,
+        "rigor": 70,
+        "data": 40,
+        "impact": 68,
+        "presentation": 75,
+        "strengths": [
+          "Addresses a genuine trilemma (autonomy, security, efficiency) in decentralized LACNets—problem framing is well-motivated",
+          "Integration of consortium blockchain with hybrid-action MADDPG is a reasonable approach to trust-aware resource management",
+          "Shows stable convergence within 300 episodes and 94.1% task completion rate in the baseline scenario"
+        ],
+        "limitations": [
+          "Entirely simulation-based; no real-world testing or even trace-driven evaluation with actual drone/network data",
+          "Blockchain overhead analysis (latency, gas cost, consensus delay) is largely absent—critical for resource-constrained LAEAI agents",
+          "The hybrid-action-space MADDPG is an incremental extension of existing MADDPG; core RL methodology is not novel"
+        ],
+        "data_quality_note": "Synthetic simulation only. No real datasets, no hardware experiments, no real-world workload traces. Blockchain performance metrics (throughput, transaction latency, consensus overhead) are not empirically evaluated.",
+        "prediction_reason": "The trilemma framing is relevant, and the architecture design is reasonable, but the lack of real-world or even realistic trace-based evaluation, combined with absent blockchain overhead measurement, significantly weakens the contribution."
+      }
+    },
+    {
+      "arxiv_id": "2606.23110v1",
+      "title": "LOLLA: Deep Reinforcement Learning for Closed-Loop Link Adaptation Towards a GPU-Accelerated AI-RAN",
+      "authors": "Rui Wang, Linchao Zhang, Qiang Liu, Kun Yang",
+      "affiliations": "Electronic Science and Technology of China, Quzhou | State Key Laboratory of Novel Software Technology | Engineering, Nanjing University (Suzhou Campus), Suzhou | University of Electronic Science and Technology of China, Chengdu",
+      "published_date": "2026-06-22",
+      "crawled_date": "2026-06-26",
+      "categories": "eess.SP, cs.LG, cs.NI",
+      "abstract": "Outer-loop link adaptation (OLLA) is widely deployed in 5G NR to track channel variations, yet its reliance on first-order, single-bit feedback degrades performance significantly under high-mobility and fast-varying channels. This paper presents LOLLA (Learned Outer-Loop Link Adaptation), a deep reinforcement learning framework that replaces the conventional OLLA staircase with a learned, continuous SINR offset conditioned on rich PHY/MAC telemetry inaccessible to OLLA. The offset modulates the SINR-to-MCS lookup table, preserving 3GPP-compliant MCS selection and provably subsuming the conventional OLLA update rule. A Proximal Policy Optimization (PPO) policy trained under a Lagrangian block error rate (BLER) constraint automatically enforces tunable reliability targets from 1% to 15% without manual penalty calibration. The framework is realized as the first closed-loop AI-native control dApp on a GPU-accelerated 5G NR stack, achieving end-to-end control latencies under 500 microseconds. Evaluations under 3GPP TDL channel models demonstrate 15% to 92% throughput gains over OLLA across Doppler frequencies up to 400 Hz, while attaining a Pareto frontier that strictly dominates OLLA across all evaluated reliability targets. The learned policy generalizes to unseen channel models and scales to eight concurrent UEs under shared-resource scheduling. In the uplink formulation, the gNB directly observes decoding outcomes, enabling simulation-to-deployment parity.",
+      "summary_cn": "传统外环链路自适应（OLLA）在5G NR中广泛部署，但其依赖一阶单比特反馈在高移动性和快变信道下性能显著下降。本文提出LOLLA框架，用深度强化学习替代传统OLLA阶梯式更新，基于丰富的PHY/MAC遥测数据学习连续SINR偏移量，保持3GPP兼容的MCS选择。该框架在GPU加速的5G NR协议栈上实现，端到端控制时延低于500微秒，在3GPP TDL信道模型下相比OLLA实现15%至92%的吞吐量增益，并在1%至15%可靠性目标范围内严格优于OLLA。",
+      "arxiv_url": "https://arxiv.org/abs/2606.23110v1",
+      "pdf_url": "https://arxiv.org/pdf/2606.23110v1",
+      "is_enriched": true,
+      "quality_assessment": {
+        "overall_score": 83,
+        "confidence": "high",
+        "novelty": 82,
+        "rigor": 85,
+        "data": 78,
+        "impact": 88,
+        "presentation": 82,
+        "strengths": [
+          "First closed-loop AI-native control dApp on GPU-accelerated 5G NR stack — novel system integration contribution",
+          "PPO policy with Lagrangian BLER constraint is principled; preserves 3GPP MCS selection compliance, enabling real deployment",
+          "15-92% throughput gains over OLLA across Doppler up to 400 Hz is a wide and impressive evaluation range",
+          "End-to-end control latency under 500 microseconds addresses a real and challenging engineering problem",
+          "Uplink formulation achieves sim-to-deployment parity — strong evidence of practical viability",
+          "Generalization to unseen channel models and scaling to 8 concurrent UEs demonstrates robustness"
+        ],
+        "limitations": [
+          "Evaluated only on 3GPP TDL channel models; no over-the-air or hardware-in-the-loop validation",
+          "GPU dependency for sub-500µs latency may limit deployment scope in low-cost RANs",
+          "BLER target range 1%-15% covers wide reliability but misses ultra-reliable URLLC regime (<0.1%)",
+          "Training complexity and hyperparameter sensitivity of PPO not discussed in detail"
+        ],
+        "data_quality_note": "3GPP TDL channel models (E, A, CDL) provide standardized and reproducible evaluation; 400 Hz Doppler covers high-mobility scenarios; no real-world over-the-air dataset; scale of 8 UEs is modest but reasonable for proof-of-concept.",
+        "prediction_reason": "Strong across all dimensions: novel system integration of DRL into 5G NR stack with provable compliance, impressive gains over baselines, sub-500µs latency is a genuine engineering achievement, and uplink parity demonstrates practical deployment readiness."
+      }
+    },
+    {
+      "arxiv_id": "2606.23569v1",
+      "title": "High Speed High Signal-to-Noise Ratio Antenna Measurements -- Demonstration for UAV-Based Near-Field Measurements of Modulated Terrestrial Navigation Signals",
+      "authors": "Thomas F. Eibert, Denis Unruh, Thomas Mittereder, Alexander H. Paulus",
+      "affiliations": "",
+      "published_date": "2026-06-22",
+      "crawled_date": "2026-06-26",
+      "categories": "eess.SP",
+      "abstract": "Antenna measurements with high signal-to-noise ratio (SNR) require long measurement or integration times of the receiver and can, thus, lead to a very long duration of the measurements, especially if many frequency and spatial samples need to be collected. In order to speed up such measurements, an approach is presented, which collects all measurement samples with short measurement times, performs a Fourier transform of the measurement samples, bandpass filters the desired measurement signals with a small bandwidth, and obtains high-SNR measurement samples according to the short measurement times by inverse Fourier transform. This approach can be utilized with single-frequency continuous wave (CW) transmit signals, but also with transmit signals containing several discrete frequency components, as, e.g., found for periodically modulated CW carriers. The approach is first worked out and demonstrated for simulated test data. Next, it is utilized for the processing of modulated near-field (NF) measurement data collected via an uninhabited aerial vehicle (UAV) at a Doppler high-frequency omnidirectional radio range (DVOR) and at the localizer of an instrument landing system (ILS). The extracted CW NF data is transformed into the far field (FF) and diagnostic information is obtained from the underlying inverse source solutions.",
+      "summary_cn": "为解决高信噪比天线测量耗时过长的问题，本文提出一种加速方法：采集短时测量样本，经傅里叶变换和带通滤波后，通过逆变换获得高信噪比数据。该方法适用于单频及调制连续波信号，并在DVOR和ILS的无人机近场测量数据中得到验证，成功提取诊断信息并转换至远场。",
+      "arxiv_url": "https://arxiv.org/abs/2606.23569v1",
+      "pdf_url": "https://arxiv.org/pdf/2606.23569v1",
+      "is_enriched": true,
+      "quality_assessment": {
+        "overall_score": 62,
+        "confidence": "low",
+        "novelty": 62,
+        "rigor": 78,
+        "data": 68,
+        "impact": 45,
+        "presentation": 75,
+        "strengths": [
+          "Methodologically sound approach to accelerating antenna measurements via FFT-bandpass-inverse FFT pipeline",
+          "Practical validation with real UAV-collected DVOR and ILS data (near-field to far-field transformation)",
+          "Addresses real-world measurement bottleneck of long integration times",
+          "Clear mathematical derivation and step-by-step signal processing chain"
+        ],
+        "limitations": [
+          "Peripheral relevance to AI-RAN/6G core topics; primarily an antenna/RF measurement paper",
+          "Limited algorithmic novelty — technique is an application of known Fourier-domain filtering principles",
+          "No discussion of applicability to 5G/6G communication signals beyond navigation signals (DVOR/ILS)",
+          "UAV platform specifics not deeply analyzed for generalizability"
+        ],
+        "data_quality_note": "Real UAV-based NF measurements for DVOR and ILS; simulations included for validation. Adequate for the antenna measurement focus but limited scale.",
+        "prediction_reason": "Solid antenna measurement contribution but low relevance to AI-RAN/6G network intelligence topics. Niche acceptance at antenna/RF venues but unlikely to be competitive at 6G/wireless communications conferences without stronger connection to communication system sensing."
+      }
     },
     {
       "arxiv_id": "2606.23125v1",
