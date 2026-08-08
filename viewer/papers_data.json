@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-07 22:40:38",
+  "generated_at": "2026-08-08 14:30:05",
   "count": 10,
   "total_papers": 35,
   "overflow_count": 48,
@@ -56,7 +56,7 @@
       "crawled_date": "2026-08-07",
       "categories": "eess.SP, cs.DC, cs.NI",
       "abstract": "This paper describes DeepSig's CUDA-based acceleration backend for the OCUDU physical layer and O-RAN fronthaul path, integrated through acceleration interfaces that are largely independent of the underlying acceleration mechanism. The design accelerates PDSCH, PUSCH, SRS, PRACH, split-8 lower-PHY transforms, and O-RAN fronthaul (O-FH) IQ compression/decompression while preserving existing factories, resource-grid interfaces, PRACH-buffer interfaces, and channel processors. CUDA-visible grids, device-side softbit buffers, stream events, pinned staging buffers, and managed-memory policies keep data resident on the accelerator when the platform and radio split permit it. On an NVIDIA DGX Spark platform with a GB10 GPU and ARM CPU host, representative measurements with CPU baselines pinned to high-capacity cores show up to 10.3x PUSCH speedup, 2.7x PDSCH speedup, 19.7x split-8 low-PHY RX speedup with slot-shaped batching and scattered mapped zero-copy, 91.4x O-FH BFP12 decompression speedup, and 28.8x PRACH detector speedup against the production CPU path, with CPU and GPU 10% BLER thresholds agreeing to within 0.064 dB in the tested PUSCH sweeps. The same resident pipeline provides an execution substrate for AI-RAN, allowing machine-learned channel estimation, neural receivers, and AI-native air-interface research to run beside standards-compliant baseband kernels.",
-      "summary_cn": "O-RAN架构的开放性和模块化带来了更广的攻击面，其中性能降级攻击是O-RAN联盟WG11列出的最大攻击类别。这类攻击产生的丢包和时延尖峰难以与配置错误、瞬时拥塞或软件回归等运维事件区分，导致工单分类成为事件响应中关键的人工瓶颈。本文提出C-RE-ACT（因果RE-ACTing智能体），基于结构无关模型（SAM）在O-RAN指标上构建加权有向无环图（WDAG），通过图同构网络（GIN）将因果拓扑编码为软令牌，对齐大语言模型的语言空间，为ReAct智能体提供推理能力。在物理O-RAN测试床上对140个性能降级实验评估显示：因果排序在89%的案例中将正确根因隔离在前三位；图软提示将LLM在因果拓扑查询上的准确率从0.22（纯文本基线）提升至0.72；自主智能体对时延异常的分类准确率达83%，对丢包异常达84%。",
+      "summary_cn": "本文介绍 DeepSig 面向 OCUDU 物理层与 O-RAN 前传路径的 CUDA 加速后端，通过独立于底层加速机制的接口集成，加速 PDSCH、PUSCH、SRS、PRACH、split-8 低层 PHY 变换及 O-FH IQ 压缩/解压，并保持既有接口。在 GB10 GPU 上，PUSCH 最高加速 10.3 倍、O-FH 解压 91.4 倍、PRACH 检测 28.8 倍，且 BLER 阈值误差小于 0.064 dB；同一驻留流水线亦支撑 AI-RAN。",
       "pdf_url": "https://arxiv.org/pdf/2608.04338v1",
       "arxiv_url": "https://arxiv.org/abs/2608.04338v1",
       "is_enriched": true,
